@@ -718,23 +718,6 @@ export default function DiningList({ onLocate }: DiningListProps) {
                   )}
                 </div>
 
-                {/* Actions */}
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <button
-                    onClick={() => setActiveMenuGallery(shop)}
-                    className="flex-1 py-3 bg-orange-500 text-white rounded-full text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-orange-600 transition-colors shadow-md"
-                  >
-                    <FileText size={14} /> View Menu
-                  </button>
-                  {onLocate && (
-                    <button
-                      onClick={() => { setActiveDetails(null); onLocate(shop); }}
-                      className="flex-1 py-3 bg-slate-900 text-white rounded-full text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 hover:bg-rose-600 transition-colors shadow-sm"
-                    >
-                      <MapPin size={14} /> Route Map
-                    </button>
-                  )}
-                </div>
               </div>
             </div>
           </div>
