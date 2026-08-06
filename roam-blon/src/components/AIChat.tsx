@@ -171,7 +171,7 @@ export default function AIChat({ onClose, initialMode = "ai", lockMode = false }
       
       if (!history || history.length === 0) {
         setMessages([{
-          sender_role: 'assistant',
+          sender_role: mode === 'officer' ? 'admin' : 'assistant',
           content: mode === 'ai' 
             ? "Mabuhay! 🏝️ I'm your Romblon AI Travel Buddy. Ask me anything about our beautiful islands!"
             : "Hello! 🎧 I'm a Tourism Officer. How can I assist you with your travel plans today?"
