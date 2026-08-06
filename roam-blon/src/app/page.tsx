@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
+import { getCoords } from "@/lib/coordinates";
 import {
   Star,
   Utensils,
@@ -61,7 +62,6 @@ const STATIC_DESTINATIONS = [
     address: "Bonbon Beach Access Road, Brgy. Lonos, Romblon Island, 5500 Romblon",
     contact: "+63 917 842 1092",
     facebook: "https://facebook.com/BonbonBeachRomblonOfficial",
-    latitude: 12.5804, longitude: 122.2530,
     desc: "The crown jewel of Romblon, featuring a world-famous powdery sandbar that emerges during low tide and stretches toward Bangug Island. Ideal for swimming, snorkeling, sunset watching, and landscape photography.",
     howToGetThere: "Take a 15-minute tricycle ride from Romblon Town Proper to Brgy. Lonos. Follow the walkway signage down to the shore. At low tide (6:00 AM – 9:00 AM), you can walk all the way along the sandbar.",
     tag: "Sandbar", type: "Beach", category: "Beach",
@@ -70,13 +70,12 @@ const STATIC_DESTINATIONS = [
     info: { type: "Natural Beach", access: "Tricycle / Motorbike", bestTime: "Low Tide (6AM–9AM)", entranceFee: "₱10 public / ₱60 private", visitingHours: "6:00 AM - 6:00 PM", features: ["Famous Sandbar", "Snorkeling", "Swimming", "Sunset View"] }
   },
   {
-    id: "sd-peable", name: "Peable Walk", barangay: "Brgy. Ginablan",
-    address: "Ginablan Highway, Brgy. Ginablan, Romblon Island, 5500 Romblon",
+    id: "sd-peable", name: "Peable Walk", barangay: "Brgy. Sablayan",
+    address: "Sitio Lahong, Brgy. Sablayan, Romblon Island, 5500 Romblon",
     contact: "+63 928 554 9918",
     facebook: "https://facebook.com/PeableWalkResortRomblon",
-    latitude: 12.5298, longitude: 122.2355,
     desc: "A wide, white-sand paradise bordered by lush coconut groves and cozy beachside cottages. Offers clear turquoise waters for snorkeling, beach volleyball, and relaxed weekend stays.",
-    howToGetThere: "Hop on a southbound tricycle from Romblon Town Center along the coastal highway for 25 minutes until reaching Brgy. Ginablan.",
+    howToGetThere: "Hop on a southbound tricycle from Romblon Town Center along the Lamao–Calabogo–Sablayan coastal highway for about 45 minutes until reaching Sitio Lahong, Brgy. Sablayan.",
     tag: "Top Rated", type: "Resort", category: "Resort",
     image: "/beach%26resorts/peabble.jpg", image_url: "/beach%26resorts/peabble.jpg",
     images: ["/beach%26resorts/peabble.jpg", "/beach%26resorts/peabble1.jpg", "/beach%26resorts/peabble2.jpg"],
@@ -87,7 +86,6 @@ const STATIC_DESTINATIONS = [
     address: "Tiamban Beach Shoreline, Brgy. Lonos, Romblon Island, 5500 Romblon",
     contact: "+63 919 772 3014",
     facebook: "https://facebook.com/TiambanBeachResort",
-    latitude: 12.5701, longitude: 122.2510,
     desc: "Crystal clear shallow waters and fine white sand make Tiamban an ideal haven for families and young children. Offers shaded bamboo huts and peaceful swimming areas.",
     howToGetThere: "Located just past Bonbon Beach. Take a 12-minute tricycle ride from Town Proper (₱30 fare per head) directly to the Tiamban entrance path.",
     tag: "Family Friendly", type: "Beach", category: "Beach",
@@ -100,7 +98,6 @@ const STATIC_DESTINATIONS = [
     address: "Talipasak Cove, Brgy. Ginablan, Romblon Island, 5500 Romblon",
     contact: "+63 920 411 7088",
     facebook: "https://facebook.com/TalipasakBeachCove",
-    latitude: 12.5350, longitude: 122.2380,
     desc: "A quiet, secluded cove framed by lush rock formations and serene clear waters. Known for spectacular golden sunsets, peaceful kayaking, and marine biodiversity.",
     howToGetThere: "From the town center, you may hire a tricycle to take you to San Pedro Beach Resort. The fare starts at P200 for 2-3 pax. The travel time is 30-45 minutes.",
     tag: "Hidden Gem", type: "Beach", category: "Beach",
@@ -109,13 +106,12 @@ const STATIC_DESTINATIONS = [
     info: { type: "Natural Beach", access: "Tricycle + Walk", bestTime: "Sunset (5PM–6PM)", entranceFee: "₱50 adult / ₱30 kids", visitingHours: "8:00 AM - 5:00 PM", features: ["Secluded Cove", "Sunset View", "Peaceful", "Photography"] }
   },
   {
-    id: "sd-lamao", name: "Lamao Beach Resort", barangay: "Logbon Island",
-    address: "Lamao Shoreline, Logbon Island, Romblon, 5500 Romblon",
+    id: "sd-lamao", name: "Lamao Beach Resort", barangay: "Brgy. Lamao",
+    address: "Lamao–Calabogo–Sablayan Road, Brgy. Lamao, Romblon Island, 5500 Romblon",
     contact: "+63 917 630 1145",
     facebook: "https://facebook.com/LamaoBeachLogbon",
-    latitude: 12.5890, longitude: 122.2390,
     desc: "A pristine tropical island escape featuring soft white sand, calm turquoise waters, and thriving coral reefs. A mandatory highlight on Romblon island hopping trips.",
-    howToGetThere: "Charter an outrigger boat / Bangka from Romblon Town Harbor (15-20 mins sea crossing directly to Logbon Island).",
+    howToGetThere: "A 45-minute drive from Romblon Town Proper along the Lamao–Calabogo–Sablayan coastal road to the opposite (east) side of Romblon Island.",
     tag: "Pristine", type: "Resort", category: "Resort",
     image: "/beach%26resorts/lamao.jpg", image_url: "/beach%26resorts/lamao.jpg",
     images: ["/beach%26resorts/lamao.jpg", "/beach%26resorts/lamao1.jpg", "/beach%26resorts/lamao2.jpg", "/beach%26resorts/lamao3.jpg"],
@@ -126,7 +122,6 @@ const STATIC_DESTINATIONS = [
     address: "Munting Paraiso Beach, Logbon Island, Romblon, 5500 Romblon",
     contact: "+63 939 912 4055",
     facebook: "https://facebook.com/DCMuntingParaisoLogbon",
-    latitude: 12.5920, longitude: 122.2410,
     desc: "Living up to its name, this little paradise on Logbon Island offers white sand beaches, coconut shade, and fresh seafood lunches cooked by island locals.",
     howToGetThere: "Accessible by boat from Romblon Harbor (15 mins) or as part of a Logbon island hopping package.",
     tag: "Island Favorite", type: "Resort", category: "Resort",
@@ -139,7 +134,6 @@ const STATIC_DESTINATIONS = [
     address: "Coco Cabana Stretch, Logbon Island, Romblon, 5500 Romblon",
     contact: "+63 918 204 8831",
     facebook: "https://facebook.com/CocoCabanaLogbon",
-    latitude: 12.5950, longitude: 122.2430,
     desc: "A tranquil private beach retreat on the quiet side of Logbon Island. Perfect for hammocks under palm trees, swimming in warm seas, and unplugging from city life.",
     howToGetThere: "Take a 15-minute boat ride from Romblon Port directly to the Coco Cabana docking point.",
     tag: "Quiet Retreat", type: "Resort", category: "Resort",
@@ -152,7 +146,6 @@ const STATIC_DESTINATIONS = [
     address: "Agpanabat Coastal Road, Brgy. Agpanabat, Romblon, 5500 Romblon",
     contact: "+63 927 348 1190",
     facebook: "https://facebook.com/ReggaeVibesRomblonOfficial",
-    latitude: 12.5580, longitude: 122.2590,
     desc: "A bohemian beachfront accommodation and lounge popular among backpackers. Features acoustic reggae music, beach bonfires, and cold local craft beverages.",
     howToGetThere: "18-minute tricycle ride from Town Proper heading towards Agpanabat along the coastal road.",
     tag: "Budget Stay", type: "Hotel", category: "Hotel",
@@ -165,7 +158,6 @@ const STATIC_DESTINATIONS = [
     address: "Robinson Inlet, Brgy. Lonos, Romblon Island, 5500 Romblon",
     contact: "+63 917 500 2234",
     facebook: "https://facebook.com/RobinsonsCoveRomblon",
-    latitude: 12.5680, longitude: 122.2490,
     desc: "A picturesque hidden inlet featuring a mini sandbar, calm waters, and dramatic rock formations. An ideal spot for drone videography and romantic strolls.",
     howToGetThere: "12 minutes by tricycle from Town Proper to Brgy. Lonos turnout, followed by a 3-minute walking path to the cove.",
     tag: "Photogenic", type: "Beach", category: "Beach",
@@ -178,7 +170,6 @@ const STATIC_DESTINATIONS = [
     address: "Lonos Beachfront, Brgy. Lonos, Romblon Island, 5500 Romblon",
     contact: "+63 918 392 7041",
     facebook: "https://facebook.com/HorizonBeachResortRomblon",
-    latitude: 12.5650, longitude: 122.2470,
     desc: "A stunning seaside resort offering elevated oceanfront rooms, infinity views, fresh seafood dining, and direct access to pristine swimming waters.",
     howToGetThere: "Take a tricycle from Romblon Town Proper along Lonos main road (approx. 10-15 minutes).",
     tag: "Sea View", type: "Hotel", category: "Hotel",
@@ -191,7 +182,6 @@ const STATIC_DESTINATIONS = [
     address: "Consolacion Hill, Town Proper, Romblon, 5500 Romblon",
     contact: "+63 42 567 5012",
     facebook: "https://facebook.com/FortSanAndresRomblonHeritage",
-    latitude: 12.5788, longitude: 122.2705,
     desc: "A 17th-century Spanish stone fortress overlooking Romblon harbor. Built by Spanish recollection friars to defend the island against pirate raids. Offers unmatched panoramic views of the entire town.",
     howToGetThere: "Located right in Town Proper. Ascend the stone staircase (around 200 steps) behind the municipal hall or take a 3-minute tricycle up Consolacion Hill.",
     tag: "Heritage", type: "Landmark", category: "Landmark",
@@ -204,7 +194,6 @@ const STATIC_DESTINATIONS = [
     address: "Brgy. Ginablan, Romblon Island, 5500 Romblon",
     contact: "0976 305 9118",
     facebook: "https://www.facebook.com/profile.php?id=61566457658217",
-    latitude: 12.5320, longitude: 122.2360,
     desc: "A peaceful beachfront accommodation in Romblon, Romblon, offering guests a relaxing island getaway with beautiful sea views and a quiet atmosphere. Ideal for travelers looking to unwind, watch the sunset, and explore Romblon Island.",
     howToGetThere: "Ride a tricycle from Freedom Park and tell the driver you're going to Stevejoy Beach House in Ginablan (5–10 mins). If driving or riding a motorcycle, follow the main coastal road toward Barangay Ginablan.",
     tag: "Beachfront", type: "Resort", category: "Resort",
@@ -217,7 +206,6 @@ const STATIC_DESTINATIONS = [
     address: "Sablayan Point, Brgy. Apunan, Romblon Island, 5500 Romblon",
     contact: "+63 917 842 1092",
     facebook: "https://facebook.com/RomblonTourism",
-    latitude: 12.5052, longitude: 122.2788,
     desc: "An off-the-beaten-path layered waterfall reached by a 10-15 minute trail that follows the sound of running water upstream, descending below the forest canopy to reveal cascades set against dense tropical greenery.",
     howToGetThere: "Rent a moped or hire a tricycle in Poblacion and drive about 30-40 minutes to Apunan Point. Continue past the big church until you cross a small river, then stop and follow the stream-side path for 10-15 minutes.",
     tag: "Waterfall", type: "Falls", category: "Falls",
@@ -230,7 +218,6 @@ const STATIC_DESTINATIONS = [
     address: "Kipot River, Southeast Romblon Island, 5500 Romblon",
     contact: "+63 917 842 1092",
     facebook: "https://facebook.com/RomblonTourism",
-    latitude: 12.5013, longitude: 122.3136,
     desc: "A hidden emerald river canyon carved through centuries of flowing water. Walk a short steep trail down to natural rock pools where you can swim through narrow slots and jump into the refreshing water.",
     howToGetThere: "From Romblon Town, ride a motorbike or tricycle about 20-30 minutes south-east past Agpanabat. The entrance is through a private yard; the steep trail then winds down to the river canyon.",
     tag: "River Canyon", type: "Falls", category: "Falls",
@@ -243,7 +230,6 @@ const STATIC_DESTINATIONS = [
     address: "Plaza Rizal, Town Proper, Romblon, 5500 Romblon",
     contact: "+63 42 567 4011",
     facebook: "https://facebook.com/RomblonDiocese",
-    latitude: 12.5758, longitude: 122.2695,
     desc: "The Cathedral of Saint Joseph, a Baroque fortress-church built in the 17th century largely from local marble. It is the seat of the Diocese of Romblon and one of the 26 colonial churches declared a National Cultural Treasure in 2001.",
     howToGetThere: "Located right in the Town Proper plaza, a short walk from the port and Freedom Park. It is within 10-15 minutes on foot from anywhere in the town center.",
     tag: "National Treasure", type: "Landmark", category: "Landmark",
@@ -256,7 +242,6 @@ const STATIC_DESTINATIONS = [
     address: "Freedom Park, Town Proper, Romblon, 5500 Romblon",
     contact: "+63 42 567 4088",
     facebook: "https://facebook.com/RomblonShoppingCenter",
-    latitude: 12.5761, longitude: 122.2712,
     desc: "The main pasalubong hub of Romblon, located in front of Freedom Park. Browse marble souvenirs, sculptures, furniture, decor, and handcrafted items made by local artisans — with on-site engraving services.",
     howToGetThere: "Just outside the port, directly in front of Freedom Park in the Town Proper. Walk from the pier or ride a tricycle from anywhere in town (3-5 mins).",
     tag: "Marble Souvenirs", type: "Landmark", category: "Landmark",
@@ -537,6 +522,7 @@ export default function Home() {
               (normName(d.name).length > 0 && normName(s.name).includes(normName(d.name))) ||
               (normName(s.name).length > 0 && normName(d.name).includes(normName(s.name)))
             );
+            const fallbackCoords = getCoords(d.id);
             if (staticMatch) {
               return {
                 ...staticMatch,
@@ -555,8 +541,8 @@ export default function Home() {
               address: d.location || "Romblon Island, Romblon",
               contact: "+63 976 305 9118",
               facebook: "",
-              latitude: 12.5320,
-              longitude: 122.2360,
+              latitude: fallbackCoords.lat,
+              longitude: fallbackCoords.lng,
               desc: d.description || "",
               howToGetThere: d.description?.includes("How To Get There:") ? d.description.split("How To Get There:")[1].trim() : `Take a tricycle from Romblon Town Proper to ${d.name}.`,
               tag: d.category === 'Beaches' ? 'Natural' : d.category || 'Featured',

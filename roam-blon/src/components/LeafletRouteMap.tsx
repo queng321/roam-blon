@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { LocateFixed, AlertTriangle } from "lucide-react";
+import { getCoords, TOWN_PROPER_COORDS as TOWN_CENTER } from "@/lib/coordinates";
 
 interface LeafletRouteMapProps {
   destination?: {
@@ -31,27 +32,7 @@ interface LeafletRouteMapProps {
 }
 
 // Romblon Town Proper default center coordinates
-const TOWN_PROPER_COORDS: [number, number] = [12.5768, 122.2721];
-
-// Default coordinates for Romblon destinations if lat/lng not specified
-const DESTINATION_COORDS: Record<string, [number, number]> = {
-  "sd-bonbon": [12.5804, 122.2530],       // Bonbon Beach & Sandbar
-  "sd-peable": [12.5298, 122.2355],       // Peable Walk Beach Resort Ginablan
-  "sd-tiamban": [12.5701, 122.2510],      // Tiamban Beach Lonos
-  "sd-talipasak": [12.5350, 122.2380],     // Talipasak Beach Ginablan
-  "sd-lamao": [12.5890, 122.2390],        // Lamao Beach Resort Logbon Island
-  "sd-dc-logbon": [12.5920, 122.2410],    // DC Munting Paraiso Logbon
-  "sd-coco": [12.5950, 122.2430],         // Coco Cabana Logbon
-  "sd-reggae": [12.5580, 122.2590],       // Reggae Vibes Agpanabat
-  "sd-robinson": [12.5680, 122.2490],     // Robinson's Cove Lonos
-  "sd-horizon": [12.5650, 122.2470],      // Horizon Beach Resort Lonos
-  "sd-fort-san-andres": [12.5788, 122.2705], // Fort San Andres
-  "sd-stevejoy": [12.5320, 122.2360],    // Stevejoy Beach House Ginablan
-  "sd-libtong": [12.5052, 122.2788],     // Libtong Falls, Sablayan Point
-  "sd-kipot": [12.5013, 122.3136],       // Kipot River, Southeast Romblon
-  "sd-cathedral": [12.5758, 122.2695],   // Saint Joseph Cathedral, Town Proper
-  "sd-shopping": [12.5761, 122.2712],    // Romblon Shopping Center, Town Proper
-};
+const TOWN_PROPER_COORDS: [number, number] = [TOWN_CENTER.lat, TOWN_CENTER.lng];
 
 export default function LeafletRouteMap({ destination, allDestinations = [] }: LeafletRouteMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -72,9 +53,9 @@ export default function LeafletRouteMap({ destination, allDestinations = [] }: L
 
   const isOverview = !destination;
 
-  // Resolve target coordinates
-  const targetLat = destination?.latitude || destination?.lat || (destination?.id && DESTINATION_COORDS[destination.id] ? DESTINATION_COORDS[destination.id][0] : 12.5701);
-  const targetLng = destination?.longitude || destination?.lng || (destination?.id && DESTINATION_COORDS[destination.id] ? DESTINATION_COORDS[destination.id][1] : 122.2510);
+  // Resolve target coordinates from the shared coordinate registry
+  const targetLat = destination?.latitude || destination?.lat || getCoords(destination?.id).lat;
+  const targetLng = destination?.longitude || destination?.lng || getCoords(destination?.id).lng;
   const destCoords: [number, number] = [targetLat, targetLng];
 
   // Address fallbacks

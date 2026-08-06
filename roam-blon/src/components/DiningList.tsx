@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { getCoords } from '@/lib/coordinates';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -51,17 +52,17 @@ export default function DiningList({ onLocate }: DiningListProps) {
   ];
 
   const STATIC_DINING = [
-    { id: "bistro", name: "Marble City Café & Bistro", location: "Town Proper", address: "Town Proper, Romblon", category: "Coffee Shop & Bistro", image_url: "/dining/bistro.jpg", images: ["/dining/bistro.jpg"], menus: ["/dining/menu/bistro.jpg"], contact: "0900 000 0000" /* TODO: Island Bistro full number */ },
-    { id: "el", name: "El Hotel & Restaurant", location: "Romblon Town", address: "Romblon Town", category: "Restaurant & Hotel", image_url: "/dining/el.jpg", images: ["/dining/el.jpg"], menus: ["/dining/menu/el1.jpg", "/dining/menu/el2.jpg", "/dining/menu/el3.jpg", "/dining/menu/el4.jpg", "/dining/menu/el5.jpg"], contact: "0900 000 0000" /* TODO: El Krimpuff full number */ },
-    { id: "gangnam", name: "Gangnam Korean Grill", location: "Romblon Town", address: "Romblon Town", category: "Korean BBQ", image_url: "/dining/gangnam.jpg", images: ["/dining/gangnam.jpg"], menus: ["/dining/menu/gangnam.jpg", "/dining/menu/gangnam1.jpg", "/dining/menu/gangnam2.jpg", "/dining/menu/gangnam3.jpg"], contact: "0998 404 3290" },
-    { id: "horizon", name: "Horizon Seaside Restaurant", location: "Brgy. Lonos", address: "Brgy. Lonos", category: "Seafood & Grill", image_url: "/dining/horizon.jpg", images: ["/dining/horizon.jpg"], menus: ["/dining/menu/horizon.jpg", "/dining/menu/horizon1.jpg"], contact: "0915 771 8481" },
-    { id: "italian", name: "Italian Trattoria", location: "Town Proper", address: "Town Proper", category: "Italian Trattoria", image_url: "/dining/italian.jpg", images: ["/dining/italian.jpg"], menus: ["/dining/menu/italian (1).jpg", "/dining/menu/italian (2).jpg", "/dining/menu/italian (3).jpg", "/dining/menu/italian (4).jpg"], contact: "0917 876 0072" },
-    { id: "mamalois", name: "Mama Lois Kitchen", location: "Brgy. Lonos", address: "Brgy. Lonos", category: "Local Diner", image_url: "/dining/mamalois.jpg", images: ["/dining/mamalois.jpg"], menus: ["/dining/menu/mamalois1 (1).jpg", "/dining/menu/mamalois1 (2).jpg"], contact: "0900 000 0000" /* TODO: Mama Loi's full number */ },
-    { id: "ocean", name: "Ocean View Seafood Grill", location: "Brgy. Ginablan", address: "Brgy. Ginablan", category: "Seafood Restaurant", image_url: "/dining/ocean.jpg", images: ["/dining/ocean.jpg"], menus: ["/dining/menu/seaview (1).jpg", "/dining/menu/seaview (2).jpg", "/dining/menu/seaview (3).jpg", "/dining/menu/seaview (4).jpg", "/dining/menu/seaview (5).jpg", "/dining/menu/seaview (6).jpg"], contact: "0999 433 1224" },
-    { id: "panublion", name: "Panublion Heritage Diner", location: "Town Proper", address: "Town Proper", category: "Heritage Diner", image_url: "/dining/panublion.jpg", images: ["/dining/panublion.jpg"], menus: ["/dining/menu/panublion1 (1).jpg", "/dining/menu/panublion1 (2).jpg", "/dining/menu/panublion1 (3).jpg", "/dining/menu/panublion1 (4).jpg", "/dining/menu/panublion1 (5).jpg", "/dining/menu/panublion1 (6).jpg"], contact: "0956 044 7249" },
-    { id: "reggae", name: "Reggae Bar & Grill", location: "Agpanabat", address: "Agpanabat, Romblon", category: "Bar & Grill", image_url: "/dining/reggae.jpg", images: ["/dining/reggae.jpg"], menus: ["/dining/menu/reggae (1).jpg", "/dining/menu/reggae (2).jpg", "/dining/menu/reggae (3).jpg", "/dining/menu/reggae (4).jpg", "/dining/menu/reggae (5).jpg", "/dining/menu/reggae (6).jpg"], contact: "0915 029 8242" },
-    { id: "sunbird", name: "Sunbird Cafe & Lounge", location: "Romblon Town", address: "Romblon Town", category: "Coffee Shop & Lounge", image_url: "/dining/sunbird.jpg", images: ["/dining/sunbird.jpg", "/foods/sarsa.webp", "/foods/inaslum.webp", "/foods/sihi.webp", "/foods/gayabon.webp"] },
-    { id: "yurich", name: "Yurich Food House", location: "Brgy. Ginablan", address: "Brgy. Ginablan", category: "Local Restaurant", image_url: "/dining/yurich.jpg", images: ["/dining/yurich.jpg"], menus: ["/dining/menu/yurich (1).jpg", "/dining/menu/yurich (2).jpg", "/dining/menu/yurich (3).jpg", "/dining/menu/yurich (4).jpg", "/dining/menu/yurich (5).jpg", "/dining/menu/yurich (6).jpg", "/dining/menu/yurich (7).jpg", "/dining/menu/yurich (8).jpg", "/dining/menu/yurich (9).jpg", "/dining/menu/yurich (10).jpg", "/dining/menu/yurich (11).jpg", "/dining/menu/yurich (12).jpg"], contact: "0900 000 0000" /* TODO: Yurich full number */ },
+    { id: "bistro", name: "Marble City Café & Bistro", location: "Town Proper", address: "Town Proper, Romblon", category: "Coffee Shop & Bistro", image_url: "/dining/bistro.jpg", images: ["/dining/bistro.jpg"], menus: ["/dining/menu/bistro.jpg"], contact: "0900 000 0000", latitude: 12.5758, longitude: 122.2706 /* TODO: Island Bistro full number */ },
+    { id: "el", name: "El Hotel & Restaurant", location: "Romblon Town", address: "Romblon Town", category: "Restaurant & Hotel", image_url: "/dining/el.jpg", images: ["/dining/el.jpg"], menus: ["/dining/menu/el1.jpg", "/dining/menu/el2.jpg", "/dining/menu/el3.jpg", "/dining/menu/el4.jpg", "/dining/menu/el5.jpg"], contact: "0900 000 0000", latitude: 12.5760, longitude: 122.2710 /* TODO: El Krimpuff full number */ },
+    { id: "gangnam", name: "Gangnam Korean Grill", location: "Romblon Town", address: "Romblon Town", category: "Korean BBQ", image_url: "/dining/gangnam.jpg", images: ["/dining/gangnam.jpg"], menus: ["/dining/menu/gangnam.jpg", "/dining/menu/gangnam1.jpg", "/dining/menu/gangnam2.jpg", "/dining/menu/gangnam3.jpg"], contact: "0998 404 3290", latitude: 12.5765, longitude: 122.2720 },
+    { id: "horizon", name: "Horizon Seaside Restaurant", location: "Brgy. Lonos", address: "Brgy. Lonos", category: "Seafood & Grill", image_url: "/dining/horizon.jpg", images: ["/dining/horizon.jpg"], menus: ["/dining/menu/horizon.jpg", "/dining/menu/horizon1.jpg"], contact: "0915 771 8481", latitude: 12.5650, longitude: 122.2520 },
+    { id: "italian", name: "Italian Trattoria", location: "Town Proper", address: "Town Proper", category: "Italian Trattoria", image_url: "/dining/italian.jpg", images: ["/dining/italian.jpg"], menus: ["/dining/menu/italian (1).jpg", "/dining/menu/italian (2).jpg", "/dining/menu/italian (3).jpg", "/dining/menu/italian (4).jpg"], contact: "0917 876 0072", latitude: 12.5755, longitude: 122.2700 },
+    { id: "mamalois", name: "Mama Lois Kitchen", location: "Brgy. Lonos", address: "Brgy. Lonos", category: "Local Diner", image_url: "/dining/mamalois.jpg", images: ["/dining/mamalois.jpg"], menus: ["/dining/menu/mamalois1 (1).jpg", "/dining/menu/mamalois1 (2).jpg"], contact: "0900 000 0000", latitude: 12.5710, longitude: 122.2535 /* TODO: Mama Loi's full number */ },
+    { id: "ocean", name: "Ocean View Seafood Grill", location: "Brgy. Ginablan", address: "Brgy. Ginablan", category: "Seafood Restaurant", image_url: "/dining/ocean.jpg", images: ["/dining/ocean.jpg"], menus: ["/dining/menu/seaview (1).jpg", "/dining/menu/seaview (2).jpg", "/dining/menu/seaview (3).jpg", "/dining/menu/seaview (4).jpg", "/dining/menu/seaview (5).jpg", "/dining/menu/seaview (6).jpg"], contact: "0999 433 1224", latitude: 12.5325, longitude: 122.2578 },
+    { id: "panublion", name: "Panublion Heritage Diner", location: "Town Proper", address: "Town Proper", category: "Heritage Diner", image_url: "/dining/panublion.jpg", images: ["/dining/panublion.jpg"], menus: ["/dining/menu/panublion1 (1).jpg", "/dining/menu/panublion1 (2).jpg", "/dining/menu/panublion1 (3).jpg", "/dining/menu/panublion1 (4).jpg", "/dining/menu/panublion1 (5).jpg", "/dining/menu/panublion1 (6).jpg"], contact: "0956 044 7249", latitude: 12.5750, longitude: 122.2705 },
+    { id: "reggae", name: "Reggae Bar & Grill", location: "Agpanabat", address: "Agpanabat, Romblon", category: "Bar & Grill", image_url: "/dining/reggae.jpg", images: ["/dining/reggae.jpg"], menus: ["/dining/menu/reggae (1).jpg", "/dining/menu/reggae (2).jpg", "/dining/menu/reggae (3).jpg", "/dining/menu/reggae (4).jpg", "/dining/menu/reggae (5).jpg", "/dining/menu/reggae (6).jpg"], contact: "0915 029 8242", latitude: 12.4828, longitude: 122.2830 },
+    { id: "sunbird", name: "Sunbird Cafe & Lounge", location: "Romblon Town", address: "Romblon Town", category: "Coffee Shop & Lounge", image_url: "/dining/sunbird.jpg", images: ["/dining/sunbird.jpg", "/foods/sarsa.webp", "/foods/inaslum.webp", "/foods/sihi.webp", "/foods/gayabon.webp"], latitude: 12.5762, longitude: 122.2715 },
+    { id: "yurich", name: "Yurich Food House", location: "Brgy. Ginablan", address: "Brgy. Ginablan", category: "Local Restaurant", image_url: "/dining/yurich.jpg", images: ["/dining/yurich.jpg"], menus: ["/dining/menu/yurich (1).jpg", "/dining/menu/yurich (2).jpg", "/dining/menu/yurich (3).jpg", "/dining/menu/yurich (4).jpg", "/dining/menu/yurich (5).jpg", "/dining/menu/yurich (6).jpg", "/dining/menu/yurich (7).jpg", "/dining/menu/yurich (8).jpg", "/dining/menu/yurich (9).jpg", "/dining/menu/yurich (10).jpg", "/dining/menu/yurich (11).jpg", "/dining/menu/yurich (12).jpg"], contact: "0900 000 0000", latitude: 12.5320, longitude: 122.2575 /* TODO: Yurich full number */ },
   ];
 
   const normalizeDiningItem = (shop: any) => {
@@ -136,6 +137,9 @@ export default function DiningList({ onLocate }: DiningListProps) {
     const combined = Array.from(new Set([...directGallery, ...mapped]));
     const primaryImage = shop?.image_url || shop?.image || combined[0] || "/dining/bistro1.jpg";
 
+    // Resolve coordinates: explicit shop values win, otherwise the shared registry
+    const coords = getCoords(shopKey);
+
     // Static fallback menu images for specific shops
     const staticMenus: Record<string, string[]> = {
       bistro: ["/dining/menu/bistro.jpg"],
@@ -154,6 +158,8 @@ export default function DiningList({ onLocate }: DiningListProps) {
       image_url: primaryImage,
       images: combined.length > 0 ? combined : [primaryImage],
       category: categoryMap[shopKey] || shop?.category || "Local Eat",
+      latitude: shop?.latitude ?? coords.lat,
+      longitude: shop?.longitude ?? coords.lng,
       // Prefer explicit shop.menus, then static fallback, then photo combo
       menus: shop?.menus && shop.menus.length > 0 ? shop.menus : (staticMenus[shopKey] || (combined.length > 0 ? combined : [primaryImage])),
       contact: shop?.contact || contactMap[shopKey] || "+63 917 123 4567",
