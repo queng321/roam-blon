@@ -102,15 +102,22 @@ export default function LeafletRouteMap({ destination, allDestinations = [] }: L
 
       applyView(L, map, mapViewRef.current);
 
-      // Custom icon helper
-      const createCustomIcon = (color: string, label: string) => {
+      // Classic location-pin icon (teardrop with a shadowed tip)
+      const createCustomIcon = (color: string, label: string, showLabel = true) => {
+        const safeLabel = (label || "").replace(/"/g, "'");
         return L.divIcon({
           className: "custom-leaflet-marker",
-          html: `<div style="background-color: ${color}; color: white; padding: 6px 12px; border-radius: 20px; font-weight: 900; font-size: 11px; font-family: sans-serif; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 2px solid white; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
-            <span>📍</span> ${label}
-          </div>`,
-          iconSize: [120, 36],
-          iconAnchor: [60, 18],
+          html: `
+            <div style="position: relative; transform: translate(-50%, -100%);">
+              <div style="position: absolute; top: 34px; left: 50%; width: 14px; height: 14px; background: rgba(0,0,0,0.25); border-radius: 50%; filter: blur(2px); transform: translateX(-50%);"></div>
+              <svg width="44" height="52" viewBox="0 0 44 52" style="display: block; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">
+                <path d="M22 0C9.85 0 0 9.85 0 22c0 15 18.5 28.5 21.2 30.6a1.2 1.2 0 0 0 1.6 0C25.5 50.5 44 37 44 22 44 9.85 34.15 0 22 0z" fill="${color}"/>
+                <circle cx="22" cy="22" r="9" fill="#ffffff"/>
+              </svg>
+              ${showLabel ? `<div style="position: absolute; top: -26px; left: 50%; transform: translateX(-50%); background: ${color}; color: white; padding: 3px 10px; border-radius: 999px; font-weight: 900; font-size: 11px; font-family: sans-serif; border: 2px solid white; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.25);">${safeLabel}</div>` : ""}
+            </div>`,
+          iconSize: [44, 52],
+          iconAnchor: [22, 52],
         });
       };
 
@@ -123,7 +130,7 @@ export default function LeafletRouteMap({ destination, allDestinations = [] }: L
           const lat = d?.latitude || d?.lat || getCoords(d?.id).lat;
           const lng = d?.longitude || d?.lng || getCoords(d?.id).lng;
           L.marker([lat, lng], {
-            icon: createCustomIcon("#e11d48", d.name),
+            icon: createCustomIcon("#e11d48", d.name, false),
           }).addTo(map).bindPopup(`<b>${d.name}</b><br/>${d.address || d.location || d.barangay || ""}`);
         });
         setMapLoaded(true);

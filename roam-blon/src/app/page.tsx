@@ -130,16 +130,16 @@ const STATIC_DESTINATIONS = [
     info: { type: "Island Resort", access: "Boat", bestTime: "Morning", entranceFee: "₱50 adult / ₱30 kids", visitingHours: "8:00 AM - 5:00 PM", features: ["White Sand", "Island Paradise", "Swimming", "Relaxation"] }
   },
   {
-    id: "sd-coco", name: "Coco Cabana", barangay: "Logbon Island",
-    address: "Coco Cabana Stretch, Logbon Island, Romblon, 5500 Romblon",
+    id: "sd-coco", name: "Coco Cabana", barangay: "Brgy. Palje",
+    address: "Bantigue–Sablayan Road, Brgy. Palje, Romblon Island, 5500 Romblon",
     contact: "+63 918 204 8831",
-    facebook: "https://facebook.com/CocoCabanaLogbon",
-    desc: "A tranquil private beach retreat on the quiet side of Logbon Island. Perfect for hammocks under palm trees, swimming in warm seas, and unplugging from city life.",
-    howToGetThere: "Take a 15-minute boat ride from Romblon Port directly to the Coco Cabana docking point.",
+    facebook: "https://facebook.com/CocoCabanaRomblon",
+    desc: "A tranquil beachfront guest house on the southern coast of Romblon Island. Perfect for hammocks under palm trees, swimming, snorkeling, and unplugging from city life.",
+    howToGetThere: "A 20–25 minute tricycle ride from Romblon Town Proper along the coastal road to Bantigue, Brgy. Palje (about 10 km from the town center).",
     tag: "Quiet Retreat", type: "Resort", category: "Resort",
     image: "/beach%26resorts/coco.jpg", image_url: "/beach%26resorts/coco.jpg",
     images: ["/beach%26resorts/coco.jpg", "/beach%26resorts/coco1.jpg", "/beach%26resorts/coco2.jpg", "/beach%26resorts/coco3.jpg", "/beach%26resorts/coco4.jpg", "/beach%26resorts/coco5.jpg", "/beach%26resorts/coco6.jpg"],
-    info: { type: "Island Resort", access: "Boat", bestTime: "Morning to Noon", entranceFee: "₱100 adult / ₱50 kids", visitingHours: "8:00 AM - 5:00 PM", features: ["Less Crowded", "Privacy", "Palm Shade", "Swimming"] }
+    info: { type: "Beachfront Resort", access: "Tricycle", bestTime: "Morning to Noon", entranceFee: "₱100 adult / ₱50 kids", visitingHours: "8:00 AM - 5:00 PM", features: ["Less Crowded", "Privacy", "Palm Shade", "Swimming"] }
   },
   {
     id: "sd-reggae", name: "Reggae Vibes Romblon", barangay: "Agpanabat",
