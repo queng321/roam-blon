@@ -2564,7 +2564,7 @@ export default function AdminDashboardPage() {
                     { id: "sd-tiamban",   name: "Tiamban Beach",        location: "Brgy. Lonos",      tag: "Family Friendly", type: "Natural", category: "Beach",  image: "/beach&resorts/tiamban.jpg" },
                     { id: "sd-talipasak", name: "Talipasak Beach",      location: "Brgy. Ginablan",   tag: "Hidden Gem",      type: "Natural", category: "Beach",  image: "/beach&resorts/talipasak.jpg" },
                     { id: "sd-lamao",     name: "Lamao Beach Resort",   location: "Logbon Island",    tag: "Pristine",        type: "Natural", category: "Resort", image: "/beach&resorts/lamao.jpg" },
-                    { id: "sd-dc-logbon", name: "DC Munting Paraiso",   location: "Logbon Island",    tag: "Island Favorite", type: "Natural", category: "Resort", image: "/beach&resorts/dc.jpg" },
+                    { id: "sd-dc-logbon", name: "DC Munting Paraiso",   location: "Brgy. Agnay",      tag: "Island Favorite", type: "Natural", category: "Resort", image: "/beach&resorts/dc.jpg" },
                     { id: "sd-coco",      name: "Coco Cabana",          location: "Logbon Island",    tag: "Quiet Retreat",   type: "Natural", category: "Resort", image: "/beach&resorts/coco.jpg" },
                     { id: "sd-reggae",    name: "Reggae Vibes Romblon", location: "Agpanabat",        tag: "Budget Friendly", type: "Resort",  category: "Hotel",  image: "/beach&resorts/reggae.jpg" },
                     { id: "sd-robinson",  name: "Robinson's Cove",      location: "Brgy. Lonos",      tag: "Photogenic",      type: "Natural", category: "Beach",  image: "/beach&resorts/robinson.jpg" },

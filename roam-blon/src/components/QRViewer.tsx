@@ -18,7 +18,7 @@ const STATIC_DESTINATIONS = [
   { id: "d1", name: "Bonbon Beach", location: "Brgy. Lonos", description: "The crown jewel of Romblon with a world-famous sandbar that appears at low tide.", category: "Beaches", image_url: "/beach&resorts/bonbon.webp" },
   { id: "d2", name: "Tiamban Beach", location: "Brgy. Lonos", description: "Crystal clear shallow waters and fine white sand, ideal for families.", category: "Beaches", image_url: "/beach&resorts/tiamban.webp" },
   { id: "d3", name: "Talipasak Beach", location: "Brgy. Ginablan", description: "A secluded cove offering peace, quiet, and stunning sunset views.", category: "Beaches", image_url: "/beach&resorts/talipasak.webp" },
-  { id: "d4", name: "DC Munting Paraiso", location: "Logbon Island", description: "A beautiful and relaxing white sand beach located on Logbon Island.", category: "Beaches", image_url: "/beach&resorts/dc.webp" },
+  { id: "d4", name: "DC Munting Paraiso", location: "Brgy. Agnay", description: "A beautiful and relaxing white sand beach located in Brgy. Agnay, Romblon.", category: "Beaches", image_url: "/beach&resorts/dc.webp" },
   { id: "d6", name: "Coco Cabana", location: "Logbon Island", description: "A peaceful stretch of sand with turquoise waters, perfect for a quiet retreat.", category: "Resort", image_url: "/beach&resorts/coco.webp" },
 ];
 

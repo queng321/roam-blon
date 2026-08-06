@@ -118,16 +118,16 @@ const STATIC_DESTINATIONS = [
     info: { type: "Island Resort", access: "Outrigger Boat", bestTime: "Dry Season (Nov–May)", entranceFee: "₱100 adult / ₱70 kids", visitingHours: "8:00 AM - 5:00 PM", features: ["Island Hopping", "Turquoise Waters", "White Sand", "Snorkeling"] }
   },
   {
-    id: "sd-dc-logbon", name: "DC Munting Paraiso", barangay: "Logbon Island",
-    address: "Munting Paraiso Beach, Logbon Island, Romblon, 5500 Romblon",
+    id: "sd-dc-logbon", name: "DC Munting Paraiso", barangay: "Brgy. Agnay",
+    address: "Munting Paraiso Beach, Brgy. Agnay, Romblon, 5500 Romblon",
     contact: "+63 939 912 4055",
     facebook: "https://facebook.com/DCMuntingParaisoLogbon",
-    desc: "Living up to its name, this little paradise on Logbon Island offers white sand beaches, coconut shade, and fresh seafood lunches cooked by island locals.",
-    howToGetThere: "Accessible by boat from Romblon Harbor (15 mins) or as part of a Logbon island hopping package.",
+    desc: "Living up to its name, this little paradise in Brgy. Agnay offers white sand beaches, coconut shade, and fresh seafood lunches cooked by local families.",
+    howToGetThere: "A short tricycle ride from Romblon Town Proper toward Brgy. Agnay (near the Lonos/Sawang road), about 10–15 minutes by land.",
     tag: "Island Favorite", type: "Resort", category: "Resort",
     image: "/beach%26resorts/dc.jpg", image_url: "/beach%26resorts/dc.jpg",
     images: ["/beach%26resorts/dc.jpg", "/beach%26resorts/dc1.jpg", "/beach%26resorts/dc2.jpg", "/beach%26resorts/dc3.jpg"],
-    info: { type: "Island Resort", access: "Boat", bestTime: "Morning", entranceFee: "₱50 adult / ₱30 kids", visitingHours: "8:00 AM - 5:00 PM", features: ["White Sand", "Island Paradise", "Swimming", "Relaxation"] }
+    info: { type: "Beach Resort", access: "Tricycle", bestTime: "Morning", entranceFee: "₱50 adult / ₱30 kids", visitingHours: "8:00 AM - 5:00 PM", features: ["White Sand", "Coastal Retreat", "Swimming", "Relaxation"] }
   },
   {
     id: "sd-coco", name: "Coco Cabana", barangay: "Brgy. Palje",

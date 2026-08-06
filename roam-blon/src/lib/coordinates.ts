@@ -32,7 +32,7 @@ export const DESTINATION_COORDS: Record<string, LatLng> = {
   "sd-tiamban": { lat: 12.5688, lng: 122.2500 },      // Tiamban Beach, Sitio Tiamban, Brgy Lonos
   "sd-talipasak": { lat: 12.5311, lng: 122.2511 },    // Talipasak / San Pedro Beach, Brgy Ginablan
   "sd-lamao": { lat: 12.5547, lng: 122.3097 },        // Lamao Beach Resort, Brgy Lamao (east coast)
-  "sd-dc-logbon": { lat: 12.5905, lng: 122.2420 },    // DC Munting Paraiso, Logbon Island
+  "sd-dc-logbon": { lat: 12.5539, lng: 122.2568 },    // DC Munting Paraiso, Brgy Agnay
   "sd-coco": { lat: 12.4907, lng: 122.2769 },         // Coco Cabana, Bantigue-Sablayan Rd, Brgy Palje (southern coast)
   "sd-reggae": { lat: 12.4828, lng: 122.2830 },       // Reggae Vibes en Isla de Romblon, Brgy Agpanabat
   "sd-robinson": { lat: 12.5500, lng: 122.2500 },     // Robinson's Cove (Marble Beach), west coast Brgy Lonos
