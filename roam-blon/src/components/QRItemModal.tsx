@@ -91,20 +91,6 @@ export default function QRItemModal({ item, type, onClose, tourist }: QRItemModa
             </p>
           </div>
 
-          {item.facebook && (
-              <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Facebook Page</p>
-                <a
-                  href={item.facebook}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:underline"
-                >
-                  <span>Official Facebook Page →</span>
-                </a>
-              </div>
-            )}
-
           {/* Book a Tour Guide */}
           {!showGuideBooking ? (
             <button

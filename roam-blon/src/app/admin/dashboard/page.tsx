@@ -223,7 +223,6 @@ export default function AdminDashboardPage() {
         category: item.category || 'Beaches',
         image_url: item.image_url || '',
         contact: item.contact || '',
-        facebook: item.facebook || '',
         howToGetThere: item.howToGetThere || ''
       } as any);
       setActiveModal('destination');
@@ -1174,7 +1173,6 @@ export default function AdminDashboardPage() {
           const formAny = destinationForm as any;
           let fullDesc = destinationForm.description || "";
           if (formAny.contact) fullDesc += `\n\nContact: ${formAny.contact}`;
-          if (formAny.facebook) fullDesc += `\nFacebook: ${formAny.facebook}`;
           if (formAny.howToGetThere) fullDesc += `\n\nHow To Get There:\n${formAny.howToGetThere}`;
 
           payload = {
@@ -2937,7 +2935,6 @@ export default function AdminDashboardPage() {
                     <FormInput label="Full Address / Location" value={destinationForm.location} onChange={(v: string) => setDestinationForm({...destinationForm, location: v})} placeholder="e.g. Brgy. Lonos, Romblon Island" />
                   </div>
                   <FormInput label="Contact Number" value={(destinationForm as any).contact || ""} onChange={(v: string) => setDestinationForm({...destinationForm, contact: v} as any)} placeholder="+63 917 123 4567" />
-                  <FormInput label="Facebook Page Link" value={(destinationForm as any).facebook || ""} onChange={(v: string) => setDestinationForm({...destinationForm, facebook: v} as any)} placeholder="https://facebook.com/..." />
                   <div className="md:col-span-2">
                     <FormInput label="Image URL" value={destinationForm.image_url} onChange={(v: string) => setDestinationForm({...destinationForm, image_url: v})} placeholder="https://..." />
                   </div>
