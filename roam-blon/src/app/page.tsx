@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
-import { getCoords } from "@/lib/coordinates";
+import { resolveCoords } from "@/lib/coordinates";
 import {
   Star,
   Utensils,
@@ -522,7 +522,7 @@ export default function Home() {
               (normName(d.name).length > 0 && normName(s.name).includes(normName(d.name))) ||
               (normName(s.name).length > 0 && normName(d.name).includes(normName(s.name)))
             );
-            const fallbackCoords = getCoords(d.id);
+            const fallbackCoords = resolveCoords(d);
             if (staticMatch) {
               return {
                 ...staticMatch,
@@ -532,6 +532,8 @@ export default function Home() {
                 category: d.category || staticMatch.category,
                 image: d.image_url || staticMatch.image,
                 image_url: d.image_url || staticMatch.image_url,
+                latitude: fallbackCoords.lat,
+                longitude: fallbackCoords.lng,
               };
             }
             return {

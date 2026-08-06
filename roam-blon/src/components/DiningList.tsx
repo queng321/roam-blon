@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { getCoords } from '@/lib/coordinates';
+import { resolveCoords } from '@/lib/coordinates';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -138,7 +138,7 @@ export default function DiningList({ onLocate }: DiningListProps) {
     const primaryImage = shop?.image_url || shop?.image || combined[0] || "/dining/bistro1.jpg";
 
     // Resolve coordinates: explicit shop values win, otherwise the shared registry
-    const coords = getCoords(shopKey);
+    const coords = resolveCoords({ id: shopKey, name: shop?.name });
 
     // Static fallback menu images for specific shops
     const staticMenus: Record<string, string[]> = {

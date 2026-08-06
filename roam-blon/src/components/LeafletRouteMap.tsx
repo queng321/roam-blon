@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Layers } from "lucide-react";
-import { getCoords, TOWN_PROPER_COORDS as TOWN_CENTER } from "@/lib/coordinates";
+import { resolveCoords, TOWN_PROPER_COORDS as TOWN_CENTER } from "@/lib/coordinates";
 
 interface LeafletRouteMapProps {
   destination?: {
@@ -36,10 +36,9 @@ export default function LeafletRouteMap({ destination, allDestinations = [] }: L
 
   const isOverview = !destination;
 
-  // Resolve target coordinates from the shared coordinate registry
-  const targetLat = destination?.latitude || destination?.lat || getCoords(destination?.id).lat;
-  const targetLng = destination?.longitude || destination?.lng || getCoords(destination?.id).lng;
-  const destCoords: [number, number] = [targetLat, targetLng];
+  // Resolve target coordinates from the shared coordinate registry (id + name aware)
+  const resolved = resolveCoords(destination || undefined);
+  const destCoords: [number, number] = [resolved.lat, resolved.lng];
 
   // Address fallbacks
   const address = destination?.address || destination?.location || destination?.barangay || "Romblon Island, Romblon, Philippines";
@@ -127,9 +126,8 @@ export default function LeafletRouteMap({ destination, allDestinations = [] }: L
         allDestinations.forEach((d: any) => {
           if (!d || !d.name || seen.has(d.name)) return;
           seen.add(d.name);
-          const lat = d?.latitude || d?.lat || getCoords(d?.id).lat;
-          const lng = d?.longitude || d?.lng || getCoords(d?.id).lng;
-          L.marker([lat, lng], {
+          const c = resolveCoords(d);
+          L.marker([c.lat, c.lng], {
             icon: createCustomIcon("#e11d48", d.name, false),
           }).addTo(map).bindPopup(`<b>${d.name}</b><br/>${d.address || d.location || d.barangay || ""}`);
         });

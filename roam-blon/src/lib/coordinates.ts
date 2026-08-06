@@ -73,3 +73,129 @@ export function getCoords(id?: string): LatLng {
   }
   return TOWN_PROPER_COORDS;
 }
+
+// Normalize a place name for fuzzy matching (lowercase, strip punctuation)
+function normalizeName(name: string): string {
+  return String(name || "")
+    .toLowerCase()
+    .replace(/['’`]/g, "")
+    .replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Known name aliases → registry keys (covers DB rows and QR-scanned items
+// whose `id` is a database UUID that won't match the sd-* keys).
+const NAME_ALIASES: Record<string, string> = {
+  "bon bon": "sd-bonbon",
+  "bonbon": "sd-bonbon",
+  "bonbon beach": "sd-bonbon",
+  "bonbon beach and sandbar": "sd-bonbon",
+  "peable": "sd-peable",
+  "pebble": "sd-peable",
+  "pebble walk": "sd-peable",
+  "peable walk": "sd-peable",
+  "pebbles": "sd-peable",
+  "tiamban": "sd-tiamban",
+  "tiamban beach": "sd-tiamban",
+  "tiamban resort": "sd-tiamban",
+  "talipasak": "sd-talipasak",
+  "san pedro beach": "sd-talipasak",
+  "san pedro resort": "sd-talipasak",
+  "lamao": "sd-lamao",
+  "lamao beach": "sd-lamao",
+  "lamao beach resort": "sd-lamao",
+  "dc munting": "sd-dc-logbon",
+  "dc munting paraiso": "sd-dc-logbon",
+  "munting paraiso": "sd-dc-logbon",
+  "coco cabana": "sd-coco",
+  "reggae vibes": "sd-reggae",
+  "reggae vibes de isla": "sd-reggae",
+  "reggae": "sd-reggae",
+  "robinson": "sd-robinson",
+  "robinsons cove": "sd-robinson",
+  "marble beach": "sd-robinson",
+  "horizon beach": "sd-horizon",
+  "horizon resort": "sd-horizon",
+  "horizon": "sd-horizon",
+  "stevejoy": "sd-stevejoy",
+  "steve joy": "sd-stevejoy",
+  "libtong": "sd-libtong",
+  "kipot": "sd-kipot",
+  "kipot river": "sd-kipot",
+  "fort san andres": "sd-fort-san-andres",
+  "san andres fort": "sd-fort-san-andres",
+  "fort": "sd-fort-san-andres",
+  "cathedral": "sd-cathedral",
+  "st joseph cathedral": "sd-cathedral",
+  "saint joseph cathedral": "sd-cathedral",
+  "shopping": "sd-shopping",
+  "shopping center": "sd-shopping",
+  "romblon shopping": "sd-shopping",
+  "marble city": "bistro",
+  "island bistro": "bistro",
+  "bistro": "bistro",
+  "el hotel": "el",
+  "el restaurant": "el",
+  "el krimphoff": "el",
+  "gangnam": "gangnam",
+  "gangnam korean": "gangnam",
+  "italian": "italian",
+  "italian trattoria": "italian",
+  "panublion": "panublion",
+  "sunbird": "sunbird",
+  "mama lois": "mamalois",
+  "mama lois kitchen": "mamalois",
+  "ocean view": "ocean",
+  "ocean view seafood": "ocean",
+  "seaview": "ocean",
+  "yurich": "yurich",
+};
+
+// Resolve the best known coordinates for a place, matching by id first, then
+// by name, then by barangay keyword. DB rows and QR items usually only have a
+// UUID id + a display name, so name matching is what keeps pins accurate.
+export function resolveCoords(place?: {
+  id?: string;
+  name?: string;
+  barangay?: string;
+  location?: string;
+  latitude?: number;
+  longitude?: number;
+  lat?: number;
+  lng?: number;
+}): LatLng {
+  // 1. Explicit coordinates carried by the item (e.g. static data)
+  const explicitLat = place?.latitude ?? place?.lat;
+  const explicitLng = place?.longitude ?? place?.lng;
+  if (typeof explicitLat === "number" && typeof explicitLng === "number") {
+    // Sanity check: must be near Romblon island (lat 12.2–12.9, lng 121.9–122.5)
+    if (explicitLat > 12 && explicitLat < 13.5 && explicitLng > 121.5 && explicitLng < 123.5) {
+      return { lat: explicitLat, lng: explicitLng };
+    }
+  }
+
+  // 2. Registry key match by id
+  const idKey = place?.id;
+  if (idKey && DESTINATION_COORDS[idKey]) return DESTINATION_COORDS[idKey];
+
+  // 3. Name alias / fuzzy name match
+  const name = normalizeName(place?.name || "");
+  if (name) {
+    for (const alias of Object.keys(NAME_ALIASES)) {
+      const normAlias = normalizeName(alias);
+      if (name.includes(normAlias) || normAlias.includes(name)) {
+        return DESTINATION_COORDS[NAME_ALIASES[alias]];
+      }
+    }
+  }
+
+  // 4. Barangay keyword match
+  const area = `${place?.barangay || ""} ${place?.location || ""} ${idKey || ""}`.toLowerCase();
+  for (const key of Object.keys(BARANGAY)) {
+    if (area.includes(key)) return BARANGAY[key];
+  }
+
+  // 5. Last resort: town proper
+  return TOWN_PROPER_COORDS;
+}
