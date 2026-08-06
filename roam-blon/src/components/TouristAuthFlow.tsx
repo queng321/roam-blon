@@ -1632,7 +1632,7 @@ export default function TouristAuthFlow({ onComplete, onCancel, initialScreen = 
 
         {screen !== "landing" && (
           <div style={{ fontSize: "11px", color: C.gray, letterSpacing: "0.16em", marginBottom: showTracker ? "16px" : "28px" }}>
-            ROAM-BLONs · ROMBLON, PHILIPPINES
+            ROAM-BLON · ROMBLON, PHILIPPINES
           </div>
         )}
 
