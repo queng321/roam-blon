@@ -443,18 +443,20 @@ export default function DiningList({ onLocate }: DiningListProps) {
                 </div>
                 
                 <div className="mt-4 flex flex-col gap-2">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setActiveDetails(shop); setDetailsPhotoIdx(0); }}
-                    className="w-full py-2.5 bg-slate-900 text-white rounded-full text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose-600 transition-colors shadow-md"
-                  >
-                    <Eye size={14} /> View Details
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setActiveMenuGallery(shop); setMenuGalleryIdx(0); }}
-                    className="w-full py-2.5 bg-orange-500 text-white rounded-full text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-orange-600 transition-colors shadow-md"
-                  >
-                    <FileText size={14} /> View Menu
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setActiveDetails(shop); setDetailsPhotoIdx(0); }}
+                      className="flex-1 py-2 bg-slate-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 hover:bg-rose-600 transition-colors shadow-md"
+                    >
+                      <Eye size={12} /> View Details
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setActiveMenuGallery(shop); setMenuGalleryIdx(0); }}
+                      className="flex-1 py-2 bg-orange-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 hover:bg-orange-600 transition-colors shadow-md"
+                    >
+                      <FileText size={12} /> View Menu
+                    </button>
+                  </div>
                   {onLocate && (
                     <button
                       onClick={(e) => { e.stopPropagation(); onLocate(shop); }}
