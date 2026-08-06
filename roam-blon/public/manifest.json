@@ -1,0 +1,21 @@
+{
+  "name": "Roam-Blon Digital Concierge",
+  "short_name": "Roam-Blon",
+  "description": "Your AI Travel Buddy for Romblon, Philippines",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f43f5e",
+  "icons": [
+    {
+      "src": "/logo.jpg",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
