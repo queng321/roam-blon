@@ -56,7 +56,7 @@ export const DESTINATION_COORDS: Record<string, LatLng> = {
   horizon: { lat: 12.5728, lng: 122.2514 },           // Horizon Seaside Restaurant (Horizon Hotel), Brgy Lonos
   mamalois: { lat: 12.5701, lng: 122.2560 },          // Mama Lois Kitchen, Brgy Lonos
   ocean: { lat: 12.5291, lng: 122.2608 },             // Ocean View Seafood Grill, Brgy Ginablan
-  yurich: { lat: 12.5291, lng: 122.2608 },            // Yurich Food House, Brgy Ginablan
+  yurich: { lat: 12.5762, lng: 122.2655 },            // Yurich Hotel & Caffeinate Co., Sitio Binagong, Brgy Bagacay
   reggae: { lat: 12.4828, lng: 122.2830 },            // Reggae Bar & Grill, Brgy Agpanabat
 };
 

@@ -2680,7 +2680,7 @@ export default function AdminDashboardPage() {
                     { id: "panublion", name: "Panublion Heritage Diner", location: "Town Proper", address: "Town Proper", category: "Heritage Cuisine", image_url: "/dining/panublion.jpg" },
                     { id: "reggae", name: "Reggae Bar & Grill", location: "Agpanabat", address: "Agpanabat, Romblon", category: "Bar & Grill", image_url: "/dining/reggae.jpg" },
                     { id: "sunbird", name: "Sunbird Cafe & Lounge", location: "Romblon Town", address: "Romblon Town", category: "Café", image_url: "/dining/sunbird.jpg" },
-                    { id: "yurich", name: "Yurich Food House", location: "Brgy. Ginablan", address: "Brgy. Ginablan", category: "Local Restaurant", image_url: "/dining/yurich.jpg" },
+                    { id: "yurich", name: "Yurich Hotel & Caffeinate Co.", location: "Brgy. Bagacay", address: "Sitio Binagong, Brgy. Bagacay", category: "Local Restaurant", image_url: "/dining/yurich.jpg" },
                   ];
                   const DINING_ITEMS = allServices.dining.length > 0 ? allServices.dining : STATIC_DINING;
                   const BASE = typeof window !== 'undefined' ? window.location.origin : 'https://roam-blon.vercel.app';
