@@ -170,12 +170,18 @@ export default function AIChat({ onClose, initialMode = "ai", lockMode = false }
         .order('created_at', { ascending: true });
       
       if (!history || history.length === 0) {
-        setMessages([{
-          sender_role: mode === 'officer' ? 'admin' : 'assistant',
+        const greeting = {
+          room_id: room.id,
           content: mode === 'ai' 
             ? "Mabuhay! 🏝️ I'm your Romblon AI Travel Buddy. Ask me anything about our beautiful islands!"
-            : "Hello! 🎧 I'm a Tourism Officer. How can I assist you with your travel plans today?"
-        }]);
+            : "Hello! 🎧 I'm a Tourism Officer. How can I assist you with your travel plans today?",
+          sender_role: mode === 'officer' ? 'admin' : 'assistant',
+          sender_email: mode === 'officer' ? 'officer@roam-blon.com' : 'ai@roam-blon.com',
+          created_at: new Date().toISOString()
+        };
+        // Persist the greeting so it also shows up on the admin side
+        await supabase.from('chat_messages').insert([greeting]);
+        setMessages([greeting]);
       } else {
         setMessages(history);
       }
