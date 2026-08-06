@@ -48,14 +48,14 @@ export const DESTINATION_COORDS: Record<string, LatLng> = {
 
   // Dining spots (same id space used by DiningList / QR pages)
   bistro: { lat: 12.5760, lng: 122.2708 },            // Marble City Café & Island Bistro, across Freedom Park, Town Proper
-  el: { lat: 12.5760, lng: 122.2710 },                // El Hotel & Restaurant, Town Proper
+  el: { lat: 12.5596, lng: 122.2512 },                // El Krimphoff Resort, Sitio Babangtan, Brgy Lonos
   gangnam: { lat: 12.5401, lng: 122.2642 },           // Gangnam Grill, Sitio Batiano, Brgy Mapula
   italian: { lat: 12.5767, lng: 122.2689 },           // JD&G Italian Food (Italian Trattoria), Republika St, near port
-  panublion: { lat: 12.5750, lng: 122.2705 },         // Panublion Heritage Diner, Town Proper
+  panublion: { lat: 12.5770, lng: 122.2685 },         // Panublion Heritage Diner, Republika St, Town Proper
   sunbird: { lat: 12.5700, lng: 122.2485 },           // Sunbird Ridge Coffee Shop, ridge above Tiamban, Brgy Lonos
   horizon: { lat: 12.5728, lng: 122.2514 },           // Horizon Seaside Restaurant (Horizon Hotel), Sitio Upper Lusod, Brgy Lonos
-  mamalois: { lat: 12.5701, lng: 122.2560 },          // Mama Lois Kitchen, Brgy Lonos
-  ocean: { lat: 12.5291, lng: 122.2608 },             // Ocean View Seafood Grill, Brgy Ginablan
+  mamalois: { lat: 12.5781, lng: 122.2690 },          // Mama Lois Kitchen, beside Romblon Port Terminal, Town Proper
+  ocean: { lat: 12.5650, lng: 122.2520 },             // Seaview Restobar, Sitio Suwa, Brgy Lonos
   yurich: { lat: 12.5762, lng: 122.2655 },            // Yurich Hotel & Caffeinate Co., Sitio Binagong, Brgy Bagacay
   reggae: { lat: 12.4828, lng: 122.2830 },            // Reggae Bar & Grill, Brgy Agpanabat
 };

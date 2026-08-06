@@ -155,8 +155,8 @@ export default function AdminDashboardPage() {
         { item_type: "destination", item_id: "sd-robinson", item_name: "Robinson's Cove",  visitor_type: "foreign", nationality: "Foreign" },
         { item_type: "destination", item_id: "sd-horizon",  item_name: "Horizon Beach Resort",visitor_type: "local", nationality: "Local" },
         { item_type: "destination", item_id: "sd-peable",   item_name: "Peable Walk",      visitor_type: "local",   nationality: "Local" },
-        { item_type: "dining", item_id: "el",       item_name: "El Hotel & Restaurant",    visitor_type: "local",   nationality: "Local" },
-        { item_type: "dining", item_id: "el",       item_name: "El Hotel & Restaurant",    visitor_type: "local",   nationality: "Local" },
+        { item_type: "dining", item_id: "el",       item_name: "El Krimphoff Resort",       visitor_type: "local",   nationality: "Local" },
+        { item_type: "dining", item_id: "el",       item_name: "El Krimphoff Resort",       visitor_type: "local",   nationality: "Local" },
         { item_type: "dining", item_id: "gangnam",  item_name: "Gangnam Korean Grill",     visitor_type: "local",   nationality: "Local" },
         { item_type: "dining", item_id: "gangnam",  item_name: "Gangnam Korean Grill",     visitor_type: "foreign", nationality: "Foreign" },
         { item_type: "dining", item_id: "bistro",   item_name: "Marble City Café & Bistro",visitor_type: "local",   nationality: "Local" },
@@ -165,7 +165,7 @@ export default function AdminDashboardPage() {
         { item_type: "dining", item_id: "italian",  item_name: "Italian Trattoria",        visitor_type: "foreign", nationality: "Foreign" },
         { item_type: "dining", item_id: "italian",  item_name: "Italian Trattoria",        visitor_type: "local",   nationality: "Local" },
         { item_type: "dining", item_id: "mamalois", item_name: "Mama Lois Kitchen",        visitor_type: "local",   nationality: "Local" },
-        { item_type: "dining", item_id: "ocean",    item_name: "Ocean View Seafood Grill", visitor_type: "local",   nationality: "Local" },
+        { item_type: "dining", item_id: "ocean",    item_name: "Seaview Restobar",          visitor_type: "local",   nationality: "Local" },
         { item_type: "dining", item_id: "panublion",item_name: "Panublion Heritage Diner", visitor_type: "local",   nationality: "Local" },
         { item_type: "dining", item_id: "reggae",   item_name: "Reggae Bar & Grill",       visitor_type: "foreign", nationality: "Foreign" },
         { item_type: "dining", item_id: "sunbird",  item_name: "Sunbird Cafe & Lounge",    visitor_type: "local",   nationality: "Local" },
@@ -350,8 +350,8 @@ export default function AdminDashboardPage() {
     });
     // Start from every registered dining spot (X-axis includes all of them)
     const STATIC_DINING = [
-      "Marble City Café & Bistro", "El Hotel & Restaurant", "Horizon Seaside Restaurant",
-      "Italian Trattoria", "Mama Lois Kitchen", "Ocean View Seafood Grill",
+      "Marble City Café & Bistro", "El Krimphoff Resort", "Horizon Seaside Restaurant",
+      "Italian Trattoria", "Mama Lois Kitchen", "Seaview Restobar",
       "Panublion Heritage Diner", "Reggae Bar & Grill", "Sunbird Cafe & Lounge",
       "Yurich Food House"
     ];
@@ -2671,13 +2671,13 @@ export default function AdminDashboardPage() {
                 {(() => {
                   const STATIC_DINING = [
                     { id: "bistro", name: "Marble City Café & Bistro", location: "Town Proper", address: "Across Freedom Park, Town Proper, Romblon", category: "Café & Bistro", image_url: "/dining/bistro.jpg" },
-                    { id: "el", name: "El Hotel & Restaurant", location: "Romblon Town", address: "Romblon Town", category: "Restaurant", image_url: "/dining/el.jpg" },
+                    { id: "el", name: "El Krimphoff Resort & Restaurant", location: "Brgy. Lonos", address: "Sitio Babangtan, Brgy. Lonos, Romblon", category: "Restaurant", image_url: "/dining/el.jpg" },
                     { id: "gangnam", name: "Gangnam Korean Grill", location: "Brgy. Mapula", address: "Sitio Batiano, Brgy. Mapula, Romblon", category: "Korean BBQ", image_url: "/dining/gangnam.jpg" },
                     { id: "horizon", name: "Horizon Seaside Restaurant", location: "Brgy. Lonos", address: "Sitio Upper Lusod, Brgy. Lonos", category: "Seafood & Grill", image_url: "/dining/horizon.jpg" },
                     { id: "italian", name: "Italian Trattoria", location: "Republika St, Brgy. 1 Poblacion", address: "Republika St, Brgy. 1 Poblacion, Romblon", category: "Italian & Pizza", image_url: "/dining/italian.jpg" },
-                    { id: "mamalois", name: "Mama Lois Kitchen", location: "Brgy. Lonos", address: "Brgy. Lonos", category: "Local Eat", image_url: "/dining/mamalois.jpg" },
-                    { id: "ocean", name: "Ocean View Seafood Grill", location: "Brgy. Ginablan", address: "Brgy. Ginablan", category: "Seafood", image_url: "/dining/ocean.jpg" },
-                    { id: "panublion", name: "Panublion Heritage Diner", location: "Town Proper", address: "Town Proper", category: "Heritage Cuisine", image_url: "/dining/panublion.jpg" },
+                    { id: "mamalois", name: "Mama Lois Kitchen", location: "Town Proper", address: "Beside Romblon Port Terminal, Town Proper, Romblon", category: "Local Eat", image_url: "/dining/mamalois.jpg" },
+                    { id: "ocean", name: "Seaview Restobar", location: "Brgy. Lonos", address: "Sitio Suwa, Brgy. Lonos, Romblon", category: "Seafood", image_url: "/dining/ocean.jpg" },
+                    { id: "panublion", name: "Panublion Heritage Diner", location: "Town Proper", address: "Republika St, Town Proper, Romblon", category: "Heritage Cuisine", image_url: "/dining/panublion.jpg" },
                     { id: "reggae", name: "Reggae Bar & Grill", location: "Agpanabat", address: "Agpanabat, Romblon", category: "Bar & Grill", image_url: "/dining/reggae.jpg" },
                     { id: "sunbird", name: "Sunbird Ridge Coffee Shop", location: "Brgy. Lonos", address: "Ridge above Tiamban Beach, Brgy. Lonos", category: "Café", image_url: "/dining/sunbird.jpg" },
                     { id: "yurich", name: "Yurich Hotel & Caffeinate Co.", location: "Brgy. Bagacay", address: "Sitio Binagong, Brgy. Bagacay", category: "Local Restaurant", image_url: "/dining/yurich.jpg" },
