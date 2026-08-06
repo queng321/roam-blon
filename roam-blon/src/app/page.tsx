@@ -122,7 +122,7 @@ const STATIC_DESTINATIONS = [
     address: "Munting Paraiso Beach, Brgy. Agnay, Romblon, 5500 Romblon",
     contact: "+63 939 912 4055",
     facebook: "https://facebook.com/DCMuntingParaisoLogbon",
-    desc: "Living up to its name, this little paradise in Brgy. Agnay offers white sand beaches, coconut shade, and fresh seafood lunches cooked by local families.",
+    desc: "A serene hideaway in Brgy. Agnay where fine white sand meets calm turquoise water. Fringed by swaying coconut palms and shaded day cottages, DC Munting Paraiso is the perfect spot to unwind, swim, and feast on fresh seafood grilled right by the shore — served with warm island hospitality.",
     howToGetThere: "A short tricycle ride from Romblon Town Proper toward Brgy. Agnay (near the Lonos/Sawang road), about 10–15 minutes by land.",
     tag: "Island Favorite", type: "Resort", category: "Resort",
     image: "/beach%26resorts/dc.jpg", image_url: "/beach%26resorts/dc.jpg",
