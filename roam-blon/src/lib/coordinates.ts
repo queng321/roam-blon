@@ -47,13 +47,13 @@ export const DESTINATION_COORDS: Record<string, LatLng> = {
   "sd-shopping": { lat: 12.5761, lng: 122.2712 },     // Romblon Shopping Center (Freedom Park)
 
   // Dining spots (same id space used by DiningList / QR pages)
-  bistro: { lat: 12.5758, lng: 122.2706 },            // Marble City Café & Bistro, Town Proper
+  bistro: { lat: 12.5760, lng: 122.2708 },            // Marble City Café & Island Bistro, across Freedom Park, Town Proper
   el: { lat: 12.5760, lng: 122.2710 },                // El Hotel & Restaurant, Town Proper
-  gangnam: { lat: 12.5765, lng: 122.2720 },           // Gangnam Korean Grill, Town Proper
-  italian: { lat: 12.5755, lng: 122.2700 },           // Italian Trattoria, Town Proper
+  gangnam: { lat: 12.5401, lng: 122.2642 },           // Gangnam Grill, Sitio Batiano, Brgy Mapula
+  italian: { lat: 12.5767, lng: 122.2689 },           // JD&G Italian Food (Italian Trattoria), Republika St, near port
   panublion: { lat: 12.5750, lng: 122.2705 },         // Panublion Heritage Diner, Town Proper
-  sunbird: { lat: 12.5762, lng: 122.2715 },           // Sunbird Cafe & Lounge, Town Proper
-  horizon: { lat: 12.5728, lng: 122.2514 },           // Horizon Seaside Restaurant (Horizon Hotel), Brgy Lonos
+  sunbird: { lat: 12.5700, lng: 122.2485 },           // Sunbird Ridge Coffee Shop, ridge above Tiamban, Brgy Lonos
+  horizon: { lat: 12.5728, lng: 122.2514 },           // Horizon Seaside Restaurant (Horizon Hotel), Sitio Upper Lusod, Brgy Lonos
   mamalois: { lat: 12.5701, lng: 122.2560 },          // Mama Lois Kitchen, Brgy Lonos
   ocean: { lat: 12.5291, lng: 122.2608 },             // Ocean View Seafood Grill, Brgy Ginablan
   yurich: { lat: 12.5762, lng: 122.2655 },            // Yurich Hotel & Caffeinate Co., Sitio Binagong, Brgy Bagacay
