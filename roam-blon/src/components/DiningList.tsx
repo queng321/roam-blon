@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
   Utensils, Flame, Star, MapPin, ChefHat, 
-  MessageCircle, Trophy, ChevronLeft, ChevronRight, Images, X, Phone, Facebook, FileText
+  MessageCircle, Trophy, ChevronLeft, ChevronRight, Images, X, Phone, Facebook, FileText, Eye
 } from "lucide-react";
 
 interface DiningReview {
@@ -42,6 +42,8 @@ export default function DiningList({ onLocate }: DiningListProps) {
   const [galleryIdx, setGalleryIdx] = useState(0);
   const [activeMenuGallery, setActiveMenuGallery] = useState<any | null>(null);
   const [menuGalleryIdx, setMenuGalleryIdx] = useState(0);
+  const [activeDetails, setActiveDetails] = useState<any | null>(null);
+  const [detailsPhotoIdx, setDetailsPhotoIdx] = useState(0);
   const [activeCategory, setActiveCategory] = useState("all");
 
   const DINING_CATEGORIES = [
@@ -442,6 +444,12 @@ export default function DiningList({ onLocate }: DiningListProps) {
                 
                 <div className="mt-4 flex flex-col gap-2">
                   <button
+                    onClick={(e) => { e.stopPropagation(); setActiveDetails(shop); setDetailsPhotoIdx(0); }}
+                    className="w-full py-2.5 bg-slate-900 text-white rounded-full text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose-600 transition-colors shadow-md"
+                  >
+                    <Eye size={14} /> View Details
+                  </button>
+                  <button
                     onClick={(e) => { e.stopPropagation(); setActiveMenuGallery(shop); setMenuGalleryIdx(0); }}
                     className="w-full py-2.5 bg-orange-500 text-white rounded-full text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-orange-600 transition-colors shadow-md"
                   >
@@ -579,6 +587,155 @@ export default function DiningList({ onLocate }: DiningListProps) {
                   <img src={p} className="w-full h-full object-cover" alt="" />
                 </button>
               ))}
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ── DINING DETAILS MODAL ── */}
+      {activeDetails && (() => {
+        const shop = activeDetails;
+        const reviews = diningReviews[shop.id] || [];
+        const avg = reviews.length
+          ? (reviews.reduce((s: number, r: DiningReview) => s + r.rating, 0) / reviews.length).toFixed(1)
+          : null;
+        const photos: string[] = shop.images && shop.images.length > 0 ? shop.images : (shop.image_url ? [shop.image_url] : []);
+        const total = photos.length;
+        const goPrevPhoto = () => setDetailsPhotoIdx(i => (i - 1 + total) % total);
+        const goNextPhoto = () => setDetailsPhotoIdx(i => (i + 1) % total);
+        return (
+          <div
+            className="fixed inset-0 z-[700] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300"
+            onClick={() => setActiveDetails(null)}
+          >
+            <div className="bg-white rounded-[2rem] w-full max-w-3xl max-h-[92vh] overflow-y-auto shadow-2xl animate-in zoom-in-95 duration-300" onClick={e => e.stopPropagation()}>
+              {/* Header */}
+              <div className="sticky top-0 bg-white/95 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex items-center justify-between z-10 rounded-t-[2rem]">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-orange-200 bg-orange-50 text-orange-600 text-[10px] font-black uppercase tracking-widest mb-1">
+                    <Utensils size={10} />
+                    Dining Details
+                  </div>
+                  <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight leading-tight">{shop.name}</h3>
+                </div>
+                <button onClick={() => setActiveDetails(null)} className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors flex-shrink-0">
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-5">
+                {/* Photo carousel */}
+                {photos.length > 0 && (
+                  <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-100">
+                    <img src={photos[detailsPhotoIdx]} alt={`${shop.name} photo ${detailsPhotoIdx + 1}`} className="w-full h-56 md:h-72 object-cover" />
+                    {total > 1 && (
+                      <>
+                        <button onClick={goPrevPhoto} className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all">
+                          <ChevronLeft size={18} />
+                        </button>
+                        <button onClick={goNextPhoto} className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all">
+                          <ChevronRight size={18} />
+                        </button>
+                        <span className="absolute bottom-3 right-3 bg-black/60 text-white text-[10px] font-black px-2.5 py-1 rounded-full">
+                          {detailsPhotoIdx + 1} / {total}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {/* Rating */}
+                <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-0.5">
+                    {[1,2,3,4,5].map(s => (
+                      <Star key={s} size={12}
+                        className={avg && s <= Math.round(parseFloat(avg)) ? 'text-amber-400 fill-amber-400' : 'text-slate-200 fill-slate-200'}
+                      />
+                    ))}
+                  </div>
+                  {avg && <span className="text-sm font-black text-slate-700">{avg}</span>}
+                  <span className="text-xs font-bold text-slate-400">
+                    {reviews.length === 0 ? 'No reviews yet' : `${reviews.length} review${reviews.length > 1 ? 's' : ''}`}
+                  </span>
+                </div>
+
+                {/* Info rows */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1.5">Category</p>
+                    <p className="text-sm font-bold text-slate-800">{shop.category || 'Local Eat'}</p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1.5">Address</p>
+                    <p className="text-sm font-bold text-slate-800">{shop.address || shop.location || 'Romblon'}</p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1.5">Contact</p>
+                    <p className="text-sm font-bold text-slate-800">{shop.contact || '+63 917 123 4567'}</p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1.5">Menu Images</p>
+                    <p className="text-sm font-bold text-slate-800">{shop.menus?.length || 0} menu photo{shop.menus?.length !== 1 ? 's' : ''}</p>
+                  </div>
+                </div>
+
+                {/* Description */}
+                {(shop.description || shop.desc) && (
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500 mb-2">About {shop.name}</p>
+                    <p className="text-sm font-medium text-slate-600 leading-relaxed">{shop.description || shop.desc}</p>
+                  </div>
+                )}
+
+                {/* Reviews */}
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Reviews & Comments</p>
+                  {reviewsLoading ? (
+                    <p className="text-xs text-slate-300 font-bold animate-pulse">Loading reviews...</p>
+                  ) : reviews.length === 0 ? (
+                    <p className="text-xs text-slate-400 font-medium italic">Be the first to leave a review!</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {reviews.slice(0, 5).map((r: DiningReview, i: number) => (
+                        <div key={i} className="bg-white rounded-lg px-3 py-2 border border-slate-100">
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <span className="text-xs font-black text-slate-700 truncate">{r.reviewer_name}</span>
+                            <div className="flex gap-0.5 ml-auto flex-shrink-0">
+                              {[1,2,3,4,5].map(s => (
+                                <Star key={s} size={9} className={s <= r.rating ? 'text-amber-400 fill-amber-400' : 'text-slate-200 fill-slate-200'} />
+                              ))}
+                            </div>
+                          </div>
+                          {r.comment && (
+                            <p className="text-xs text-slate-500 font-medium leading-tight">{r.comment}</p>
+                          )}
+                        </div>
+                      ))}
+                      {reviews.length > 5 && (
+                        <p className="text-[10px] text-rose-500 font-black text-right">+{reviews.length - 5} more</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Actions */}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <button
+                    onClick={() => setActiveMenuGallery(shop)}
+                    className="flex-1 py-3 bg-orange-500 text-white rounded-full text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-orange-600 transition-colors shadow-md"
+                  >
+                    <FileText size={14} /> View Menu
+                  </button>
+                  {onLocate && (
+                    <button
+                      onClick={() => { setActiveDetails(null); onLocate(shop); }}
+                      className="flex-1 py-3 bg-slate-900 text-white rounded-full text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 hover:bg-rose-600 transition-colors shadow-sm"
+                    >
+                      <MapPin size={14} /> Route Map
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         );
