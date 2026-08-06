@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, ChangeEvent, KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { MapPin, Compass, Sparkles } from "lucide-react";
+import { MapPin, Compass, Sparkles, Eye, EyeOff } from "lucide-react";
 
 /* ─── TYPES & INTERFACES ─────────────────────────────────────────────────────── */
 
@@ -707,6 +707,7 @@ function ScreenSignIn({ role, onNext, onGoSignUp, errorMessage }: ScreenSignInPr
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const friendlyError = (msg: string) => {
     if (msg.toLowerCase().includes("failed to fetch") || msg.toLowerCase().includes("networkerror") || msg.toLowerCase().includes("network request failed")) {
@@ -791,10 +792,34 @@ function ScreenSignIn({ role, onNext, onGoSignUp, errorMessage }: ScreenSignInPr
         </div>
         <div>
           <label style={S.label}>Password</label>
-          <input style={S.input} type="password" placeholder="••••••••" value={form.password}
-            disabled={loading}
-            onKeyDown={(e) => e.key === "Enter" && !loading && submit()}
-            onChange={(e) => { setForm({ ...form, password: e.target.value }); setErr(""); }} />
+          <div style={{ position: "relative" }}>
+            <input style={{ ...S.input, paddingRight: "48px" }} type={showPassword ? "text" : "password"} placeholder="••••••••" value={form.password}
+              disabled={loading}
+              onKeyDown={(e) => e.key === "Enter" && !loading && submit()}
+              onChange={(e) => { setForm({ ...form, password: e.target.value }); setErr(""); }} />
+            <button
+              type="button"
+              tabIndex={-1}
+              onClick={() => setShowPassword(v => !v)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              style={{
+                position: "absolute",
+                right: "6px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                padding: "8px",
+                color: C.gray,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
         </div>
 
         {role === "admin" && (
