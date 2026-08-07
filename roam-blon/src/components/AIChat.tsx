@@ -573,7 +573,7 @@ export default function AIChat({ onClose, initialMode = "ai", lockMode = false }
                   Welcome, Explorer!
                 </h3>
                 <p className="text-[11px] font-bold text-slate-500 leading-relaxed mt-2 max-w-[280px]">
-                  Before you continue — I'm <span className="text-rose-600">Romy</span>, your AI Travel Assistant, here to help you plan the perfect Romblon adventure. 🏝️
+                  Before you continue — I'm your AI Assistant, here to help you plan the perfect Romblon adventure. 🏝️
                 </p>
 
                 <div className="w-full bg-amber-50 border border-amber-200 rounded-[1.5rem] p-4 text-left mt-5">
