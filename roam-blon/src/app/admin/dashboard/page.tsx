@@ -464,12 +464,12 @@ export default function AdminDashboardPage() {
         !(tCountData || []).some((td: any) => td.id === lt.id || (lt.email && td.email === lt.email))
       ).length;
 
-      // Visitor logs = QR scans + tourist account creations (each new account counts once)
+      // Visitor logs = QR scans only (new account signups do NOT count as logs)
       const scanCount = Math.max(
         scanDbCount,
         Number(localStorage.getItem('roam_blon_total_scans') || '0')
       );
-      setTotalScans(scanCount + combinedTouristCount);
+      setTotalScans(scanCount);
 
       setStats(prev => ({ ...prev, totalTourists: combinedTouristCount, destinations: dCount, diningSpots: diningCount }));
 
@@ -799,9 +799,8 @@ export default function AdminDashboardPage() {
       .channel('admin-tourist-live')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'tourists' }, (payload) => {
         const newTourist = payload.new as any;
-        // Bump total counts (account also counts as a visitor log)
+        // Count the account (total tourists) but NOT as a visitor log (scans only)
         setStats(prev => ({ ...prev, totalTourists: prev.totalTourists + 1 }));
-        setTotalScans(prev => prev + 1);
         // Prepend to list
         setTourists(prev => [newTourist, ...prev]);
         // Update insight stats
@@ -984,7 +983,6 @@ export default function AdminDashboardPage() {
       .on('broadcast', { event: 'new_tourist' }, ({ payload: t }: any) => {
         // Fallback — catches tourist signups broadcast from the signup flow if RLS blocks the DB insert
         setStats(prev => ({ ...prev, totalTourists: prev.totalTourists + 1 }));
-        setTotalScans(prev => prev + 1);
         setTourists(prev => {
           if (prev.some(x => (t.email && x.email === t.email))) return prev;
           return [{ ...t, id: t.id || `local_${Date.now()}` }, ...prev];
@@ -1323,10 +1321,9 @@ export default function AdminDashboardPage() {
     return <UnifiedAuthFlow onComplete={handleAuthComplete} initialRole="admin" initialScreen="signin" />;
   }
 
-  // Single source of truth for visitor totals: the sum of Top Nationalities
-  // (Local + Foreign) equals the total QR scan count. All three widgets read this.
-  const visitorLogTotal = touristStats.topNationalities.reduce((sum, n) => sum + n.count, 0);
-  const totalVisitorLogs = visitorLogTotal > 0 ? visitorLogTotal : totalScans;
+  // Visitor log total = QR scans only (account signups are tracked separately and
+  // do NOT count as logs). All three widgets read this single source of truth.
+  const totalVisitorLogs = Math.max(0, totalScans);
 
   return (
     <div className="flex h-screen bg-[#F6F1ED] text-[#222] relative overflow-hidden">
