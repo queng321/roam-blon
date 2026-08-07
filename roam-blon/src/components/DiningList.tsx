@@ -63,7 +63,7 @@ export default function DiningList({ onLocate }: DiningListProps) {
     { id: "ocean", name: "Seaview Restobar", location: "Brgy. Lonos", address: "Sitio Suwa, Brgy. Lonos, Romblon", category: "Seafood Restaurant", image_url: "/dining/ocean.jpg", images: ["/dining/ocean.jpg"], menus: ["/dining/menu/seaview (1).jpg", "/dining/menu/seaview (2).jpg", "/dining/menu/seaview (3).jpg", "/dining/menu/seaview (4).jpg", "/dining/menu/seaview (5).jpg", "/dining/menu/seaview (6).jpg"], contact: "0999 433 1224", latitude: 12.5650, longitude: 122.2520 },
     { id: "panublion", name: "Panublion Heritage Diner", location: "Town Proper", address: "Republika St, Town Proper, Romblon", category: "Heritage Diner", image_url: "/dining/panublion.jpg", images: ["/dining/panublion.jpg"], menus: ["/dining/menu/panublion1 (1).jpg", "/dining/menu/panublion1 (2).jpg", "/dining/menu/panublion1 (3).jpg", "/dining/menu/panublion1 (4).jpg", "/dining/menu/panublion1 (5).jpg", "/dining/menu/panublion1 (6).jpg"], contact: "0956 044 7249", latitude: 12.5770, longitude: 122.2685 },
     { id: "reggae", name: "Reggae Bar & Grill", location: "Agpanabat", address: "Agpanabat, Romblon", category: "Bar & Grill", image_url: "/dining/reggae.jpg", images: ["/dining/reggae.jpg"], menus: ["/dining/menu/reggae (1).jpg", "/dining/menu/reggae (2).jpg", "/dining/menu/reggae (3).jpg", "/dining/menu/reggae (4).jpg", "/dining/menu/reggae (5).jpg", "/dining/menu/reggae (6).jpg"], contact: "0915 029 8242", latitude: 12.4828, longitude: 122.2830 },
-    { id: "sunbird", name: "Sunbird Ridge Coffee Shop", location: "Brgy. Lonos", address: "Ridge above Tiamban Beach, Brgy. Lonos", category: "Coffee Shop & Lounge", image_url: "/dining/sunbird.jpg", images: ["/dining/sunbird.jpg", "/foods/sarsa.webp", "/foods/inaslum.webp", "/foods/sihi.webp", "/foods/gayabon.webp"], latitude: 12.5700, longitude: 122.2485 },
+    { id: "sunbird", name: "Sunbird Ridge Coffee Shop", location: "Brgy. Lonos", address: "Ridge above Tiamban Beach, Brgy. Lonos", category: "Coffee Shop & Lounge", image_url: "/foods/sarsa.webp", images: ["/foods/sarsa.webp", "/foods/inaslum.webp", "/foods/sihi.webp", "/foods/gayabon.webp"], latitude: 12.5700, longitude: 122.2485 },
     { id: "yurich", name: "Yurich Hotel & Caffeinate Co.", location: "Brgy. Bagacay", address: "Sitio Binagong, Brgy. Bagacay, Romblon", category: "Local Restaurant", image_url: "/dining/yurich.jpg", images: ["/dining/yurich.jpg"], menus: ["/dining/menu/yurich (1).jpg", "/dining/menu/yurich (2).jpg", "/dining/menu/yurich (3).jpg", "/dining/menu/yurich (4).jpg", "/dining/menu/yurich (5).jpg", "/dining/menu/yurich (6).jpg", "/dining/menu/yurich (7).jpg", "/dining/menu/yurich (8).jpg", "/dining/menu/yurich (9).jpg", "/dining/menu/yurich (10).jpg", "/dining/menu/yurich (11).jpg", "/dining/menu/yurich (12).jpg"], contact: "0900 000 0000", latitude: 12.5762, longitude: 122.2655 /* TODO: Yurich full number */ },
   ];
 
@@ -78,7 +78,7 @@ export default function DiningList({ onLocate }: DiningListProps) {
       ocean: ["/dining/ocean.jpg"],
       panublion: ["/dining/panublion.jpg"],
       reggae: ["/dining/reggae.jpg"],
-      sunbird: ["/dining/sunbird.jpg", "/foods/sarsa.webp", "/foods/inaslum.webp", "/foods/sihi.webp", "/foods/gayabon.webp"],
+      sunbird: ["/foods/sarsa.webp", "/foods/inaslum.webp", "/foods/sihi.webp", "/foods/gayabon.webp"],
       yurich: ["/dining/yurich.jpg"],
     };
 
@@ -137,7 +137,7 @@ export default function DiningList({ onLocate }: DiningListProps) {
     const directGallery = Array.isArray(shop?.images) && shop.images.length > 0 ? shop.images : [];
     const mapped = galleryMap[shopKey] || [];
     const combined = Array.from(new Set([...directGallery, ...mapped]));
-    const primaryImage = shop?.image_url || shop?.image || combined[0] || "/dining/bistro1.jpg";
+    const primaryImage = shop?.image_url || shop?.image || combined[0] || "/dining/bistro.jpg";
 
     // Resolve coordinates: explicit shop values win, otherwise the shared registry
     const coords = resolveCoords({ id: shopKey, name: shop?.name });

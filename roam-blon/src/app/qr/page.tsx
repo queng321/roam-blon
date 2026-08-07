@@ -681,17 +681,17 @@ function QRScanContent() {
 
   const getStaticDining = (diningId: string) => {
     const STATIC: Record<string, any> = {
-      "bistro": { id: "bistro", name: "Marble City Café & Bistro", location: "Town Proper, Romblon", address: "Across Freedom Park, Town Proper, Romblon", category: "Café & Bistro", description: "A cozy café serving artisanal espresso, freshly baked pastries, and local snacks. Free Wi-Fi for travelers.", image_url: "/dining/bistro.jpg", images: ["/dining/bistro.jpg", "/dining/bistro1.jpg", "/dining/bistro2.jpg", "/dining/bistro3.jpg", "/dining/bistro4.jpg"], opening_time: "7:00 AM", closing_time: "10:00 PM" },
-      "el": { id: "el", name: "El Krimphoff Resort & Restaurant", location: "Sitio Babangtan, Brgy. Lonos, Romblon", address: "Sitio Babangtan, Brgy. Lonos, Romblon", category: "Restaurant", description: "Full-service resort restaurant offering fresh seafood, Filipino favorites, and cold beverages in a seaside setting.", image_url: "/dining/el.jpg", images: ["/dining/el.jpg", "/dining/el1.jpg", "/dining/el2.jpg", "/dining/el3.jpg", "/dining/el4.jpg", "/dining/el5.jpg"], opening_time: "6:00 AM", closing_time: "10:00 PM" },
-      "gangnam": { id: "gangnam", name: "Gangnam Korean Grill", location: "Brgy. Mapula, Romblon", address: "Sitio Batiano, Brgy. Mapula, Romblon", category: "Korean BBQ", description: "Unlimited Korean BBQ and Samgyeopsal with authentic banchan side dishes. Fun tabletop grill experience for the whole family.", image_url: "/dining/gangnam.jpg", images: ["/dining/gangnam.jpg", "/dining/gangnam1.jpg", "/dining/gangnam2.jpg", "/dining/gangnam3.jpg", "/dining/gangnam4.jpg"], opening_time: "11:00 AM", closing_time: "10:00 PM" },
-      "horizon": { id: "horizon", name: "Horizon Seaside Restaurant", location: "Brgy. Lonos, Romblon", address: "Brgy. Lonos", category: "Seafood & Grill", description: "Beachfront dining with panoramic ocean views, fresh grilled seafood, and a relaxing sea breeze atmosphere.", image_url: "/dining/horizon.jpg", images: ["/dining/horizon.jpg", "/dining/horizon1.jpg", "/dining/horizon2.jpg", "/dining/horizon3.jpg"], opening_time: "11:00 AM", closing_time: "9:00 PM" },
-      "italian": { id: "italian", name: "Italian Trattoria", location: "Republika St, Brgy. 1 Poblacion, Romblon", address: "Republika St, Brgy. 1 Poblacion, Romblon", category: "Italian & Pizza", description: "Authentic wood-fired pizzas, fresh homemade pasta, fine Italian wines, and desserts in a romantic candlelit setting.", image_url: "/dining/italian.jpg", images: ["/dining/italian.jpg", "/dining/italian1.jpg", "/dining/italian2.jpg", "/dining/italian3.jpg", "/dining/italian4.jpg"], opening_time: "12:00 PM", closing_time: "10:00 PM" },
-      "mamalois": { id: "mamalois", name: "Mama Lois Kitchen", location: "Beside Romblon Port Terminal, Town Proper, Romblon", address: "Beside Romblon Port Terminal, Town Proper, Romblon", category: "Local Eat", description: "Home-cooked Romblon carinderia classics with generous servings at very affordable prices. A popular local favorite.", image_url: "/dining/mamalois.jpg", images: ["/dining/mamalois.jpg", "/dining/mamalois1.jpg", "/dining/mamalois2.jpg", "/dining/mamalois3.jpg"], opening_time: "6:00 AM", closing_time: "8:00 PM" },
-      "ocean": { id: "ocean", name: "Seaview Restobar", location: "Sitio Suwa, Brgy. Lonos, Romblon", address: "Sitio Suwa, Brgy. Lonos, Romblon", category: "Seafood", description: "Seaside restobar serving catch-of-the-day seafood, grilled fish, squid, and prawns with ice-cold beers and ocean sunset views.", image_url: "/dining/ocean.jpg", images: ["/dining/ocean.jpg", "/dining/ocean1.jpg", "/dining/ocean2.jpg", "/dining/ocean3.jpg"], opening_time: "10:00 AM", closing_time: "9:00 PM" },
-      "panublion": { id: "panublion", name: "Panublion Heritage Diner", location: "Republika St, Town Proper, Romblon", address: "Republika St, Town Proper, Romblon", category: "Heritage Cuisine", description: "Heritage Romblon recipes and delicacies using traditional island ingredients. A warm, historic cultural dining experience.", image_url: "/dining/panublion.jpg", images: ["/dining/panublion.jpg", "/dining/panublion1.jpg", "/dining/panublion2.jpg", "/dining/panublion3.jpg"], opening_time: "10:00 AM", closing_time: "9:00 PM" },
-      "reggae": { id: "reggae", name: "Reggae Bar & Grill", location: "Agpanabat, Romblon", address: "Agpanabat", category: "Bar & Grill", description: "Bohemian beachfront bar and grill with live music, tropical cocktails, grilled BBQ skewers, and chill bonfire nights.", image_url: "/dining/reggae.jpg", images: ["/dining/reggae.jpg", "/dining/reggae1.jpg", "/dining/reggae2.jpg", "/dining/reggae3.jpg", "/dining/reggae4.jpg"], opening_time: "4:00 PM", closing_time: "12:00 AM" },
-      "sunbird": { id: "sunbird", name: "Sunbird Ridge Coffee Shop", location: "Brgy. Lonos, Romblon", address: "Ridge above Tiamban Beach, Brgy. Lonos", category: "Café", description: "Specialty coffee and cold brews, healthy breakfast bowls and sandwiches in a peaceful garden lounge setting.", image_url: "/dining/sunbird.jpg", images: ["/dining/sunbird.jpg"], opening_time: "7:00 AM", closing_time: "6:00 PM" },
-      "yurich": { id: "yurich", name: "Yurich Hotel & Caffeinate Co.", location: "Sitio Binagong, Brgy. Bagacay, Romblon", address: "Sitio Binagong, Brgy. Bagacay", category: "Local Restaurant", description: "Where modern caffeine culture meets island hospitality — premium coffee blends, artisanal pastries, and hearty local dishes in a cozy air-conditioned space.", image_url: "/dining/yurich.jpg", images: ["/dining/yurich.jpg", "/dining/yurich1.jpg", "/dining/yurich2.jpg", "/dining/yurich3.jpg", "/dining/yurich4.jpg", "/dining/yurich5.jpg"], opening_time: "8:00 AM", closing_time: "9:00 PM" },
+      "bistro": { id: "bistro", name: "Marble City Café & Bistro", location: "Town Proper, Romblon", address: "Across Freedom Park, Town Proper, Romblon", category: "Café & Bistro", description: "A cozy café serving artisanal espresso, freshly baked pastries, and local snacks. Free Wi-Fi for travelers.", image_url: "/dining/bistro.jpg", images: ["/dining/bistro.jpg"], opening_time: "7:00 AM", closing_time: "10:00 PM" },
+      "el": { id: "el", name: "El Krimphoff Resort & Restaurant", location: "Sitio Babangtan, Brgy. Lonos, Romblon", address: "Sitio Babangtan, Brgy. Lonos, Romblon", category: "Restaurant", description: "Full-service resort restaurant offering fresh seafood, Filipino favorites, and cold beverages in a seaside setting.", image_url: "/dining/el.jpg", images: ["/dining/el.jpg"], opening_time: "6:00 AM", closing_time: "10:00 PM" },
+      "gangnam": { id: "gangnam", name: "Gangnam Korean Grill", location: "Brgy. Mapula, Romblon", address: "Sitio Batiano, Brgy. Mapula, Romblon", category: "Korean BBQ", description: "Unlimited Korean BBQ and Samgyeopsal with authentic banchan side dishes. Fun tabletop grill experience for the whole family.", image_url: "/dining/gangnam.jpg", images: ["/dining/gangnam.jpg"], opening_time: "11:00 AM", closing_time: "10:00 PM" },
+      "horizon": { id: "horizon", name: "Horizon Seaside Restaurant", location: "Brgy. Lonos, Romblon", address: "Brgy. Lonos", category: "Seafood & Grill", description: "Beachfront dining with panoramic ocean views, fresh grilled seafood, and a relaxing sea breeze atmosphere.", image_url: "/dining/horizon.jpg", images: ["/dining/horizon.jpg"], opening_time: "11:00 AM", closing_time: "9:00 PM" },
+      "italian": { id: "italian", name: "Italian Trattoria", location: "Republika St, Brgy. 1 Poblacion, Romblon", address: "Republika St, Brgy. 1 Poblacion, Romblon", category: "Italian & Pizza", description: "Authentic wood-fired pizzas, fresh homemade pasta, fine Italian wines, and desserts in a romantic candlelit setting.", image_url: "/dining/italian.jpg", images: ["/dining/italian.jpg"], opening_time: "12:00 PM", closing_time: "10:00 PM" },
+      "mamalois": { id: "mamalois", name: "Mama Lois Kitchen", location: "Beside Romblon Port Terminal, Town Proper, Romblon", address: "Beside Romblon Port Terminal, Town Proper, Romblon", category: "Local Eat", description: "Home-cooked Romblon carinderia classics with generous servings at very affordable prices. A popular local favorite.", image_url: "/dining/mamalois.jpg", images: ["/dining/mamalois.jpg"], opening_time: "6:00 AM", closing_time: "8:00 PM" },
+      "ocean": { id: "ocean", name: "Seaview Restobar", location: "Sitio Suwa, Brgy. Lonos, Romblon", address: "Sitio Suwa, Brgy. Lonos, Romblon", category: "Seafood", description: "Seaside restobar serving catch-of-the-day seafood, grilled fish, squid, and prawns with ice-cold beers and ocean sunset views.", image_url: "/dining/ocean.jpg", images: ["/dining/ocean.jpg"], opening_time: "10:00 AM", closing_time: "9:00 PM" },
+      "panublion": { id: "panublion", name: "Panublion Heritage Diner", location: "Republika St, Town Proper, Romblon", address: "Republika St, Town Proper, Romblon", category: "Heritage Cuisine", description: "Heritage Romblon recipes and delicacies using traditional island ingredients. A warm, historic cultural dining experience.", image_url: "/dining/panublion.jpg", images: ["/dining/panublion.jpg"], opening_time: "10:00 AM", closing_time: "9:00 PM" },
+      "reggae": { id: "reggae", name: "Reggae Bar & Grill", location: "Agpanabat, Romblon", address: "Agpanabat", category: "Bar & Grill", description: "Bohemian beachfront bar and grill with live music, tropical cocktails, grilled BBQ skewers, and chill bonfire nights.", image_url: "/dining/reggae.jpg", images: ["/dining/reggae.jpg"], opening_time: "4:00 PM", closing_time: "12:00 AM" },
+      "sunbird": { id: "sunbird", name: "Sunbird Ridge Coffee Shop", location: "Brgy. Lonos, Romblon", address: "Ridge above Tiamban Beach, Brgy. Lonos", category: "Café", description: "Specialty coffee and cold brews, healthy breakfast bowls and sandwiches in a peaceful garden lounge setting.", image_url: "/foods/sarsa.webp", images: ["/foods/sarsa.webp", "/foods/inaslum.webp", "/foods/sihi.webp", "/foods/gayabon.webp"], opening_time: "7:00 AM", closing_time: "6:00 PM" },
+      "yurich": { id: "yurich", name: "Yurich Hotel & Caffeinate Co.", location: "Sitio Binagong, Brgy. Bagacay, Romblon", address: "Sitio Binagong, Brgy. Bagacay", category: "Local Restaurant", description: "Where modern caffeine culture meets island hospitality — premium coffee blends, artisanal pastries, and hearty local dishes in a cozy air-conditioned space.", image_url: "/dining/yurich.jpg", images: ["/dining/yurich.jpg"], opening_time: "8:00 AM", closing_time: "9:00 PM" },
     };
     return STATIC[diningId] || null;
   };
@@ -782,67 +782,67 @@ function QRScanContent() {
 /* ─── DINING MEDIA DATABASE ─────────────────────────────────────────── */
 const DINING_MEDIA: Record<string, { images: string[]; highlights: string[]; bestTime: string; activities: string[]; videoId?: string; videoUrl?: string; entranceFee?: string }> = {
   "bistro": {
-    images: ["/dining/bistro.jpg", "/dining/bistro1.jpg", "/dining/bistro2.jpg", "/dining/bistro3.jpg", "/dining/bistro4.jpg"],
+    images: ["/dining/bistro.jpg"],
     highlights: ["Artisanal Romblon espresso & brews", "Cozy air-conditioned ambiance", "Freshly baked pastries & local snacks", "Free high-speed Wi-Fi for travelers"],
     bestTime: "07:00 AM – 10:00 PM",
     activities: ["Coffee & Pastries", "Remote Work", "Snack Break", "Socializing"],
   },
   "el": {
-    images: ["/dining/el.jpg", "/dining/el1.jpg", "/dining/el2.jpg", "/dining/el3.jpg", "/dining/el4.jpg", "/dining/el5.jpg"],
+    images: ["/dining/el.jpg"],
     highlights: ["Full-service hotel restaurant", "Fresh seafood & Filipino favorites", "Spacious dining area for groups", "Cocktails & cold beverages"],
     bestTime: "06:00 AM – 10:00 PM",
     activities: ["Buffet Dining", "Group Dinners", "Cocktails", "Breakfast"],
   },
   "gangnam": {
-    images: ["/dining/gangnam.jpg", "/dining/gangnam1.jpg", "/dining/gangnam2.jpg", "/dining/gangnam3.jpg", "/dining/gangnam4.jpg"],
+    images: ["/dining/gangnam.jpg"],
     highlights: ["Unlimited Korean BBQ & Samgyeopsal", "Authentic Korean side dishes (Banchan)", "Fun tabletop grill experience", "Great for family & friends"],
     bestTime: "11:00 AM – 10:00 PM",
     activities: ["Korean BBQ", "Samgyeopsal", "Group Dining", "Celebrations"],
   },
   "horizon": {
-    images: ["/dining/horizon.jpg", "/dining/horizon1.jpg", "/dining/horizon2.jpg", "/dining/horizon3.jpg"],
+    images: ["/dining/horizon.jpg"],
     highlights: ["Beachfront ocean views", "Fresh grilled seafood & meat", "Relaxing sea breeze dining", "Sunset dinner setting"],
     bestTime: "11:00 AM – 09:00 PM",
     activities: ["Sunset Dinner", "Seafood Tasting", "Beachfront Dining", "Drinks"],
   },
   "italian": {
-    images: ["/dining/italian.jpg", "/dining/italian1.jpg", "/dining/italian2.jpg", "/dining/italian3.jpg", "/dining/italian4.jpg"],
+    images: ["/dining/italian.jpg"],
     highlights: ["Wood-fired authentic pizzas", "Fresh homemade pasta dishes", "Fine Italian wines & desserts", "Romantic candlelit atmosphere"],
     bestTime: "12:00 PM – 10:00 PM",
     activities: ["Pizza & Pasta", "Wine Tasting", "Romantic Dinners", "Dessert"],
   },
   "mamalois": {
-    images: ["/dining/mamalois.jpg", "/dining/mamalois1.jpg", "/dining/mamalois2.jpg", "/dining/mamalois3.jpg"],
+    images: ["/dining/mamalois.jpg"],
     highlights: ["Home-cooked Romblon carinderia classics", "Affordable budget-friendly meals", "Generous servings & quick service", "Popular local favorite"],
     bestTime: "06:00 AM – 08:00 PM",
     activities: ["Quick Breakfast", "Budget Lunch", "Home-style Meal", "Takeout"],
   },
   "ocean": {
-    images: ["/dining/ocean.jpg", "/dining/ocean1.jpg", "/dining/ocean2.jpg", "/dining/ocean3.jpg"],
+    images: ["/dining/ocean.jpg"],
     highlights: ["Catch-of-the-day fresh seafood", "Panoramic ocean sunset views", "Grilled fish, squid & prawns", "Ice-cold beers"],
     bestTime: "10:00 AM – 09:00 PM",
     activities: ["Seafood Feast", "Sunset Viewing", "Group Lunch", "Chilled Drinks"],
   },
   "panublion": {
-    images: ["/dining/panublion.jpg", "/dining/panublion1.jpg", "/dining/panublion2.jpg", "/dining/panublion3.jpg"],
+    images: ["/dining/panublion.jpg"],
     highlights: ["Heritage Romblon recipes & delicacies", "Traditional island ingredients", "Cultural dining experience", "Warm historic ambiance"],
     bestTime: "10:00 AM – 09:00 PM",
     activities: ["Heritage Food Tasting", "Cultural Dining", "Family Lunch", "Local Delicacies"],
   },
   "reggae": {
-    images: ["/dining/reggae.jpg", "/dining/reggae1.jpg", "/dining/reggae2.jpg", "/dining/reggae3.jpg", "/dining/reggae4.jpg"],
+    images: ["/dining/reggae.jpg"],
     highlights: ["Bohemian beachfront bar & grill", "Live music & tropical cocktails", "Grilled barbecue skewers", "Chill sunset & bonfire night"],
     bestTime: "04:00 PM – 12:00 AM",
     activities: ["Live Music", "Cocktails", "Bonfire", "Beach Barbecue"],
   },
   "sunbird": {
-    images: ["/dining/sunbird.jpg"],
+    images: ["/foods/sarsa.webp", "/foods/inaslum.webp", "/foods/sihi.webp", "/foods/gayabon.webp"],
     highlights: ["Specialty coffee & cold brews", "Healthy breakfast bowls & sandwiches", "Peaceful garden lounge setting", "Cozy atmosphere"],
     bestTime: "07:00 AM – 06:00 PM",
     activities: ["Morning Coffee", "Healthy Breakfast", "Reading & Relaxing", "Smoothies"],
   },
   "yurich": {
-    images: ["/dining/yurich.jpg", "/dining/yurich1.jpg", "/dining/yurich2.jpg", "/dining/yurich3.jpg", "/dining/yurich4.jpg", "/dining/yurich5.jpg"],
+    images: ["/dining/yurich.jpg"],
     highlights: ["Hearty local Filipino dishes", "Fresh fruit shakes & desserts", "Cozy family atmosphere", "Very affordable prices"],
     bestTime: "08:00 AM – 09:00 PM",
     activities: ["Family Meal", "Fruit Shakes", "Filipino Favorites", "Group Dining"],

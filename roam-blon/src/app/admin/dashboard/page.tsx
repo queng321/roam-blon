@@ -2676,7 +2676,7 @@ export default function AdminDashboardPage() {
                     { id: "ocean", name: "Seaview Restobar", location: "Brgy. Lonos", address: "Sitio Suwa, Brgy. Lonos, Romblon", category: "Seafood", image_url: "/dining/ocean.jpg" },
                     { id: "panublion", name: "Panublion Heritage Diner", location: "Town Proper", address: "Republika St, Town Proper, Romblon", category: "Heritage Cuisine", image_url: "/dining/panublion.jpg" },
                     { id: "reggae", name: "Reggae Bar & Grill", location: "Agpanabat", address: "Agpanabat, Romblon", category: "Bar & Grill", image_url: "/dining/reggae.jpg" },
-                    { id: "sunbird", name: "Sunbird Ridge Coffee Shop", location: "Brgy. Lonos", address: "Ridge above Tiamban Beach, Brgy. Lonos", category: "Café", image_url: "/dining/sunbird.jpg" },
+                    { id: "sunbird", name: "Sunbird Ridge Coffee Shop", location: "Brgy. Lonos", address: "Ridge above Tiamban Beach, Brgy. Lonos", category: "Café", image_url: "/foods/sarsa.webp" },
                     { id: "yurich", name: "Yurich Hotel & Caffeinate Co.", location: "Brgy. Bagacay", address: "Sitio Binagong, Brgy. Bagacay", category: "Local Restaurant", image_url: "/dining/yurich.jpg" },
                   ];
                   const DINING_ITEMS = allServices.dining.length > 0 ? allServices.dining : STATIC_DINING;
