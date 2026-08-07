@@ -2541,7 +2541,7 @@ export default function AdminDashboardPage() {
               <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100">
                   <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter italic mb-2">QR Code Generator</h2>
-                  <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Generate and download QR codes for shores, resorts &amp; dining hubs</p>
+                  <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Generate and download QR codes for tourist destinations &amp; dining hubs</p>
                 </div>
 
                 {/* ── SHORES & RESORTS SECTION (ALL 15 BEACHES) ── */}
@@ -2574,7 +2574,7 @@ export default function AdminDashboardPage() {
                           <QrCode size={24} className="text-rose-500" />
                         </div>
                         <div>
-                          <h3 className="text-2xl font-black uppercase tracking-tighter italic text-rose-600">Shores &amp; Resorts</h3>
+                          <h3 className="text-2xl font-black uppercase tracking-tighter italic text-rose-600">Tourist Destinations</h3>
                           <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-0.5">{SHORES.length} locations · Click QR to open the tourist page</p>
                         </div>
                       </div>
