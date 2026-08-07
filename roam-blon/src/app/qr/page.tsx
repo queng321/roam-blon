@@ -954,6 +954,9 @@ const DINING_MENUS: Record<string, string[]> = {
     ? (Array.isArray(item?.menus) && item.menus.length > 0 ? item.menus : DINING_MENUS[getMenuKey(item)] || [])
     : [];
 
+  // Menu images are also folded into the main < > photo carousel so they always show
+  const galleryImages = [...allImages, ...menuImages];
+
   return (
     <div className="min-h-screen bg-[#0d1117] flex flex-col">
       {/* ── Header ── */}
@@ -1041,7 +1044,16 @@ const DINING_MENUS: Record<string, string[]> = {
             {/* GALLERY TAB */}
             {activeTab === "gallery" && (
               <div className="space-y-4 animate-in fade-in duration-300">
-                <PhotoGallery images={allImages} name={item.name} />
+                <PhotoGallery images={galleryImages} name={item.name} />
+
+                {type === "dining" && menuImages.length > 0 && (
+                  <div className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 flex items-center gap-2">
+                    <Utensils size={12} className="text-rose-400 shrink-0" />
+                    <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">
+                      Menu photos included below — flip through with the arrows
+                    </p>
+                  </div>
+                )}
 
                 {/* Quick highlights */}
                 <div className="bg-white/5 border border-white/10 rounded-3xl p-4 space-y-3">
