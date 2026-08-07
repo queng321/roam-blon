@@ -132,12 +132,30 @@ export default function AIChat({ onClose, initialMode = "ai", lockMode = false }
     // SEPARATE CONVERSATIONS: Append mode to identifier so each mode has its own history
     const roomIdentifier = `${identifier}_${mode}`;
 
-    let { data: room } = await supabase
+    // Reuse the existing room (even a closed one) so the conversation history
+    // is NEVER lost — pick the most recently updated room to stay safe even if
+    // duplicate rooms were accidentally created.
+    let { data: room, error: findError } = await supabase
       .from('chat_rooms')
       .select('*')
       .eq('tourist_email', roomIdentifier)
-      .eq('status', 'active')
+      .order('updated_at', { ascending: false })
+      .limit(1)
       .maybeSingle();
+
+    if (findError) {
+      console.error("Room lookup error:", findError);
+    }
+
+    // Re-open a closed session so the same conversation keeps working
+    if (room && room.status !== 'active') {
+      const { error: reopenError } = await supabase
+        .from('chat_rooms')
+        .update({ status: 'active', updated_at: new Date().toISOString() })
+        .eq('id', room.id);
+      if (reopenError) console.error("Room reopen error:", reopenError);
+      room = { ...room, status: 'active' };
+    }
 
     if (!room) {
       // Create new room
@@ -162,7 +180,7 @@ export default function AIChat({ onClose, initialMode = "ai", lockMode = false }
 
     if (room) {
       setActiveRoom(room);
-      // Fetch initial messages
+      // Fetch full message history (never cleared)
       const { data: history } = await supabase
         .from('chat_messages')
         .select('*')
