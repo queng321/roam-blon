@@ -930,7 +930,29 @@ const DINING_MENUS: Record<string, string[]> = {
     ? (Array.isArray(item.images) && item.images.length > 0 ? item.images : beachMedia?.images || (imageUrl ? [imageUrl] : []))
     : (beachMedia ? beachMedia.images : (imageUrl ? [imageUrl] : []));
 
-  const menuImages = type === "dining" ? (DINING_MENUS[item.id] || DINING_MENUS[id] || []) : [];
+  // Menu images — resolve by stored `menus` field, exact id, url id, or normalized name
+  // so EVERY dining spot shows its menu regardless of how the DB row was keyed.
+  const getMenuKey = (it: any) => {
+    const idKey = String(it?.id || "").toLowerCase();
+    if (DINING_MENUS[idKey]) return idKey;
+    if (DINING_MENUS[String(id || "").toLowerCase()]) return String(id).toLowerCase();
+    const name = String(it?.name || "").toLowerCase().replace(/[''`]/g, "").replace(/\s+/g, " ").trim();
+    if (name.includes("gangnam")) return "gangnam";
+    if (name.includes("bistro") || name.includes("marble")) return "bistro";
+    if (name.includes("el krim") || name.includes("el hotel") || name.includes("krimphoff") || name.includes("krimpuff")) return "el";
+    if (name.includes("horizon")) return "horizon";
+    if (name.includes("italian")) return "italian";
+    if (name.includes("mama")) return "mamalois";
+    if (name.includes("seaview") || name.includes("sea view") || name.includes("ocean")) return "ocean";
+    if (name.includes("panublion") || name.includes("pahublion")) return "panublion";
+    if (name.includes("reggae")) return "reggae";
+    if (name.includes("sunbird")) return "sunbird";
+    if (name.includes("yurich")) return "yurich";
+    return idKey;
+  };
+  const menuImages = type === "dining"
+    ? (Array.isArray(item?.menus) && item.menus.length > 0 ? item.menus : DINING_MENUS[getMenuKey(item)] || [])
+    : [];
 
   return (
     <div className="min-h-screen bg-[#0d1117] flex flex-col">
