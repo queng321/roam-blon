@@ -2694,7 +2694,7 @@ export default function AdminDashboardPage() {
                           <Building size={24} className="text-orange-500" />
                         </div>
                         <div>
-                          <h3 className="text-2xl font-black uppercase tracking-tighter italic text-orange-600">Dining Hubs</h3>
+                          <h3 className="text-2xl font-black uppercase tracking-tighter italic text-orange-600">Dining Spots</h3>
                           <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-0.5">{DINING_ITEMS.length} establishments · Click QR to open the tourist page</p>
                         </div>
                       </div>
