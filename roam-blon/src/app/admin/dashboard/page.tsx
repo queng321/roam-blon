@@ -82,6 +82,7 @@ export default function AdminDashboardPage() {
     dining: [], souvenirs: [], emergency: [], tourGuides: []
   });
   const [guideBookings, setGuideBookings] = useState<any[]>([]);
+  const [guideReviews, setGuideReviews] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Chat/Messages states
@@ -96,7 +97,7 @@ export default function AdminDashboardPage() {
   const [reviewFilter, setReviewFilter] = useState<string>("all");
 
   // Real-time notification state
-  const [liveToasts, setLiveToasts] = useState<{id: string; reviewer: string; item: string; rating: number; comment: string; type: 'review' | 'scan' | 'booking'}[]>([]);
+  const [liveToasts, setLiveToasts] = useState<{id: string; reviewer: string; item: string; rating: number; comment: string; type: 'review' | 'guide_review' | 'scan' | 'booking'}[]>([]);
   const [newReviewCount, setNewReviewCount] = useState(0);
   const [liveScanCount, setLiveScanCount] = useState(0);
   const [scanVisits, setScanVisits] = useState<Record<string, number>>(
@@ -110,7 +111,7 @@ export default function AdminDashboardPage() {
   // the seed's own inserts don't double-inflate the totals.
   const suppressScanBump = useRef(false);
 
-  const addLiveToast = (toast: {reviewer: string; item: string; rating: number; comment: string; type: 'review' | 'scan' | 'booking'}) => {
+  const addLiveToast = (toast: {reviewer: string; item: string; rating: number; comment: string; type: 'review' | 'guide_review' | 'scan' | 'booking'}) => {
     const id = Date.now().toString();
     setLiveToasts(prev => [{ id, ...toast }, ...prev].slice(0, 5));
     setTimeout(() => {
@@ -569,7 +570,33 @@ export default function AdminDashboardPage() {
     seedScanActivity();
     fetchDashboardData();
     loadReviews();
+    loadGuideReviews();
   }, []);
+
+  const loadGuideReviews = async () => {
+    try {
+      let remote: any[] = [];
+      try {
+        const res = await fetch('/api/guide-reviews');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.data) remote = json.data;
+        }
+      } catch {
+        const { data } = await supabase.from('guide_reviews').select('*').order('created_at', { ascending: false });
+        if (data) remote = data;
+      }
+
+      const stored = JSON.parse(localStorage.getItem('roam_blon_guide_reviews') || '[]');
+      const combined = [...remote];
+      stored.forEach((lr: any) => {
+        if (!combined.some(c => c.id === lr.id || (c.booking_id && lr.booking_id && c.booking_id === lr.booking_id && c.tourist_email === lr.tourist_email))) {
+          combined.push(lr);
+        }
+      });
+      setGuideReviews(combined);
+    } catch { /* ignore */ }
+  };
 
   const loadReviews = async () => {
     try {
@@ -1038,6 +1065,20 @@ export default function AdminDashboardPage() {
         });
         setTimeout(() => fetchDashboardData(), 1200);
       })
+      .on('broadcast', { event: 'new_guide_review' }, ({ payload: r }: any) => {
+        // Live guide review — show toast + update the reviews list instantly
+        addLiveToast({
+          type: 'guide_review',
+          reviewer: r.tourist_name || r.tourist_email || 'A Tourist',
+          item: r.guide_name || 'Tour Guide',
+          rating: r.rating || 0,
+          comment: r.comment || ''
+        });
+        setGuideReviews(prev => {
+          const rest = prev.filter((x: any) => !(x.booking_id && r.booking_id && x.booking_id === r.booking_id));
+          return [{ ...r, id: r.id || `live_${Date.now()}` }, ...rest];
+        });
+      })
       .subscribe();
 
     return () => {
@@ -1358,12 +1399,12 @@ export default function AdminDashboardPage() {
             style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(244,63,94,0.1)' }}
           >
             {/* Colored top bar */}
-            <div className={`h-1.5 w-full ${toast.type === 'review' ? 'bg-gradient-to-r from-amber-400 to-rose-500' : toast.type === 'booking' ? 'bg-gradient-to-r from-orange-400 to-rose-500' : 'bg-gradient-to-r from-blue-400 to-indigo-500'}`} />
+            <div className={`h-1.5 w-full ${toast.type === 'review' || toast.type === 'guide_review' ? 'bg-gradient-to-r from-amber-400 to-rose-500' : toast.type === 'booking' ? 'bg-gradient-to-r from-orange-400 to-rose-500' : 'bg-gradient-to-r from-blue-400 to-indigo-500'}`} />
             <div className="p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3 flex-1 min-w-0">
-                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${toast.type === 'review' ? 'bg-amber-50 text-amber-500' : toast.type === 'booking' ? 'bg-orange-50 text-orange-500' : 'bg-blue-50 text-blue-500'}`}>
-                    {toast.type === 'review' ? (
+                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${toast.type === 'review' || toast.type === 'guide_review' ? 'bg-amber-50 text-amber-500' : toast.type === 'booking' ? 'bg-orange-50 text-orange-500' : 'bg-blue-50 text-blue-500'}`}>
+                    {toast.type === 'review' || toast.type === 'guide_review' ? (
                       <Star size={18} className="fill-amber-400 text-amber-400" />
                     ) : toast.type === 'booking' ? (
                       <BellDot size={18} />
@@ -1374,7 +1415,7 @@ export default function AdminDashboardPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-0.5">
                       <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest">
-                        {toast.type === 'review' ? '⚡ New Review' : toast.type === 'booking' ? '🔔 New Booking' : '📱 QR Scanned'}
+                        {toast.type === 'review' ? '⚡ New Review' : toast.type === 'guide_review' ? '⭐ Guide Review' : toast.type === 'booking' ? '🔔 New Booking' : '📱 QR Scanned'}
                       </span>
                       <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
                       <span className="text-[9px] font-bold text-emerald-600 uppercase">LIVE</span>
@@ -1383,9 +1424,9 @@ export default function AdminDashboardPage() {
                       {toast.type === 'booking' ? toast.item : toast.reviewer}
                     </p>
                     <p className="text-slate-500 text-xs font-medium mt-0.5 truncate">
-                      {toast.type === 'review' ? `Rated "${toast.item}"` : toast.type === 'booking' ? `Booked by ${toast.reviewer}` : `Scanned: ${toast.item}`}
+                      {toast.type === 'review' || toast.type === 'guide_review' ? `Rated "${toast.item}"` : toast.type === 'booking' ? `Booked by ${toast.reviewer}` : `Scanned: ${toast.item}`}
                     </p>
-                    {toast.type === 'review' && toast.rating > 0 && (
+                    {(toast.type === 'review' || toast.type === 'guide_review') && toast.rating > 0 && (
                       <div className="flex gap-0.5 mt-1.5">
                         {[1,2,3,4,5].map(s => (
                           <Star key={s} size={11} className={s <= toast.rating ? 'text-amber-400 fill-amber-400' : 'text-slate-200 fill-slate-200'} />
@@ -2232,6 +2273,7 @@ export default function AdminDashboardPage() {
                               <th className="pb-6 px-4 text-[10px] font-black uppercase text-slate-300 tracking-widest">Tour Date &amp; Pax</th>
                               <th className="pb-6 px-4 text-[10px] font-black uppercase text-slate-300 tracking-widest">Notes</th>
                               <th className="pb-6 px-4 text-[10px] font-black uppercase text-slate-300 tracking-widest">Total Price</th>
+                              <th className="pb-6 px-4 text-[10px] font-black uppercase text-slate-300 tracking-widest">Rating &amp; Review</th>
                               <th className="pb-6 px-4 text-[10px] font-black uppercase text-slate-300 tracking-widest">Status &amp; Actions</th>
                            </tr>
                         </thead>
@@ -2276,6 +2318,33 @@ export default function AdminDashboardPage() {
                                  </td>
                                  <td className="py-6 px-4 font-black text-slate-900 text-sm">₱{Number(b.total_price || 1500).toLocaleString()}</td>
                                  <td className="py-6 px-4">
+                                    {(() => {
+                                       const review = guideReviews.find((r: any) =>
+                                         (r.booking_id && b.id && String(r.booking_id) === String(b.id)) ||
+                                         (r.reference_code && b.reference_code && String(r.reference_code) === String(b.reference_code)) ||
+                                         (r.guide_name === b.guide_name && r.tourist_email === b.tourist_email && (r.booking_date || r.tour_date) === b.booking_date)
+                                       );
+                                       if (!review) {
+                                         return <span className="text-[10px] text-slate-300 font-bold">—</span>;
+                                       }
+                                       return (
+                                         <div className="max-w-[200px]">
+                                           <div className="flex gap-0.5">
+                                             {[1,2,3,4,5].map((s: number) => (
+                                               <Star key={s} size={12} className={s <= review.rating ? 'text-amber-400 fill-amber-400' : 'text-slate-200 fill-slate-200'} />
+                                             ))}
+                                           </div>
+                                           {review.comment && (
+                                             <p className="text-[11px] text-slate-600 italic mt-1.5 leading-snug line-clamp-2" title={review.comment}>"{review.comment}"</p>
+                                           )}
+                                           {review.tourist_name && (
+                                             <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">by {review.tourist_name}</p>
+                                           )}
+                                         </div>
+                                       );
+                                    })()}
+                                 </td>
+                                 <td className="py-6 px-4">
                                     <div className="flex items-center gap-3">
                                        <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm ${
                                           b.status === 'approved' || b.status === 'confirmed' ? 'bg-emerald-500 text-white' : 
@@ -2305,7 +2374,7 @@ export default function AdminDashboardPage() {
                               </tr>
                            )) : (
                               <tr>
-                                 <td colSpan={8} className="py-12 text-center text-slate-400 font-bold uppercase text-xs tracking-widest">
+                                 <td colSpan={9} className="py-12 text-center text-slate-400 font-bold uppercase text-xs tracking-widest">
                                     No tour guide bookings recorded yet.
                                  </td>
                               </tr>

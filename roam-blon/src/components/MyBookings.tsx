@@ -14,7 +14,8 @@ import {
   Bike,
   X,
   Compass,
-  Users
+  Users,
+  Star
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -27,9 +28,19 @@ export default function MyBookings({ tourist }: MyBookingsProps) {
   const [loading, setLoading] = useState(true);
   const [receiptBooking, setReceiptBooking] = useState<any | null>(null);
 
+  // Guide review state
+  const [reviewBooking, setReviewBooking] = useState<any | null>(null);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [hoverStar, setHoverStar] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewError, setReviewError] = useState("");
+  const [guideReviews, setGuideReviews] = useState<any[]>([]);
+
   useEffect(() => {
     if (tourist?.email) {
       fetchBookings();
+      fetchGuideReviews();
     } else {
       setLoading(false);
     }
@@ -64,6 +75,100 @@ export default function MyBookings({ tourist }: MyBookingsProps) {
       setLoading(false);
     }
   }
+
+  async function fetchGuideReviews() {
+    try {
+      let remote: any[] = [];
+      const { data } = await supabase.from('guide_reviews').select('*').order('created_at', { ascending: false });
+      if (data) remote = data;
+      const stored = JSON.parse(localStorage.getItem("roam_blon_guide_reviews") || "[]");
+      const merged = [...remote];
+      stored.forEach((lr: any) => {
+        if (!merged.some((cr: any) => cr.id === lr.id || (cr.booking_id === lr.booking_id && cr.tourist_email === lr.tourist_email))) {
+          merged.push(lr);
+        }
+      });
+      setGuideReviews(merged);
+    } catch {
+      const stored = JSON.parse(localStorage.getItem("roam_blon_guide_reviews") || "[]");
+      setGuideReviews(stored);
+    }
+  }
+
+  const findReviewFor = (booking: any) => {
+    return guideReviews.find(
+      (r: any) =>
+        (r.booking_id && booking.id && String(r.booking_id) === String(booking.id)) ||
+        (r.reference_code && booking.reference_code && String(r.reference_code) === String(booking.reference_code)) ||
+        (r.guide_name === booking.guide_name && r.tourist_email === (tourist?.email || booking.tourist_email) && (r.booking_date || r.tour_date) === booking.booking_date)
+    );
+  };
+
+  const openReviewModal = (booking: any) => {
+    setReviewBooking(booking);
+    setReviewRating(0);
+    setHoverStar(0);
+    setReviewComment("");
+    setReviewError("");
+  };
+
+  const handleSubmitReview = async () => {
+    if (!reviewBooking) return;
+    if (reviewRating < 1) {
+      setReviewError("Please select a star rating.");
+      return;
+    }
+    setReviewSubmitting(true);
+    setReviewError("");
+
+    const payload = {
+      booking_id: typeof reviewBooking.id === 'string' ? reviewBooking.id : String(reviewBooking.id || ""),
+      reference_code: reviewBooking.reference_code || null,
+      guide_name: reviewBooking.guide_name || "Tour Guide",
+      guide_id: reviewBooking.guide_id || null,
+      tourist_email: tourist?.email || reviewBooking.tourist_email || "tourist@roam-blon.com",
+      tourist_name: reviewBooking.tourist_name || `${tourist?.firstName || ""} ${tourist?.lastName || ""}`.trim() || null,
+      rating: reviewRating,
+      comment: reviewComment.trim(),
+      created_at: new Date().toISOString(),
+    };
+
+    try {
+      // 1. Server-side insert (bypasses RLS)
+      try {
+        await fetch('/api/guide-reviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      } catch { /* ignore */ }
+
+      // 2. Broadcast to admin instantly
+      try {
+        const chan = supabase.channel('admin-live-feed');
+        await chan.subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            chan.send({ type: 'broadcast', event: 'new_guide_review', payload });
+            supabase.removeChannel(chan);
+          }
+        });
+      } catch { /* ignore */ }
+
+      // 3. Persist locally as fallback + instant reflection
+      const stored = JSON.parse(localStorage.getItem("roam_blon_guide_reviews") || "[]");
+      const localEntry = { ...payload, id: `local_${Date.now()}` };
+      stored.unshift(localEntry);
+      localStorage.setItem("roam_blon_guide_reviews", JSON.stringify(stored.slice(0, 500)));
+      setGuideReviews(prev => [localEntry, ...prev.filter(r => !(r.booking_id === payload.booking_id))]);
+
+      setReviewBooking(null);
+    } catch (err) {
+      console.error("Review submit failed", err);
+      setReviewError("Something went wrong while submitting your review. Please try again.");
+    } finally {
+      setReviewSubmitting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -179,6 +284,45 @@ export default function MyBookings({ tourist }: MyBookingsProps) {
                         </button>
                       </div>
               </div>
+
+              {booking.type === 'guide' && (booking.status === 'approved' || booking.status === 'confirmed') && (
+                (() => {
+                  const existing = findReviewFor(booking);
+                  if (existing) {
+                    return (
+                      <div className="mt-6 bg-emerald-50/60 border border-emerald-100 rounded-[1.5rem] p-5 flex items-start gap-4 animate-in fade-in duration-500">
+                        <div className="flex gap-0.5 shrink-0 mt-0.5">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star key={s} size={16} className={s <= existing.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300'} />
+                          ))}
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700 mb-1">You rated this guide</p>
+                          {existing.comment ? (
+                            <p className="text-xs text-slate-700 font-medium italic leading-relaxed">"{existing.comment}"</p>
+                          ) : (
+                            <p className="text-xs text-slate-400 italic">No written comment.</p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div className="mt-6 bg-amber-50/70 border border-amber-100 rounded-[1.5rem] p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-500">
+                      <div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 mb-1">Booking Accepted!</p>
+                        <p className="text-xs font-bold text-slate-600">Enjoyed your tour? Rate your guide and help fellow travelers.</p>
+                      </div>
+                      <button
+                        onClick={() => openReviewModal(booking)}
+                        className="bg-amber-500 hover:bg-amber-600 text-white font-black uppercase tracking-widest text-[10px] px-5 py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+                      >
+                        <Star size={13} className="fill-white" /> Rate Your Guide
+                      </button>
+                    </div>
+                  );
+                })()
+              )}
             </div>
           ))}
         </div>
@@ -212,6 +356,82 @@ export default function MyBookings({ tourist }: MyBookingsProps) {
           </p>
         </div>
       </div>
+
+      {/* --- RATE YOUR GUIDE MODAL --- */}
+      {reviewBooking && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 animate-in fade-in duration-300">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setReviewBooking(null)} />
+          <div className="relative bg-white w-full max-w-md rounded-[2.5rem] p-8 md:p-10 shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in duration-300 text-center">
+            <div className="absolute top-0 left-0 w-full h-2 bg-amber-400" />
+            <button
+              onClick={() => setReviewBooking(null)}
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-900 transition-all active:scale-90"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="w-16 h-16 mx-auto bg-amber-50 rounded-2xl flex items-center justify-center mb-5">
+              <Compass size={30} className="text-amber-500" />
+            </div>
+            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-slate-900">Rate Your Guide</h3>
+            <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mt-1 mb-6">
+              {reviewBooking.guide_name || "Tour Guide"} · {reviewBooking.booking_date || reviewBooking.tour_date || ""}
+            </p>
+
+            {/* Star rating */}
+            <div className="flex justify-center gap-2 mb-6">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setReviewRating(s)}
+                  onMouseEnter={() => setHoverStar(s)}
+                  onMouseLeave={() => setHoverStar(0)}
+                  className="transition-transform hover:scale-110 active:scale-95"
+                >
+                  <Star
+                    size={36}
+                    className={`${(hoverStar || reviewRating) >= s ? 'fill-amber-400 text-amber-400' : 'text-slate-300'} transition-colors`}
+                  />
+                </button>
+              ))}
+            </div>
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-5">
+              {reviewRating > 0 ? `${reviewRating} / 5 stars` : "Tap a star to rate"}
+            </p>
+
+            <textarea
+              value={reviewComment}
+              onChange={(e) => setReviewComment(e.target.value)}
+              rows={3}
+              placeholder="Share your experience with this guide (optional)..."
+              className="w-full px-4 py-3 rounded-2xl border-2 border-slate-100 focus:border-amber-300 outline-none font-medium text-slate-700 text-sm resize-none mb-4"
+            />
+
+            {reviewError && (
+              <div className="flex items-center justify-center gap-2 bg-red-50 text-red-600 text-[12px] font-bold px-4 py-3 rounded-xl mb-4">
+                <AlertCircle size={14} />
+                {reviewError}
+              </div>
+            )}
+
+            <button
+              onClick={handleSubmitReview}
+              disabled={reviewSubmitting}
+              className="w-full bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-white font-black uppercase tracking-widest py-5 rounded-2xl transition-all flex items-center justify-center gap-2"
+            >
+              {reviewSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 size={16} className="animate-spin" /> Submitting…
+                </span>
+              ) : (
+                <>
+                  <Star size={16} className="fill-white" /> Submit Review
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* --- DIGITAL RECEIPT MODAL --- */}
       {receiptBooking && (
