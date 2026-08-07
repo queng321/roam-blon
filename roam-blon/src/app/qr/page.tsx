@@ -877,26 +877,10 @@ const DINING_MENUS: Record<string, string[]> = {
   return (
     <div className="min-h-screen bg-[#0d1117] flex flex-col">
       {/* ── Header ── */}
-      <header className="sticky top-0 z-50 bg-[#0d1117]/95 backdrop-blur-md border-b border-white/10 px-4 py-3 flex items-center gap-3">
-        <a href="/" className="flex items-center gap-1.5 text-white/60 hover:text-rose-400 transition-colors text-sm font-bold">
-          <ChevronLeft size={18} />
-        </a>
-        <div className="flex items-center gap-2 flex-1">
-          <div className="w-7 h-7 bg-rose-600 rounded-lg flex items-center justify-center">
-            {type === "dining" ? <Utensils size={14} className="text-white" /> : isDestination ? <Waves size={14} className="text-white" /> : <Camera size={14} className="text-white" />}
-          </div>
-          <span className="font-black text-white text-sm uppercase tracking-wider">ROAM-BLON</span>
+      <header className="sticky top-0 z-50 bg-[#0d1117]/95 backdrop-blur-md border-b border-white/10 px-4 py-3 flex items-center justify-center">
+        <div className="w-7 h-7 bg-rose-600 rounded-lg flex items-center justify-center">
+          {type === "dining" ? <Utensils size={14} className="text-white" /> : isDestination ? <Waves size={14} className="text-white" /> : <Camera size={14} className="text-white" />}
         </div>
-        {isDestination && (
-          <a
-            href={`https://maps.google.com/maps?q=${encodeURIComponent((item.name || "") + ", Romblon")}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 bg-rose-600 text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider hover:bg-rose-700 transition-all"
-          >
-            <MapPin size={10} /> Map
-          </a>
-        )}
       </header>
 
       {isDestination && beachMedia ? (
