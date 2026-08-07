@@ -2564,6 +2564,11 @@ export default function AdminDashboardPage() {
                     { id: "sd-reggae",    name: "Reggae Vibes Romblon", location: "Agpanabat",        tag: "Budget Friendly", type: "Resort",  category: "Hotel",  image: "/beach&resorts/reggae.jpg" },
                     { id: "sd-robinson",  name: "Robinson's Cove",      location: "Brgy. Lonos",      tag: "Photogenic",      type: "Natural", category: "Beach",  image: "/beach&resorts/robinson.jpg" },
                     { id: "sd-horizon",   name: "Horizon Beach Resort", location: "Brgy. Lonos",      tag: "Sea View",        type: "Resort",  category: "Hotel",  image: "/beach&resorts/horizon1.jpg" },
+                    { id: "sd-libtong", name: "Libtong Falls", location: "Sablayan Point", tag: "Waterfall", type: "Falls", category: "Falls", image: "/beach&resorts/libtong.jpg" },
+                    { id: "sd-kipot", name: "Kipot River", location: "SE Romblon Island", tag: "River Canyon", type: "Falls", category: "Falls", image: "/beach&resorts/kipot.jpg" },
+                    { id: "sd-fort-san-andres", name: "Fort San Andres", location: "Town Proper", tag: "Heritage", type: "Landmark", category: "Landmark", image: "/beach&resorts/fort.jpg" },
+                    { id: "sd-cathedral", name: "Saint Joseph Cathedral", location: "Town Proper", tag: "National Treasure", type: "Landmark", category: "Landmark", image: "/beach&resorts/cathedral.jpg" },
+                    { id: "sd-shopping", name: "Romblon Shopping Center", location: "Town Proper", tag: "Marble Souvenirs", type: "Landmark", category: "Landmark", image: "/beach&resorts/shopping1.jpg" },
                   ];
                   const BASE = typeof window !== 'undefined' ? window.location.origin : 'https://roam-blon.vercel.app';
                   return (
@@ -2765,118 +2770,6 @@ export default function AdminDashboardPage() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     id={`download-qr-dining-${dining.id}`}
-                                    className={`w-full py-2.5 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl ${style.hover} transition-all text-center`}
-                                  >
-                                    ↓ Download QR
-                                  </a>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })()}
-
-                {/* ── FALLS & LANDMARKS SECTION ── */}
-                {(() => {
-                  const CATEGORY_STYLES: Record<string, { badge: string; hover: string; text: string }> = {
-                    Beach: { badge: 'bg-rose-500', hover: 'hover:bg-rose-600', text: 'text-rose-600' },
-                    Resort: { badge: 'bg-blue-600', hover: 'hover:bg-blue-600', text: 'text-blue-600' },
-                    Hotel: { badge: 'bg-purple-600', hover: 'hover:bg-purple-600', text: 'text-purple-600' },
-                    Falls: { badge: 'bg-cyan-600', hover: 'hover:bg-cyan-600', text: 'text-cyan-600' },
-                    Landmark: { badge: 'bg-amber-600', hover: 'hover:bg-amber-600', text: 'text-amber-600' },
-                  };
-                  const FALLS_LANDMARKS = [
-                    { id: "sd-libtong", name: "Libtong Falls", location: "Sablayan Point", tag: "Waterfall", type: "Falls", category: "Falls", image: "/beach&resorts/libtong.jpg" },
-                    { id: "sd-kipot", name: "Kipot River", location: "SE Romblon Island", tag: "River Canyon", type: "Falls", category: "Falls", image: "/beach&resorts/kipot.jpg" },
-                    { id: "sd-fort-san-andres", name: "Fort San Andres", location: "Town Proper", tag: "Heritage", type: "Landmark", category: "Landmark", image: "/beach&resorts/fort.jpg" },
-                    { id: "sd-cathedral", name: "Saint Joseph Cathedral", location: "Town Proper", tag: "National Treasure", type: "Landmark", category: "Landmark", image: "/beach&resorts/cathedral.jpg" },
-                    { id: "sd-shopping", name: "Romblon Shopping Center", location: "Town Proper", tag: "Marble Souvenirs", type: "Landmark", category: "Landmark", image: "/beach&resorts/shopping1.jpg" },
-                  ];
-                  const BASE = typeof window !== 'undefined' ? window.location.origin : 'https://roam-blon.vercel.app';
-                  return (
-                    <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100">
-                      {/* Section Header */}
-                      <div className="flex items-center gap-4 mb-8">
-                        <div className="w-12 h-12 bg-cyan-50 rounded-2xl flex items-center justify-center">
-                          <QrCode size={24} className="text-cyan-600" />
-                        </div>
-                        <div>
-                          <h3 className="text-2xl font-black uppercase tracking-tighter italic text-cyan-600">Falls &amp; Landmarks</h3>
-                          <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-0.5">{FALLS_LANDMARKS.length} locations · Click QR to open the tourist page</p>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {FALLS_LANDMARKS.map(item => {
-                          const qrUrl = `${BASE}/qr?type=destination&id=${item.id}`;
-                          const style = CATEGORY_STYLES[item.category] || CATEGORY_STYLES.Falls;
-                          return (
-                            <div key={item.id} className="group bg-slate-50 rounded-3xl border border-slate-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
-                              {/* Thumbnail */}
-                              <div className="h-36 overflow-hidden relative flex-shrink-0">
-                                <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                                <div className={`absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm ${style.badge} text-white`}>
-                                  {item.category}
-                                </div>
-                                <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm bg-white/90 text-slate-700">
-                                  {item.tag}
-                                </div>
-                              </div>
-
-                              {/* Card body */}
-                              <div className="p-4 flex flex-col flex-1 gap-3">
-                                <div>
-                                  <div className="flex items-center gap-1 text-cyan-500 text-[9px] font-black uppercase tracking-widest mb-1">
-                                    <MapPin size={9} /> {item.location}
-                                  </div>
-                                  <h4 className="font-black text-slate-900 text-sm leading-tight uppercase tracking-tight">{item.name}</h4>
-                                </div>
-
-                                {/* QR Code — rendered inline, clickable */}
-                                <a
-                                  href={qrUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title={`Open QR page for ${item.name}`}
-                                  className="self-center bg-white p-3 rounded-2xl shadow-sm border border-slate-100 hover:border-cyan-300 hover:shadow-md transition-all group/qr"
-                                  id={`qr-link-${item.id}`}
-                                >
-                                  <QRCodeSVG
-                                    value={qrUrl}
-                                    size={110}
-                                    level="H"
-                                    includeMargin={false}
-                                    bgColor="#ffffff"
-                                    fgColor="#0f172a"
-                                    imageSettings={{
-                                      src: "/logo.jpg",
-                                      height: 24,
-                                      width: 24,
-                                      excavate: true,
-                                    }}
-                                  />
-                                </a>
-
-                                {/* Actions */}
-                                <div className="mt-auto flex flex-col gap-2">
-                                  <a
-                                    href={qrUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    id={`view-page-${item.id}`}
-                                    className={`w-full py-2.5 bg-slate-50 ${style.text} text-[10px] font-black uppercase tracking-widest rounded-xl ${style.hover} hover:text-white transition-all text-center`}
-                                  >
-                                    View QR Page
-                                  </a>
-                                  <a
-                                    href={`https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(qrUrl)}&margin=10&format=png`}
-                                    download={`qr-${item.id}.png`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    id={`download-qr-${item.id}`}
                                     className={`w-full py-2.5 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl ${style.hover} transition-all text-center`}
                                   >
                                     ↓ Download QR
