@@ -364,6 +364,21 @@ function QRScanContent() {
   const [visitorPrompt, setVisitorPrompt] = useState(false);
   const [visitorType, setVisitorType] = useState<"local" | "foreign" | null>(null);
 
+  // Logged-in tourists are classified automatically from their profile — skip the prompt
+  useEffect(() => {
+    try {
+      const cachedUser = localStorage.getItem("roam_blon_tourist_user");
+      if (cachedUser) {
+        const tourist = JSON.parse(cachedUser);
+        if (tourist?.nationality) {
+          const classified = String(tourist.nationality).toLowerCase() === "foreign" ? "foreign" : "local";
+          localStorage.setItem("roam_blon_visitor_classified", classified);
+          setVisitorType(classified);
+        }
+      }
+    } catch { /* ignore */ }
+  }, []);
+
   useEffect(() => {
     if (!type || !id) { setLoading(false); return; }
     fetchItem();
