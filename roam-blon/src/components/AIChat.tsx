@@ -31,6 +31,7 @@ export default function AIChat({ onClose, initialMode = "ai", lockMode = false }
   const [activeRoom, setActiveRoom] = useState<any>(null);
   const [isAiTyping, setIsAiTyping] = useState<boolean>(false);
   const [isOfficerOnline, setIsOfficerOnline] = useState(false);
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
 
   const [input, setInput] = useState<string>("");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -563,7 +564,41 @@ export default function AIChat({ onClose, initialMode = "ai", lockMode = false }
               </div>
             )}
 
-            {messages.map((msg, i) => (
+            {mode === "ai" && !disclaimerAccepted && (
+              <div className="flex flex-col items-center text-center py-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="w-20 h-20 bg-gradient-to-tr from-rose-500 to-rose-600 rounded-[2rem] flex items-center justify-center shadow-xl shadow-rose-200 mb-5 rotate-3">
+                  <Sparkles size={34} className="text-white" />
+                </div>
+                <h3 className="text-lg font-black text-slate-900 uppercase italic leading-tight">
+                  Welcome, Explorer!
+                </h3>
+                <p className="text-[11px] font-bold text-slate-500 leading-relaxed mt-2 max-w-[280px]">
+                  Before you continue — I'm <span className="text-rose-600">Romy</span>, your AI Travel Assistant, here to help you plan the perfect Romblon adventure. 🏝️
+                </p>
+
+                <div className="w-full bg-amber-50 border border-amber-200 rounded-[1.5rem] p-4 text-left mt-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertCircle size={14} className="text-amber-500 shrink-0" />
+                    <p className="text-[9px] font-black text-amber-800 uppercase tracking-widest">Important Disclaimer</p>
+                  </div>
+                  <p className="text-[10px] font-semibold text-amber-900 leading-relaxed">
+                    I'm an AI assistant and can make mistakes. My suggestions are informational and not guaranteed. Always verify important details — schedules, prices, and availability — with official sources or our Tourism Office before relying on them.
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => setDisclaimerAccepted(true)}
+                  className="mt-6 w-full bg-slate-900 hover:bg-rose-500 text-white font-black uppercase py-4 rounded-2xl shadow-xl transition-all active:scale-95 text-[11px] tracking-widest"
+                >
+                  Continue
+                </button>
+                <p className="text-[8px] font-bold text-slate-400 mt-3 leading-relaxed max-w-[260px]">
+                  By clicking Continue, you acknowledge that you understand these limitations and wish to proceed with the chat.
+                </p>
+              </div>
+            )}
+
+            {!(mode === "ai" && !disclaimerAccepted) && messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.sender_role === "tourist" ? "justify-end" : "justify-start animate-in fade-in slide-in-from-bottom-2"}`}>
                 <div className="flex flex-col gap-1 max-w-[85%]">
                   <span className="text-[8px] font-black uppercase tracking-widest ml-4 transition-colors">
@@ -593,7 +628,7 @@ export default function AIChat({ onClose, initialMode = "ai", lockMode = false }
       </div>
 
       {/* INPUT AREA */}
-      {(mode === "ai" || mode === "officer") && (
+      {(mode === "ai" || mode === "officer") && !(mode === "ai" && !disclaimerAccepted) && (
         <footer className="shrink-0 p-4 bg-white border-t border-slate-100">
           <div className="flex items-center gap-2 bg-slate-50 rounded-2xl px-4 py-1.5 border border-slate-200 focus-within:border-rose-400 focus-within:ring-1 focus-within:ring-rose-400 transition-all shadow-inner">
             <input
