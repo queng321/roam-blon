@@ -462,12 +462,14 @@ function QRScanContent() {
 
     let inserted = false;
     try {
+      const classified = (typeof localStorage !== "undefined" ? localStorage.getItem("roam_blon_visitor_classified") : null) as "local" | "foreign" | null;
+      const vType = visitorType || classified || "local";
       const payload = {
         item_type: itemType,
         item_id: itemId,
         item_name: itemName,
-        visitor_type: visitorType || "local",
-        nationality: (visitorType === "foreign" ? "Foreign" : "Local"),
+        visitor_type: vType,
+        nationality: (vType === "foreign" ? "Foreign" : "Local"),
         scanned_at: new Date().toISOString(),
       };
       const { error } = await supabase.from("qr_scans").insert([payload]);
@@ -478,6 +480,8 @@ function QRScanContent() {
     if (!inserted) {
       // Broadcast fallback — catches scans when the DB insert fails (missing table / RLS)
       try {
+        const classified = (typeof localStorage !== "undefined" ? localStorage.getItem("roam_blon_visitor_classified") : null) as "local" | "foreign" | null;
+        const vType = visitorType || classified || "local";
         const chan = supabase.channel('admin-live-feed');
         await chan.subscribe((status) => {
           if (status === 'SUBSCRIBED') {
@@ -488,8 +492,8 @@ function QRScanContent() {
                 item_type: itemType,
                 item_id: itemId,
                 item_name: itemName,
-                visitor_type: visitorType || "local",
-                nationality: (visitorType === "foreign" ? "Foreign" : "Local"),
+                visitor_type: vType,
+                nationality: (vType === "foreign" ? "Foreign" : "Local"),
               },
             });
             supabase.removeChannel(chan);
@@ -504,9 +508,13 @@ function QRScanContent() {
       scanned.push(scanKey);
       localStorage.setItem("roam_blon_scanned_qrs", JSON.stringify(scanned.slice(-500)));
     } catch { /* ignore */ }
+  };
 
-    // Ask the visitor whether they're local or foreign (once per browser)
-    if (!localStorage.getItem("roam_blon_visitor_classified")) {
+  // Ask local/foreign FIRST, then record the scan with their answer
+  const recordScan = (itemId: string, itemName: string) => {
+    if (localStorage.getItem("roam_blon_visitor_classified")) {
+      logQRScan(type, itemId, itemName);
+    } else {
       setVisitorPrompt(true);
     }
   };
@@ -526,26 +534,26 @@ function QRScanContent() {
       const { data } = await supabase.from(table).select("*").eq("id", id).maybeSingle();
       if (data) {
         setItem(data);
-        logQRScan(type, id, data.name || "Location");
+        recordScan(id, data.name || "Location");
       } else {
         const cached = localStorage.getItem(`roam_qr_${type}_${id}`);
         if (cached) {
           const parsed = JSON.parse(cached);
           setItem(parsed);
-          logQRScan(type, id, parsed.name || "Location");
+          recordScan(id, parsed.name || "Location");
         } else {
           // Try static data fallback
           if (type === "destination" || type === "landmarks" || type === "fall") {
             const staticItem = getStaticBeach(id);
             if (staticItem) {
               setItem(staticItem);
-              logQRScan(type, id, staticItem.name);
+              recordScan(id, staticItem.name);
             }
           } else if (type === "dining") {
             const staticItem = getStaticDining(id);
             if (staticItem) {
               setItem(staticItem);
-              logQRScan(type, id, staticItem.name);
+              recordScan(id, staticItem.name);
             }
           }
         }
@@ -555,18 +563,18 @@ function QRScanContent() {
       if (cached) {
         const parsed = JSON.parse(cached);
         setItem(parsed);
-        logQRScan(type, id, parsed.name || "Location");
+        recordScan(id, parsed.name || "Location");
       } else if (type === "destination" || type === "landmarks" || type === "fall") {
           const staticItem = getStaticBeach(id);
           if (staticItem) {
             setItem(staticItem);
-            logQRScan(type, id, staticItem.name);
+            recordScan(id, staticItem.name);
           }
         } else if (type === "dining") {
           const staticItem = getStaticDining(id);
           if (staticItem) {
             setItem(staticItem);
-            logQRScan(type, id, staticItem.name);
+            recordScan(id, staticItem.name);
           }
         }
     } finally {
@@ -670,15 +678,8 @@ function QRScanContent() {
     setVisitorType(val);
     setVisitorPrompt(false);
     try { localStorage.setItem("roam_blon_visitor_classified", val); } catch { /* ignore */ }
-    // Rescan records the classification now that visitorType is set
-    const scanned = JSON.parse(localStorage.getItem("roam_blon_scanned_qrs") || "[]");
-    const key = `${type}:${id}`;
-    if (scanned.includes(key)) {
-      scanned.splice(scanned.indexOf(key), 1);
-      localStorage.setItem("roam_blon_scanned_qrs", JSON.stringify(scanned));
-      loggedScans.delete(key);
-      logQRScan(type, id, item?.name || "Location");
-    }
+    // Record the scan now with the chosen classification
+    logQRScan(type, id, item?.name || "Location");
   };
 
   if (loading) return (

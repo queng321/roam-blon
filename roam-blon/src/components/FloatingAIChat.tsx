@@ -103,7 +103,7 @@ export default function FloatingAIChat() {
     if (activeChat === 'officer') setUnreadOfficer(false);
   }, [activeChat]);
 
-  const shouldHide = pathname?.startsWith('/admin') || (typeof document !== 'undefined' && document.body.classList.contains('hide-ai-chat'));
+  const shouldHide = pathname?.startsWith('/admin') || pathname?.startsWith('/qr') || (typeof document !== 'undefined' && document.body.classList.contains('hide-ai-chat'));
 
   if (shouldHide) return null;
 
