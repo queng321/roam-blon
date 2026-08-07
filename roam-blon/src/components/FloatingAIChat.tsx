@@ -9,6 +9,7 @@ import AIChat from "@/components/AIChat";
 export default function FloatingAIChat() {
   const pathname = usePathname();
   const [activeChat, setActiveChat] = useState<"ai" | "officer" | null>(null);
+  const [chatMode, setChatMode] = useState<"ai" | "officer">("ai");
   const [unreadAi, setUnreadAi] = useState(false);
   const [unreadOfficer, setUnreadOfficer] = useState(false);
 
@@ -109,22 +110,27 @@ export default function FloatingAIChat() {
   return (
     <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[600] flex flex-col items-end gap-3 pointer-events-none">
       
-      {/* Chat Window */}
-      {activeChat && (
-        <div className="mb-2 w-[calc(100vw-32px)] md:w-[400px] h-[550px] max-h-[calc(100vh-160px)] bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-slate-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-8 fade-in duration-300 pointer-events-auto">
-          <AIChat 
-            key={activeChat}
-            onClose={() => setActiveChat(null)} 
-            initialMode={activeChat} 
-            lockMode={true} 
-          />
-        </div>
-      )}
+      {/* Chat Window — kept mounted so the conversation stays inside when closed */}
+      <div className={`mb-2 w-[calc(100vw-32px)] md:w-[400px] h-[550px] max-h-[calc(100vh-160px)] bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-slate-200 flex flex-col overflow-hidden transition-all duration-300 pointer-events-auto ${
+        activeChat
+          ? "animate-in slide-in-from-bottom-8 fade-in duration-300"
+          : "opacity-0 pointer-events-none translate-y-4 scale-95"
+      }`}>
+        <AIChat 
+          key={chatMode}
+          onClose={() => setActiveChat(null)} 
+          initialMode={chatMode} 
+          lockMode={true} 
+        />
+      </div>
 
       <div className="flex flex-row md:flex-col gap-3 pointer-events-auto">
         {/* Officer/Live Support Button */}
         <button 
-          onClick={() => setActiveChat(activeChat === "officer" ? null : "officer")} 
+          onClick={() => {
+            if (activeChat === "officer") { setActiveChat(null); }
+            else { setChatMode("officer"); setActiveChat("officer"); }
+          }}
           className={`h-14 w-14 md:h-[60px] md:w-[60px] rounded-full shadow-[0_10px_25px_rgba(0,0,0,0.15)] border-[3px] md:border-4 border-white transition-all duration-300 flex items-center justify-center group relative ${
             activeChat === "officer" ? 'bg-rose-500 rotate-90 scale-95' : 'bg-[#0f172a] hover:scale-105 active:scale-95'
           }`}
@@ -142,7 +148,10 @@ export default function FloatingAIChat() {
 
         {/* AI Buddy Button */}
         <button 
-          onClick={() => setActiveChat(activeChat === "ai" ? null : "ai")} 
+          onClick={() => {
+            if (activeChat === "ai") { setActiveChat(null); }
+            else { setChatMode("ai"); setActiveChat("ai"); }
+          }} 
           className={`h-14 w-14 md:h-[60px] md:w-[60px] rounded-full shadow-[0_10px_25px_rgba(0,0,0,0.15)] border-[3px] md:border-4 border-white transition-all duration-300 flex items-center justify-center group relative ${
             activeChat === "ai" ? 'bg-rose-500 -rotate-90 scale-95' : 'bg-gradient-to-tr from-[#1e293b] to-[#334155] hover:scale-105 active:scale-95'
           }`}
