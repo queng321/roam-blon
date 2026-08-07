@@ -877,10 +877,11 @@ const DINING_MENUS: Record<string, string[]> = {
   return (
     <div className="min-h-screen bg-[#0d1117] flex flex-col">
       {/* ── Header ── */}
-      <header className="sticky top-0 z-50 bg-[#0d1117]/95 backdrop-blur-md border-b border-white/10 px-4 py-3 flex items-center justify-center">
+      <header className="sticky top-0 z-50 bg-[#0d1117]/95 backdrop-blur-md border-b border-white/10 px-4 py-3 flex items-center gap-2">
         <div className="w-7 h-7 bg-rose-600 rounded-lg flex items-center justify-center">
           {type === "dining" ? <Utensils size={14} className="text-white" /> : isDestination ? <Waves size={14} className="text-white" /> : <Camera size={14} className="text-white" />}
         </div>
+        <span className="font-black text-white text-sm uppercase tracking-wider">ROAM-BLON</span>
       </header>
 
       {isDestination && beachMedia ? (
