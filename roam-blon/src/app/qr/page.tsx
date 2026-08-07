@@ -201,7 +201,7 @@ interface ReviewData {
 }
 
 /* ─── PHOTO GALLERY COMPONENT ────────────────────────────────────────── */
-function PhotoGallery({ images, name }: { images: string[]; name: string }) {
+function PhotoGallery({ images, name, contain }: { images: string[]; name: string; contain?: boolean }) {
   const [current, setCurrent] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
@@ -220,11 +220,11 @@ function PhotoGallery({ images, name }: { images: string[]; name: string }) {
   return (
     <div className="relative">
       {/* Main Image */}
-      <div className="relative h-64 md:h-80 rounded-3xl overflow-hidden bg-slate-900 shadow-xl">
+      <div className={`relative ${contain ? "h-[65vh] md:h-[72vh]" : "h-64 md:h-80"} rounded-3xl overflow-hidden bg-slate-900 shadow-xl`}>
         <img
           src={images[current]}
           alt={`${name} - photo ${current + 1}`}
-          className={`w-full h-full object-cover transition-opacity duration-300 ${isTransitioning ? "opacity-0" : "opacity-100"}`}
+          className={`w-full h-full transition-opacity duration-300 ${contain ? "object-contain" : "object-cover"} ${isTransitioning ? "opacity-0" : "opacity-100"}`}
         />
 
         {/* Gradient overlay */}
@@ -264,89 +264,6 @@ function PhotoGallery({ images, name }: { images: string[]; name: string }) {
               onClick={() => go(i)}
               className={`w-16 h-11 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${
                 i === current ? "border-rose-500 scale-105 shadow-md" : "border-transparent opacity-60 hover:opacity-80"
-              }`}
-            >
-              <img src={img} alt="" className="w-full h-full object-cover" />
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ─── MENU GALLERY COMPONENT (portrait menus, < > arrows) ────────────── */
-function MenuGallery({ images, name }: { images: string[]; name: string }) {
-  const [current, setCurrent] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [zoomed, setZoomed] = useState(false);
-
-  const go = (idx: number) => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setZoomed(false);
-    setTimeout(() => {
-      setCurrent(idx);
-      setIsTransitioning(false);
-    }, 200);
-  };
-
-  const prev = () => go((current - 1 + images.length) % images.length);
-  const next = () => go((current + 1) % images.length);
-
-  return (
-    <div className="space-y-3">
-      {/* Main Menu Image */}
-      <div
-        onClick={() => setZoomed((z) => !z)}
-        className={`relative bg-slate-900 rounded-3xl overflow-hidden shadow-xl border border-white/10 transition-all duration-300 ${
-          zoomed ? "fixed inset-0 z-[700] rounded-none cursor-zoom-out flex items-center justify-center bg-black/95 p-4" : "h-[62vh] md:h-[70vh] cursor-zoom-in"
-        }`}
-      >
-        <img
-          src={images[current]}
-          alt={`${name} menu ${current + 1}`}
-          className={`w-full h-full object-contain transition-opacity duration-300 ${isTransitioning ? "opacity-0" : "opacity-100"}`}
-        />
-        {!zoomed && (
-          <div className="absolute inset-x-0 bottom-3 flex items-center justify-between px-3 pointer-events-none">
-            <span className="bg-black/50 backdrop-blur-sm text-white text-[9px] font-black px-2.5 py-1 rounded-full">
-              🔍 Tap to zoom
-            </span>
-            <span className="bg-black/50 backdrop-blur-sm text-white text-[10px] font-black px-2.5 py-1 rounded-full flex items-center gap-1.5">
-              <Camera size={10} /> {current + 1} / {images.length}
-            </span>
-          </div>
-        )}
-
-        {/* Navigation arrows */}
-        {!zoomed && images.length > 1 && (
-          <>
-            <button
-              onClick={(e) => { e.stopPropagation(); prev(); }}
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all active:scale-90 z-10"
-            >
-              <ChevronLeft size={18} className="text-slate-800" />
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); next(); }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all active:scale-90 z-10"
-            >
-              <ChevronRight size={18} className="text-slate-800" />
-            </button>
-          </>
-        )}
-      </div>
-
-      {/* Thumbnail strip */}
-      {images.length > 1 && (
-        <div className="flex gap-2 justify-center">
-          {images.map((img, i) => (
-            <button
-              key={i}
-              onClick={() => go(i)}
-              className={`w-12 h-12 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${
-                i === current ? "border-rose-500 scale-105 shadow-md" : "border-transparent opacity-50 hover:opacity-80"
               }`}
             >
               <img src={img} alt="" className="w-full h-full object-cover" />
@@ -433,7 +350,7 @@ function QRScanContent() {
 
   const [item, setItem] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"gallery" | "menu" | "video" | "info">("gallery");
+  const [activeTab, setActiveTab] = useState<"gallery" | "video" | "info">("gallery");
   const [review, setReview] = useState<ReviewData>({ rating: 0, comment: "", reviewer_name: "" });
   const [hoveredStar, setHoveredStar] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -1008,12 +925,10 @@ const DINING_MENUS: Record<string, string[]> = {
               {([
                 { key: "map", icon: MapPin, label: "Route Map" },
                 { key: "gallery", icon: ImageIcon, label: "Photos" },
-                { key: "menu", icon: Utensils, label: "Menu" },
                 { key: "video", icon: Play, label: "Video" },
                 { key: "info", icon: Info, label: "Info" },
               ] as const)
                 .filter(tab => tab.key !== "video" || beachMedia?.videoId || beachMedia?.videoUrl)
-                .filter(tab => tab.key !== "menu" || (type === "dining" && menuImages.length > 0))
                 .map(tab => (
                 <button
                   key={tab.key}
@@ -1044,7 +959,7 @@ const DINING_MENUS: Record<string, string[]> = {
             {/* GALLERY TAB */}
             {activeTab === "gallery" && (
               <div className="space-y-4 animate-in fade-in duration-300">
-                <PhotoGallery images={galleryImages} name={item.name} />
+                <PhotoGallery images={galleryImages} name={item.name} contain={type === "dining"} />
 
                 {type === "dining" && menuImages.length > 0 && (
                   <div className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 flex items-center gap-2">
@@ -1075,17 +990,6 @@ const DINING_MENUS: Record<string, string[]> = {
                     <p className="text-sm font-medium text-white/75 leading-relaxed">{item.description || item.desc}</p>
                   </div>
                 )}
-              </div>
-            )}
-
-            {/* MENU TAB */}
-            {activeTab === "menu" && menuImages.length > 0 && (
-              <div className="space-y-4 animate-in fade-in duration-300">
-                <div className="flex items-center justify-between">
-                  <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">📖 Menu</p>
-                  <span className="text-white/40 text-[10px] font-bold">Swipe with <ChevronLeft size={10} className="inline" /> <ChevronRight size={10} className="inline" /></span>
-                </div>
-                <MenuGallery images={menuImages} name={item.name} />
               </div>
             )}
 
