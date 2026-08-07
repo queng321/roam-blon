@@ -54,6 +54,14 @@ import LeafletRouteMap from "@/components/LeafletRouteMap";
 import BookingNotifications from "@/components/BookingNotifications";
 import TouristProfile from "@/components/TouristProfile";
 
+// Profile icon that shows the avatar photo when set, otherwise the email initial
+function TouristAvatar({ tourist }: { tourist: any }) {
+  if (tourist?.avatar_url) {
+    return <img src={tourist.avatar_url} alt="Profile" className="w-full h-full object-cover rounded-full" />;
+  }
+  return <>{String(tourist?.email || "R")[0]}</>;
+}
+
 // The DESTINATIONS array is now fetched dynamically from Supabase.
 // We keep the static ones as a fallback/initial state if needed.
 const STATIC_DESTINATIONS = [
@@ -1593,11 +1601,11 @@ export default function Home() {
               <button
                 onClick={() => handleNavClick("profile")}
                 title="My Profile"
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-sm uppercase transition-all shadow-sm ${
+                className={`w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-white font-black text-sm uppercase transition-all shadow-sm ${
                   view === 'profile' ? 'bg-rose-600 ring-2 ring-rose-200' : 'bg-slate-900 hover:bg-rose-600'
                 }`}
               >
-                {(tourist?.email || "R")[0]}
+                <TouristAvatar tourist={tourist} />
               </button>
             </div>
           </div>
@@ -1628,11 +1636,11 @@ export default function Home() {
             <button
               onClick={() => handleNavClick("profile")}
               title="My Profile"
-              className={`w-11 h-11 rounded-full flex items-center justify-center text-white font-black text-sm uppercase transition-all shadow-sm ${
+              className={`w-11 h-11 rounded-full overflow-hidden flex items-center justify-center text-white font-black text-sm uppercase transition-all shadow-sm ${
                 view === 'profile' ? 'bg-rose-600 ring-2 ring-rose-200' : 'bg-slate-900 hover:bg-rose-600'
               }`}
             >
-              {(tourist?.email || "R")[0]}
+              <TouristAvatar tourist={tourist} />
             </button>
           </div>
 
@@ -1660,8 +1668,8 @@ export default function Home() {
                   onClick={() => handleNavClick("profile")}
                   className={`w-full px-6 py-4 rounded-xl text-lg font-black transition-all text-left flex items-center gap-3 ${view === 'profile' ? 'bg-rose-50 text-rose-600 border-2 border-rose-200' : 'bg-slate-50 text-slate-700 border-2 border-slate-100 hover:bg-slate-100'}`}
                 >
-                  <span className={`w-9 h-9 rounded-full flex items-center justify-center text-white font-black text-sm uppercase ${view === 'profile' ? 'bg-rose-600' : 'bg-slate-900'}`}>
-                    {(tourist?.email || "R")[0]}
+                  <span className={`w-9 h-9 rounded-full overflow-hidden flex items-center justify-center text-white font-black text-sm uppercase ${view === 'profile' ? 'bg-rose-600' : 'bg-slate-900'}`}>
+                    <TouristAvatar tourist={tourist} />
                   </span>
                   My Profile
                 </button>
