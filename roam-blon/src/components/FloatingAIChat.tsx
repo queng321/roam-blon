@@ -111,7 +111,7 @@ export default function FloatingAIChat() {
     <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[600] flex flex-col items-end gap-3 pointer-events-none">
       
       {/* Chat Window — kept mounted so the conversation stays inside when closed */}
-      <div className={`mb-2 w-[calc(100vw-32px)] md:w-[480px] h-[650px] max-h-[calc(100vh-120px)] bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-slate-200 flex flex-col overflow-hidden transition-all duration-300 pointer-events-auto ${
+      <div className={`mb-2 w-[calc(100vw-32px)] md:w-[480px] h-[650px] max-h-[calc(100vh-200px)] bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-slate-200 flex flex-col overflow-hidden transition-all duration-300 pointer-events-auto ${
         activeChat
           ? "animate-in slide-in-from-bottom-8 fade-in duration-300"
           : "opacity-0 pointer-events-none translate-y-4 scale-95"
