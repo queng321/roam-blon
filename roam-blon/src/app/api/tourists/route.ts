@@ -11,7 +11,7 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { email, age, nationality, country, gender } = body;
+    const { email, age, nationality, country, gender, avatar_url } = body;
 
     if (!email || typeof email !== 'string' || !email.trim()) {
       return NextResponse.json({ error: 'Missing email' }, { status: 400 });
@@ -29,6 +29,7 @@ export async function POST(req: NextRequest) {
           nationality: nationalityValue,
           country: country?.trim() || null,
           gender: gender?.trim() || null,
+          avatar_url: avatar_url?.trim() || null,
         },
         { onConflict: 'email' }
       )

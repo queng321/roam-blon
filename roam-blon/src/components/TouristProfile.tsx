@@ -1,13 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Mail, MapPin, Users, CheckCircle2, Loader2, AlertCircle, Save, Camera } from "lucide-react";
+import { Mail, MapPin, Users, CheckCircle2, Loader2, AlertCircle, Save, Camera, Trash2 } from "lucide-react";
 
 interface TouristProfileProps {
   tourist: any;
   onUpdate: (data: any) => void;
 }
+
+// Resize + compress an image to a small JPEG data URL (keeps DB payloads tiny)
+const resizeImage = (file: File, maxDim = 320, quality = 0.82): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+        const w = Math.max(1, Math.round(img.width * scale));
+        const h = Math.max(1, Math.round(img.height * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return reject(new Error("Canvas unavailable"));
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.onerror = reject;
+      img.src = reader.result as string;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 
 export default function TouristProfile({ tourist, onUpdate }: TouristProfileProps) {
   const [email, setEmail] = useState(tourist?.email || "");
@@ -15,10 +40,34 @@ export default function TouristProfile({ tourist, onUpdate }: TouristProfileProp
     tourist?.nationality === "Foreign" || String(tourist?.nationality || "").toLowerCase() === "foreign" ? "foreign" : "local"
   );
   const [country, setCountry] = useState(tourist?.country || "");
+  const [avatarUrl, setAvatarUrl] = useState(tourist?.avatar_url || "");
+  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const emailLocal = email.split("@")[0] || "Explorer";
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setMessage({ type: "error", text: "Please choose an image file." });
+      return;
+    }
+    setUploading(true);
+    setMessage(null);
+    try {
+      const dataUrl = await resizeImage(file);
+      setAvatarUrl(dataUrl);
+      setMessage({ type: "success", text: "Photo selected. Don't forget to tap Save Profile." });
+    } catch {
+      setMessage({ type: "error", text: "Could not read that image. Try a different photo." });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
 
   const handleSave = async () => {
     setMessage(null);
@@ -44,6 +93,7 @@ export default function TouristProfile({ tourist, onUpdate }: TouristProfileProp
       nationality: nationality === "foreign" ? "Foreign" : "Local",
       country: nationality === "foreign" ? country.trim() : null,
       gender: tourist?.gender || null,
+      avatar_url: avatarUrl?.trim() ? avatarUrl.trim() : null,
     };
 
     try {
@@ -95,15 +145,47 @@ export default function TouristProfile({ tourist, onUpdate }: TouristProfileProp
         <div className="absolute -bottom-20 -left-10 w-72 h-72 bg-white/5 rounded-full blur-3xl" />
 
         <div className="relative flex flex-col items-center gap-5">
-          <div className="relative">
-            <div className="w-28 h-28 rounded-[2rem] bg-gradient-to-br from-rose-400 to-rose-600 border-4 border-white shadow-xl flex items-center justify-center">
-              <span className="text-4xl font-black text-white uppercase tracking-tight">
-                {emailLocal[0] || "R"}
-              </span>
-            </div>
-            <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-white rounded-2xl flex items-center justify-center shadow-lg">
+          <div className="relative group">
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="w-28 h-28 rounded-[2rem] bg-gradient-to-br from-rose-400 to-rose-600 border-4 border-white shadow-xl flex items-center justify-center overflow-hidden disabled:opacity-70 cursor-pointer hover:ring-4 hover:ring-white/30 transition-all"
+              title="Change photo"
+            >
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+              ) : uploading ? (
+                <Loader2 size={28} className="animate-spin text-white" />
+              ) : (
+                <span className="text-4xl font-black text-white uppercase tracking-tight">
+                  {emailLocal[0] || "R"}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="absolute -bottom-2 -right-2 w-10 h-10 bg-white rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform disabled:opacity-60"
+              title="Upload photo"
+            >
               <Camera size={16} className="text-slate-500" />
-            </div>
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+            {avatarUrl && (
+              <button
+                onClick={() => { setAvatarUrl(""); setMessage({ type: "success", text: "Photo removed. Tap Save Profile to confirm." }); }}
+                className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1 bg-white rounded-full shadow-lg text-[9px] font-black uppercase tracking-widest text-red-600 hover:bg-red-50 transition-colors"
+                title="Remove photo"
+              >
+                <Trash2 size={10} /> Remove
+              </button>
+            )}
           </div>
 
           <div>
