@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { MapPin, Compass, Sparkles, Eye, EyeOff } from "lucide-react";
 
+/* Only this single account may access the admin panel */
+const ADMIN_EMAIL = "admin@roam-blon.com";
+
 /* ─── TYPES & INTERFACES ─────────────────────────────────────────────────────── */
 
 interface TouristData {
@@ -723,6 +726,7 @@ function ScreenSignIn({ role, onNext, onGoSignUp, errorMessage }: ScreenSignInPr
     if (!form.email.trim()) return setErr("Please enter your email address.");
     if (!form.password) return setErr("Please enter your password.");
     if (role === "admin" && !form.idProof) return setErr("Please upload a photo of your Admin ID.");
+    if (role === "admin" && form.email.trim().toLowerCase() !== ADMIN_EMAIL) return setErr("Access restricted — only the official admin account (admin@roam-blon.com) can sign in.");
     if (!acceptedTerms) return setErr("Please accept the Terms and Conditions to continue.");
 
     setLoading(true);
@@ -925,6 +929,7 @@ function ScreenSignUp({ role, onNext, onGoSignIn }: ScreenSignUpProps) {
     if (form.password.length < 6) return setErr("Password must be at least 6 characters.");
     if (form.password !== form.confirm) return setErr("Passwords do not match.");
     if (role === "admin" && !form.idProof) return setErr("Please upload a photo of your Admin ID.");
+    if (role === "admin" && form.email.trim().toLowerCase() !== ADMIN_EMAIL) return setErr("Access restricted — only the official admin account (admin@roam-blon.com) can be created.");
     if (!acceptedTerms) return setErr("Please accept the Terms and Conditions to continue.");
 
     setLoading(true);

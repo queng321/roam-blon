@@ -31,11 +31,12 @@ export default function GuideAdminDashboard() {
   const [user, setUser] = useState<any>({
     first_name: "Admin",
     last_name: "System",
-    email: "owner@roam-blon.com",
+    email: "admin@roam-blon.com",
     role: "admin"
   });
   const [guides, setGuides] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [unauthorized, setUnauthorized] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -68,9 +69,16 @@ export default function GuideAdminDashboard() {
     async function checkUser() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        if (user.email === 'owner@roam-blon.com') {
-           setUser({ ...user, role: "admin", first_name: "Master", last_name: "Admin" });
+        if ((user.email || "").toLowerCase() !== 'admin@roam-blon.com') {
+          setLoading(false);
+          setUnauthorized(true);
+          return;
         }
+        setUser({ ...user, role: "admin", first_name: "Master", last_name: "Admin" });
+      } else {
+        setLoading(false);
+        setUnauthorized(true);
+        return;
       }
       await fetchGuides();
     }
@@ -133,6 +141,29 @@ export default function GuideAdminDashboard() {
              <div className="w-12 h-12 border-4 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
              <p className="text-slate-500 font-bold tracking-widest uppercase text-sm">Loading Applications...</p>
          </div>
+      </div>
+    );
+  }
+
+  if (unauthorized) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-[#F8FAFC] p-6">
+        <div className="bg-white rounded-[2.5rem] p-10 md:p-14 text-center shadow-xl border border-slate-100 max-w-md w-full">
+          <div className="w-20 h-20 mx-auto bg-rose-50 rounded-[1.75rem] flex items-center justify-center mb-6">
+            <AlertCircle size={38} className="text-rose-500" />
+          </div>
+          <h3 className="text-2xl font-black uppercase tracking-tighter italic text-slate-900 mb-3">Access Denied</h3>
+          <p className="text-slate-500 text-sm font-bold leading-relaxed mb-8">
+            This console is restricted to the official account<br />
+            <span className="text-rose-600">admin@roam-blon.com</span>.
+          </p>
+          <button
+            onClick={() => { supabase.auth.signOut(); router.push('/'); }}
+            className="w-full bg-slate-900 hover:bg-rose-600 text-white font-black uppercase tracking-widest text-[11px] py-4 rounded-2xl transition-all"
+          >
+            Back to Home
+          </button>
+        </div>
       </div>
     );
   }

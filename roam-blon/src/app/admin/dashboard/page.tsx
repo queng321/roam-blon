@@ -84,6 +84,7 @@ export default function AdminDashboardPage() {
   const [guideBookings, setGuideBookings] = useState<any[]>([]);
   const [guideReviews, setGuideReviews] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [unauthorized, setUnauthorized] = useState(false);
 
   // Chat/Messages states
   const [chatRooms, setChatRooms] = useState<any[]>([]);
@@ -685,6 +686,12 @@ export default function AdminDashboardPage() {
     async function checkUser() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
+        // Only the single official admin account is allowed
+        if ((user.email || "").toLowerCase() !== "admin@roam-blon.com") {
+          setLoading(false);
+          setUnauthorized(true);
+          return;
+        }
         // Fetch Admin profile
         const { data: admin } = await supabase
           .from('admins')
@@ -1354,6 +1361,31 @@ export default function AdminDashboardPage() {
              <div className="w-12 h-12 border-4 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
              <p className="text-slate-500 font-bold tracking-widest uppercase text-sm">Verifying Session...</p>
          </div>
+      </div>
+    );
+  }
+
+  if (unauthorized) {
+    return (
+      <div className="min-h-screen bg-[#F6F1ED] flex items-center justify-center p-6">
+        <div className="bg-white rounded-[2.5rem] p-10 md:p-14 text-center shadow-xl border border-slate-100 max-w-md w-full">
+          <div className="w-20 h-20 mx-auto bg-rose-50 rounded-[1.75rem] flex items-center justify-center mb-6">
+            <AlertCircle size={38} className="text-rose-500" />
+          </div>
+          <h3 className="text-2xl font-black uppercase tracking-tighter italic text-slate-900 mb-3">Access Denied</h3>
+          <p className="text-slate-500 text-sm font-bold leading-relaxed mb-8">
+            The admin console is restricted to the official account<br />
+            <span className="text-rose-600">admin@roam-blon.com</span>.
+          </p>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => { supabase.auth.signOut(); router.push('/'); }}
+              className="w-full bg-slate-900 hover:bg-rose-600 text-white font-black uppercase tracking-widest text-[11px] py-4 rounded-2xl transition-all"
+            >
+              Back to Home
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
