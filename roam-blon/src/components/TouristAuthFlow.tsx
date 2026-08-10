@@ -26,8 +26,6 @@ type Screen =
   | "rolePicker"
   | "signin"
   | "signup"
-  | "forgot"
-  | "reset"
   | "gender"
   | "age"
   | "nationality"
