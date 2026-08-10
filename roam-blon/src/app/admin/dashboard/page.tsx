@@ -3217,12 +3217,12 @@ function AnalyticsGraph({ title, subtitle, items, accentColor, byVisits = false,
   const PADX = 34;
   const PADTOP = 18;
   const PADBOT = 46;
-  const maxRating = 10;
+  const maxRating = 5;
   const top = items.find((i: any) => (i.count || 0) > 0);
 
-  // Axis scale: rating (0-10) by default, or percentage 0-100 when byVisits
+  // Axis scale: rating (0-5) by default, or percentage 0-100 when byVisits
   const maxValue = byVisits ? 100 : maxRating;
-  const axisSteps = byVisits ? 10 : 10;
+  const axisSteps = byVisits ? 10 : 5;
   const valueOf = (item: any) => byVisits
     ? (() => {
         // Plot raw count against the fixed 0-100 axis (capped at 100),
