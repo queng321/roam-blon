@@ -935,7 +935,12 @@ function ScreenForgot({ role, onBack, onSent }: { role: Role; onBack: () => void
       });
 
       if (error) {
-        setErr(error.message);
+        const msg = error.message?.toLowerCase() || "";
+        if (msg.includes("magic link") || msg.includes("email") || msg.includes("smtp")) {
+          setErr("We couldn't send the code email right now. This usually means email sending isn't configured yet — please contact the administrator.");
+        } else {
+          setErr(error.message);
+        }
         setLoading(false);
         return;
       }
