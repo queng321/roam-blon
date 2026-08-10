@@ -36,7 +36,7 @@ export const DESTINATION_COORDS: Record<string, LatLng> = {
   "sd-coco": { lat: 12.4907, lng: 122.2769 },         // Coco Cabana, Bantigue-Sablayan Rd, Brgy Palje (southern coast)
   "sd-reggae": { lat: 12.4828, lng: 122.2830 },       // Reggae Vibes en Isla de Romblon, Brgy Agpanabat
   "sd-robinson": { lat: 12.5500, lng: 122.2500 },     // Robinson's Cove (Marble Beach), west coast Brgy Lonos
-  "sd-horizon": { lat: 12.5728, lng: 122.2514 },      // Horizon Beach Resort, Magallanes St, Brgy Lonos
+  "sd-horizon": { lat: 12.5728, lng: 122.2514 },      // Horizon Hotel Romblon, Magallanes St, Brgy Lonos
   "sd-stevejoy": { lat: 12.5291, lng: 122.2608 },     // Stevejoy Beach House, Brgy Ginablan
   "sd-libtong": { lat: 12.5052, lng: 122.2788 },      // Libtong Falls, near Sablayan Point
   "sd-kipot": { lat: 12.5013, lng: 122.3136 },        // Kipot River, southeast Romblon

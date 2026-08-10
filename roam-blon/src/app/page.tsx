@@ -165,7 +165,7 @@ const STATIC_DESTINATIONS = [
     info: { type: "Natural Cove", access: "Tricycle + Walk", bestTime: "Golden Hour", entranceFee: "₱50 adult / ₱30 kids", visitingHours: "8:00 AM - 5:00 PM", features: ["Sandbar", "Photography", "Hidden Inlet", "Peaceful"] }
   },
   {
-    id: "sd-horizon", name: "Horizon Beach Resort", barangay: "Brgy. Lonos",
+    id: "sd-horizon", name: "Horizon Hotel Romblon", barangay: "Brgy. Lonos",
     address: "Lonos Beachfront, Brgy. Lonos, Romblon Island, 5500 Romblon",
     contact: "+63 918 392 7041",
     desc: "A stunning seaside resort offering elevated oceanfront rooms, infinity views, fresh seafood dining, and direct access to pristine swimming waters.",
