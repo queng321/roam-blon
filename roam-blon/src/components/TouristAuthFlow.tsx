@@ -935,9 +935,10 @@ function ScreenForgot({ role, onBack, onSent }: { role: Role; onBack: () => void
       });
 
       if (error) {
+        console.error("Forgot password OTP error:", error);
         const msg = error.message?.toLowerCase() || "";
         if (msg.includes("magic link") || msg.includes("email") || msg.includes("smtp")) {
-          setErr("We couldn't send the code email right now. This usually means email sending isn't configured yet — please contact the administrator.");
+          setErr(`We couldn't send the code email. ${error.message} (Check SMTP settings in Supabase → Authentication → Emails.)`);
         } else {
           setErr(error.message);
         }
