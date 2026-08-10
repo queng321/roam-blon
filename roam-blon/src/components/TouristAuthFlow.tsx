@@ -26,6 +26,8 @@ type Screen =
   | "rolePicker"
   | "signin"
   | "signup"
+  | "forgot"
+  | "reset"
   | "gender"
   | "age"
   | "nationality"
@@ -52,6 +54,7 @@ interface ScreenSignInProps {
   role: Role;
   onNext: (payload: { email: string; existingProfile: any; adminIdProof?: string }) => void;
   onGoSignUp: () => void;
+  onGoForgot: () => void;
   errorMessage?: string;
 }
 
@@ -705,7 +708,7 @@ function ScreenRolePicker({ onSelectRole, onBack }: ScreenRolePickerProps) {
 }
 
 /* ─── SCREEN: SIGN IN (uses Supabase Auth) ───────────────────────────────────── */
-function ScreenSignIn({ role, onNext, onGoSignUp, errorMessage }: ScreenSignInProps) {
+function ScreenSignIn({ role, onNext, onGoSignUp, onGoForgot, errorMessage }: ScreenSignInProps) {
   const [form, setForm] = useState({ email: "", password: "", idProof: "" });
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
@@ -897,10 +900,211 @@ function ScreenSignIn({ role, onNext, onGoSignUp, errorMessage }: ScreenSignInPr
         </button>
       </div>
 
-      <p style={{ textAlign: "center", fontSize: "13px", color: C.gray, marginTop: "24px" }}>
+      <p style={{ textAlign: "center", fontSize: "13px", color: C.gray, marginTop: "16px" }}>
+        <span onClick={!loading ? onGoForgot : undefined} style={{ color: C.coral, cursor: loading ? "not-allowed" : "pointer", fontWeight: "700", opacity: loading ? 0.5 : 1 }}>
+          Forgot your password?
+        </span>
+      </p>
+
+      <p style={{ textAlign: "center", fontSize: "13px", color: C.gray, marginTop: "16px" }}>
         No account yet?{" "}
         <span onClick={!loading ? onGoSignUp : undefined} style={{ color: C.coral, cursor: loading ? "not-allowed" : "pointer", fontWeight: "700", opacity: loading ? 0.5 : 1 }}>Create one</span>
       </p>
+    </div>
+  );
+}
+
+/* ─── SCREEN: FORGOT PASSWORD (sends a code via email) ───────────────────────── */
+function ScreenForgot({ role, onBack, onSent }: { role: Role; onBack: () => void; onSent: (email: string) => void }) {
+  const [email, setEmail] = useState("");
+  const [err, setErr] = useState("");
+  const [info, setInfo] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const submit = async () => {
+    if (loading) return;
+    if (!email.trim()) return setErr("Please enter the email address you registered with.");
+    setLoading(true);
+    setErr("");
+    setInfo("");
+
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email.trim(),
+        options: { shouldCreateUser: false },
+      });
+
+      if (error) {
+        setErr(error.message);
+        setLoading(false);
+        return;
+      }
+
+      setInfo("A verification code has been sent to your email. Check your inbox (and spam folder).");
+      setLoading(false);
+      onSent(email.trim());
+    } catch (e: any) {
+      setErr(e?.message ?? "Something went wrong. Please try again.");
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={S.card}>
+      <Brand />
+      <div style={{ marginBottom: "24px" }}>
+        <div style={{ fontSize: "22px", fontWeight: "900", color: C.navy, marginBottom: "8px" }}>Reset Password 🔑</div>
+        <div style={{ fontSize: "14px", color: C.gray, lineHeight: "1.7" }}>
+          Enter the email linked to your account and we'll send you a one-time code to reset your password.
+        </div>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div>
+          <label style={S.label}>Email Address</label>
+          <input style={S.input} type="email" placeholder="you@email.com" value={email}
+            disabled={loading}
+            onChange={(e) => { setEmail(e.target.value); setErr(""); setInfo(""); }} />
+        </div>
+
+        {info && <div style={{ ...S.error, background: "#f0fdf4", color: "#15803d", border: "1px solid #bbf7d0" }}>✓ {info}</div>}
+        {err && <div style={S.error}>⚠ {err}</div>}
+
+        <button style={{ ...S.btnPrimary, marginTop: "4px", opacity: loading ? 0.75 : 1 }}
+          onClick={submit} disabled={loading}
+          onMouseEnter={(e) => !loading && (e.currentTarget.style.background = C.coral)}
+          onMouseLeave={(e) => (e.currentTarget.style.background = C.navy)}
+        >
+          {loading ? <><Spinner /> Sending code…</> : "Send Code →"}
+        </button>
+
+        <button type="button" onClick={onBack} style={S.btnSecondary}>
+          ← Back to Sign In
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ─── SCREEN: ENTER CODE & SET NEW PASSWORD ─────────────────────────────────── */
+function ScreenReset({ email, onBack, onDone }: { email: string; onBack: () => void; onDone: () => void }) {
+  const [code, setCode] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [err, setErr] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const submit = async () => {
+    if (loading) return;
+    if (!code.trim()) return setErr("Please enter the code from your email.");
+    if (password.length < 6) return setErr("New password must be at least 6 characters.");
+    if (password !== confirm) return setErr("Passwords do not match.");
+    setLoading(true);
+    setErr("");
+
+    try {
+      // 1. Verify the code (returns a session for that user)
+      const { error: verifyError } = await supabase.auth.verifyOtp({
+        email,
+        token: code.trim(),
+        type: "email",
+      });
+
+      if (verifyError) {
+        setErr(verifyError.message);
+        setLoading(false);
+        return;
+      }
+
+      // 2. Set the new password on the now-authenticated session
+      const { error: updateError } = await supabase.auth.updateUser({ password });
+
+      if (updateError) {
+        setErr(updateError.message);
+        setLoading(false);
+        return;
+      }
+
+      setSuccess("Your password has been reset successfully!");
+      setErr("");
+      setLoading(false);
+      setTimeout(onDone, 1600);
+    } catch (e: any) {
+      setErr(e?.message ?? "Something went wrong. Please try again.");
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={S.card}>
+      <Brand />
+      <div style={{ marginBottom: "24px" }}>
+        <div style={{ fontSize: "22px", fontWeight: "900", color: C.navy, marginBottom: "8px" }}>Enter Code & New Password 🔐</div>
+        <div style={{ fontSize: "14px", color: C.gray, lineHeight: "1.7" }}>
+          We sent a code to <span style={{ fontWeight: "700", color: C.navy }}>{email}</span>. Enter it below along with your new password.
+        </div>
+      </div>
+
+      {success ? (
+        <div style={{ textAlign: "center", padding: "12px 0" }}>
+          <div style={{ fontSize: "40px", marginBottom: "12px" }}>✅</div>
+          <div style={{ fontSize: "16px", fontWeight: "700", color: C.navy, marginBottom: "8px" }}>{success}</div>
+          <div style={{ fontSize: "13px", color: C.gray }}>You can now sign in with your new password.</div>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div>
+            <label style={S.label}>Verification Code</label>
+            <input style={{ ...S.input, letterSpacing: "0.3em", fontWeight: "700" }} type="text" inputMode="numeric" placeholder="••••••" value={code}
+              disabled={loading}
+              onChange={(e) => { setCode(e.target.value.replace(/[^0-9]/g, "").slice(0, 6)); setErr(""); }} />
+          </div>
+          <div>
+            <label style={S.label}>New Password</label>
+            <div style={{ position: "relative" }}>
+              <input style={{ ...S.input, paddingRight: "48px" }} type={showPassword ? "text" : "password"} placeholder="At least 6 characters" value={password}
+                disabled={loading}
+                onChange={(e) => { setPassword(e.target.value); setErr(""); }} />
+              <button
+                type="button"
+                tabIndex={-1}
+                onClick={() => setShowPassword(v => !v)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                style={{
+                  position: "absolute", right: "6px", top: "50%", transform: "translateY(-50%)",
+                  background: "transparent", border: "none", cursor: "pointer", padding: "8px",
+                  color: C.gray, display: "flex", alignItems: "center", justifyContent: "center",
+                }}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+          </div>
+          <div>
+            <label style={S.label}>Confirm New Password</label>
+            <input style={S.input} type={showPassword ? "text" : "password"} placeholder="Re-enter new password" value={confirm}
+              disabled={loading}
+              onKeyDown={(e) => e.key === "Enter" && !loading && submit()}
+              onChange={(e) => { setConfirm(e.target.value); setErr(""); }} />
+          </div>
+
+          {err && <div style={S.error}>⚠ {err}</div>}
+
+          <button style={{ ...S.btnPrimary, marginTop: "4px", opacity: loading ? 0.75 : 1 }}
+            onClick={submit} disabled={loading}
+            onMouseEnter={(e) => !loading && (e.currentTarget.style.background = C.coral)}
+            onMouseLeave={(e) => (e.currentTarget.style.background = C.navy)}
+          >
+            {loading ? <><Spinner /> Resetting…</> : "Reset Password →"}
+          </button>
+
+          <button type="button" onClick={onBack} style={S.btnSecondary}>
+            ← Back
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -1320,6 +1524,7 @@ export default function TouristAuthFlow({ onComplete, onCancel, initialScreen = 
   });
   const [sessionChecked, setSessionChecked] = useState(initialScreen === "landing" || initialScreen === "signin");
   const [authError, setAuthError] = useState("");
+  const [resetEmail, setResetEmail] = useState("");
 
   const set = (key: keyof TouristData) => (val: string) => setData((d) => ({ ...d, [key]: val }));
 
@@ -1698,8 +1903,22 @@ export default function TouristAuthFlow({ onComplete, onCancel, initialScreen = 
               </div>
             </div>
           )}
-          {screen === "signin" && <ScreenSignIn role={role} onNext={handleAuthSuccess} onGoSignUp={() => setScreen("signup")} errorMessage={authError} />}
+          {screen === "signin" && <ScreenSignIn role={role} onNext={handleAuthSuccess} onGoSignUp={() => setScreen("signup")} onGoForgot={() => setScreen("forgot")} errorMessage={authError} />}
           {screen === "signup" && <ScreenSignUp role={role} onNext={handleAuthSuccess} onGoSignIn={() => setScreen("signin")} />}
+          {screen === "forgot" && (
+            <ScreenForgot
+              role={role}
+              onBack={() => setScreen("signin")}
+              onSent={(email) => { setResetEmail(email); setScreen("reset"); }}
+            />
+          )}
+          {screen === "reset" && (
+            <ScreenReset
+              email={resetEmail}
+              onBack={() => setScreen("forgot")}
+              onDone={() => { setScreen("signin"); }}
+            />
+          )}
           {screen === "nationality" && (
             <ScreenNationality
               nationality={data.nationality} country={data.country}
