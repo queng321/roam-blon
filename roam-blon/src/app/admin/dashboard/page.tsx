@@ -281,7 +281,21 @@ export default function AdminDashboardPage() {
 
   const topDestinations = getTopItems('destination');
   const topDining = getTopItems('dining');
-  const topGuides = getTopItems('guide');
+  // Top tour guides — computed from guide reviews (guide_reviews table/localStorage),
+  // not the QR reviews table (which never stores guide-type reviews).
+  const topGuides = (() => {
+    const itemStats: Record<string, { name: string, count: number, totalRating: number }> = {};
+    guideReviews.forEach((r: any) => {
+      const name = r.guide_name || r.item_name || "Tour Guide";
+      if (!itemStats[name]) itemStats[name] = { name, count: 0, totalRating: 0 };
+      itemStats[name].count += 1;
+      itemStats[name].totalRating += (r.rating || 0);
+    });
+    return Object.values(itemStats)
+      .map(item => ({ ...item, type: 'guide', avgRating: Number((item.totalRating / item.count).toFixed(1)) }))
+      .sort((a, b) => b.avgRating - a.avgRating || b.count - a.count)
+      .slice(0, 5);
+  })();
 
   // Most-visited analytics (ranked by visit/review count)
   const getMostVisited = (type: string, byCount = false) => {
