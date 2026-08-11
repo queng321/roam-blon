@@ -182,7 +182,7 @@ const STATIC_DESTINATIONS = [
     desc: "A 17th-century Spanish stone fortress overlooking Romblon harbor. Built by Spanish recollection friars to defend the island against pirate raids. Offers unmatched panoramic views of the entire town.",
     howToGetThere: "Located right in Town Proper. Ascend the stone staircase (around 200 steps) behind the municipal hall or take a 3-minute tricycle up Consolacion Hill.",
     tag: "Heritage", type: "Landmark", category: "Landmark",
-    image: "/beach&resorts/peable.jpg", image_url: "/beach&resorts/peable.jpg",
+    image: "/beach%26resorts/fort.jpg", image_url: "/beach%26resorts/fort.jpg",
     images: ["/beach%26resorts/fort.jpg", "/beach%26resorts/fort1.jpg"],
     info: { type: "Historical Landmark", access: "Walk / Tricycle", bestTime: "Sunset", entranceFee: "Free (Donation)", visitingHours: "8:00 AM - 5:00 PM", features: ["Spanish Fortress", "Panoramic Harbor View", "Historical Site"] }
   },
@@ -193,7 +193,7 @@ const STATIC_DESTINATIONS = [
     desc: "A peaceful beachfront accommodation in Romblon, Romblon, offering guests a relaxing island getaway with beautiful sea views and a quiet atmosphere. Ideal for travelers looking to unwind, watch the sunset, and explore Romblon Island.",
     howToGetThere: "Ride a tricycle from Freedom Park and tell the driver you're going to Stevejoy Beach House in Ginablan (5–10 mins). If driving or riding a motorcycle, follow the main coastal road toward Barangay Ginablan.",
     tag: "Beachfront", type: "Resort", category: "Resort",
-    image: "/beach&resorts/peable.jpg", image_url: "/beach&resorts/peable.jpg",
+    image: "/beach%26resorts/peabble.jpg", image_url: "/beach%26resorts/peabble.jpg",
     images: ["/beach%26resorts/peabble.jpg", "/beach%26resorts/peabble1.jpg", "/beach%26resorts/peabble2.jpg"],
     info: { type: "Beach House / Resort", access: "Tricycle / Motorbike", bestTime: "Sunset", entranceFee: "₱50", visitingHours: "8:00 AM - 5:00 PM", features: ["Beachfront", "Sea Views", "Quiet Atmosphere", "Sunset Watch"] }
   },
@@ -534,9 +534,9 @@ export default function Home() {
               tag: d.category === 'Beaches' ? 'Natural' : d.category || 'Featured',
               type: d.category === 'Resort' ? 'Resort' : 'Natural',
               category: d.category || 'Beach',
-              image: d.image_url || '/beach&resorts/peable.jpg',
-              image_url: d.image_url || '/beach&resorts/peable.jpg',
-              images: d.image_url ? [d.image_url] : ['/beach&resorts/peable.jpg'],
+              image: d.image_url || '/beach%26resorts/peabble.jpg',
+              image_url: d.image_url || '/beach%26resorts/peabble.jpg',
+              images: d.image_url ? [d.image_url] : ['/beach%26resorts/peabble.jpg', '/beach%26resorts/peabble1.jpg', '/beach%26resorts/peabble2.jpg'],
               info: { type: d.category || 'Tourist Spot', access: 'Tricycle', bestTime: 'Daytime', entranceFee: d.entrance_fee || 'Contact for details', visitingHours: d.visiting_hours || '8:00 AM - 5:00 PM', features: ['Scenic Spot', 'Island Destination'] }
             };
           });
