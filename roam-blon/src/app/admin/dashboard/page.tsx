@@ -2569,6 +2569,56 @@ export default function AdminDashboardPage() {
                   )}
                 </div>
 
+                {/* Top Rated Dining Spots */}
+                <div className="bg-white rounded-[3rem] p-10 border border-slate-100 shadow-sm">
+                  <div className="flex items-center gap-3 mb-8">
+                    <div className="h-10 w-10 bg-orange-50 rounded-xl flex items-center justify-center text-orange-500">
+                      <Trophy size={20} />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-black italic uppercase text-[#111]">Top 10 Rated Dining Spots</h3>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Top 10 dining spots ranked by average star rating</p>
+                    </div>
+                    <span className="ml-auto px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest">
+                      Live
+                    </span>
+                  </div>
+                  {mostVisitedDining.length === 0 ? (
+                    <p className="text-slate-300 text-xs italic text-center py-8">No reviews yet.</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {mostVisitedDining.slice(0, 10).map((d: any, idx: number) => (
+                        <div key={idx} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-slate-50 transition-all">
+                          <span className="w-8 h-8 rounded-xl flex items-center justify-center text-[11px] font-black flex-shrink-0"
+                            style={{
+                              background: POINT_COLORS[idx % POINT_COLORS.length],
+                              color: '#fff',
+                            }}>
+                            {idx + 1}
+                          </span>
+                          <span className="font-black text-sm text-slate-800 uppercase tracking-tight flex-1 min-w-0 truncate">{d.name}</span>
+                          <div className="flex items-center gap-1 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-100 flex-shrink-0">
+                            <Star size={11} className="text-amber-500 fill-amber-500" />
+                            <span className="text-[11px] font-black text-slate-900">{d.avgRating}</span>
+                          </div>
+                          <div className="w-40 hidden sm:block h-1.5 bg-slate-100 rounded-full overflow-hidden flex-shrink-0">
+                            <div
+                              className="h-full rounded-full"
+                              style={{
+                                width: `${Math.min((d.avgRating / 5) * 100, 100)}%`,
+                                background: POINT_COLORS[idx % POINT_COLORS.length],
+                              }}
+                            />
+                          </div>
+                          <span className="text-[11px] font-black text-slate-500 w-14 text-right flex-shrink-0">
+                            {d.count} review{d.count !== 1 ? 's' : ''}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 {/* Filter Tabs */}
                 <div className="flex gap-2 p-1.5 bg-slate-100 rounded-2xl w-fit">
                   {['all', 'destination', 'dining', 'souvenir'].map(f => (
@@ -3224,13 +3274,9 @@ function AnalyticsGraph({ title, subtitle, items, accentColor, byVisits = false,
   const maxRating = 5;
   const top = items.find((i: any) => (i.count || 0) > 0);
 
-  // Axis scale:
-  //  - byVisits: fixed 0-100 for visit counts (capped)
-  //  - byCount: dynamic 0..maxReviews so the line starts from 0 and shows real review counts
-  //  - default: 0-100 percentage for star ratings
-  const maxCount = byCount ? Math.max(...items.map((i: any) => i.count || 0), 1) : 1;
-  const maxValue = byVisits ? 100 : byCount ? maxCount : 100;
-  const axisSteps = byVisits ? 10 : byCount ? Math.min(maxCount, 10) : 10;
+  // Axis scale: fixed 0-100 for both review counts and visit counts
+  const maxValue = 100;
+  const axisSteps = 10;
   const valueOf = (item: any) => byVisits
     ? (() => {
         // Plot raw count against the fixed 0-100 axis (capped at 100),
@@ -3238,7 +3284,7 @@ function AnalyticsGraph({ title, subtitle, items, accentColor, byVisits = false,
         return Math.min(item.count || 0, 100);
       })()
     : byCount
-    ? (item.count || 0)
+    ? Math.min(item.count || 0, 100)
     : (() => {
         // Convert 0-5 star rating to a 0-100 percentage
         return Math.min(((item.avgRating || 0) / maxRating) * 100, 100);
@@ -3305,7 +3351,7 @@ function AnalyticsGraph({ title, subtitle, items, accentColor, byVisits = false,
                 })}
                 {Array.from({ length: axisSteps + 1 }, (_, k) => k).map(g => {
                   const gy = PADTOP + (1 - g / axisSteps) * (H - PADTOP - PADBOT);
-                  const val = byCount ? Math.round((g / axisSteps) * maxCount) : g * 10;
+                  const val = g * 10;
                   return (
                     <text key={g} x={PADX - 4} y={gy + 3} fontSize="8" fontWeight="700" fill="#cbd5e1" textAnchor="end">
                       {val}
