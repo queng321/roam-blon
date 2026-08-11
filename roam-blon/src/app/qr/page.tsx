@@ -364,21 +364,6 @@ function QRScanContent() {
   const [visitorPrompt, setVisitorPrompt] = useState(false);
   const [visitorType, setVisitorType] = useState<"local" | "foreign" | null>(null);
 
-  // Logged-in tourists are classified automatically from their profile — skip the prompt
-  useEffect(() => {
-    try {
-      const cachedUser = localStorage.getItem("roam_blon_tourist_user");
-      if (cachedUser) {
-        const tourist = JSON.parse(cachedUser);
-        if (tourist?.nationality) {
-          const classified = String(tourist.nationality).toLowerCase() === "foreign" ? "foreign" : "local";
-          localStorage.setItem("roam_blon_visitor_classified", classified);
-          setVisitorType(classified);
-        }
-      }
-    } catch { /* ignore */ }
-  }, []);
-
   useEffect(() => {
     if (!type || !id) { setLoading(false); return; }
     fetchItem();
@@ -476,8 +461,7 @@ function QRScanContent() {
 
     let inserted = false;
     try {
-      const classified = (typeof localStorage !== "undefined" ? localStorage.getItem("roam_blon_visitor_classified") : null) as "local" | "foreign" | null;
-      const vType = visitorType || classified || "local";
+      const vType = visitorType || "local";
       const payload = {
         item_type: itemType,
         item_id: itemId,
@@ -495,8 +479,7 @@ function QRScanContent() {
     // even when the DB insert succeeds but the table isn't in the realtime
     // publication (postgres_changes won't fire in that case).
     try {
-      const classified = (typeof localStorage !== "undefined" ? localStorage.getItem("roam_blon_visitor_classified") : null) as "local" | "foreign" | null;
-      const vType = visitorType || classified || "local";
+      const vType = visitorType || "local";
       const chan = supabase.channel('admin-live-feed');
       await chan.subscribe((status) => {
         if (status === 'SUBSCRIBED') {
@@ -682,7 +665,6 @@ function QRScanContent() {
   const handleSetVisitorType = (val: "local" | "foreign") => {
     setVisitorType(val);
     setVisitorPrompt(false);
-    try { localStorage.setItem("roam_blon_visitor_classified", val); } catch { /* ignore */ }
     // The scan was already recorded — just update its classification
     try {
       supabase.from("qr_scans")
