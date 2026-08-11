@@ -1753,7 +1753,17 @@ export default function AdminDashboardPage() {
                     return (
                       <div key={d.id} className="bg-white rounded-[3rem] overflow-hidden border border-slate-100 shadow-sm group hover:shadow-2xl transition-all flex flex-col">
                         <div className="h-60 bg-slate-100 overflow-hidden relative">
-                          <img src={d.image_url} alt={d.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                          <img
+                            src={d.image_url || destinationImageFallback(d.id, d.name)}
+                            alt={d.name}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                            onError={(e) => {
+                              const fb = destinationImageFallback(d.id, d.name);
+                              if ((e.currentTarget.src && !e.currentTarget.src.endsWith(fb))) {
+                                e.currentTarget.src = fb;
+                              }
+                            }}
+                          />
                           <div className="absolute top-6 left-6 px-4 py-1.5 bg-white/90 backdrop-blur-md rounded-full text-[10px] font-black tracking-widest uppercase text-slate-900">{d.category}</div>
                           {/* Rank badge */}
                           <div className={`absolute bottom-4 left-6 px-3 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase shadow-md ${
@@ -3102,6 +3112,13 @@ function SidebarLink({ icon, label, active = false, onClick }: any) {
       {label}
     </button>
   );
+}
+
+function destinationImageFallback(id: string, name: string) {
+  const norm = `${id} ${name}`.toLowerCase();
+  if (norm.includes('peable') || norm.includes('pebble') || norm.includes('pebble walk')) return "/beach&resorts/peabble.jpg";
+  if (norm.includes('talipasak') || norm.includes('san pedro')) return "/beach&resorts/talipasak.jpg";
+  return "/romblon.jpg";
 }
 
 function StatCard({ label, value, icon, color, isDecimal = false, onClick }: any) {
