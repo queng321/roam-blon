@@ -3222,16 +3222,19 @@ function AnalyticsGraph({ title, subtitle, items, accentColor, byVisits = false,
   const maxRating = 5;
   const top = items.find((i: any) => (i.count || 0) > 0);
 
-  // Axis scale: rating (0-5) by default, or percentage 0-100 when byVisits
-  const maxValue = byVisits ? 100 : maxRating;
-  const axisSteps = byVisits ? 10 : 5;
+  // Axis scale: 0-100 for both rating (as %) and visit counts
+  const maxValue = 100;
+  const axisSteps = 10;
   const valueOf = (item: any) => byVisits
     ? (() => {
         // Plot raw count against the fixed 0-100 axis (capped at 100),
         // so counts grow from 0-10-20… instead of jumping straight to 100.
         return Math.min(item.count || 0, 100);
       })()
-    : (item.avgRating || 0);
+    : (() => {
+        // Convert 0-5 star rating to a 0-100 percentage
+        return Math.min(((item.avgRating || 0) / maxRating) * 100, 100);
+      })();
 
   // Only plot destinations that have been visited (line = real-time scans)
   const plotted = items.filter((i: any) => (i.count || 0) > 0);
@@ -3289,7 +3292,7 @@ function AnalyticsGraph({ title, subtitle, items, accentColor, byVisits = false,
                 })}
                 {Array.from({ length: axisSteps + 1 }, (_, k) => k).map(g => {
                   const gy = PADTOP + (1 - g / axisSteps) * (H - PADTOP - PADBOT);
-                  const val = byVisits ? g * 10 : g;
+                  const val = g * 10;
                   return (
                     <text key={g} x={PADX - 4} y={gy + 3} fontSize="8" fontWeight="700" fill="#cbd5e1" textAnchor="end">
                       {val}
