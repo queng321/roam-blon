@@ -2506,6 +2506,7 @@ export default function AdminDashboardPage() {
                     subtitle="Most visited tourist destinations"
                     items={mostVisitedDestinations}
                     accentColor="rose"
+                    byCount
                     hideLegend
                   />
                   <AnalyticsGraph
@@ -2513,6 +2514,7 @@ export default function AdminDashboardPage() {
                     subtitle="Most visited dining spots"
                     items={mostVisitedDining}
                     accentColor="orange"
+                    byCount
                     hideLegend
                   />
                 </div>
@@ -3203,7 +3205,7 @@ const POINT_COLORS = [
   '#5eead4', '#f472b6', '#818cf8', '#a3e635', '#38bdf8', '#fbbf24',
 ];
 
-function AnalyticsGraph({ title, subtitle, items, accentColor, byVisits = false, hideLegend = false }: any) {
+function AnalyticsGraph({ title, subtitle, items, accentColor, byVisits = false, byCount = false, hideLegend = false }: any) {
   const accentMap: any = {
     rose: { header: 'bg-rose-50 border-rose-100 text-rose-500', stroke: '#f43f5e', strokeSoft: '#fb7185', fill: '#ffe4e6', badge: 'bg-rose-50 text-rose-600 border-rose-100' },
     orange: { header: 'bg-orange-50 border-orange-100 text-orange-500', stroke: '#f97316', strokeSoft: '#fb923c', fill: '#ffedd5', badge: 'bg-orange-50 text-orange-600 border-orange-100' },
@@ -3222,15 +3224,21 @@ function AnalyticsGraph({ title, subtitle, items, accentColor, byVisits = false,
   const maxRating = 5;
   const top = items.find((i: any) => (i.count || 0) > 0);
 
-  // Axis scale: 0-100 for both rating (as %) and visit counts
-  const maxValue = 100;
-  const axisSteps = 10;
+  // Axis scale:
+  //  - byVisits: fixed 0-100 for visit counts (capped)
+  //  - byCount: dynamic 0..maxReviews so the line starts from 0 and shows real review counts
+  //  - default: 0-100 percentage for star ratings
+  const maxCount = byCount ? Math.max(...items.map((i: any) => i.count || 0), 1) : 1;
+  const maxValue = byVisits ? 100 : byCount ? maxCount : 100;
+  const axisSteps = byVisits ? 10 : byCount ? Math.min(maxCount, 10) : 10;
   const valueOf = (item: any) => byVisits
     ? (() => {
         // Plot raw count against the fixed 0-100 axis (capped at 100),
         // so counts grow from 0-10-20… instead of jumping straight to 100.
         return Math.min(item.count || 0, 100);
       })()
+    : byCount
+    ? (item.count || 0)
     : (() => {
         // Convert 0-5 star rating to a 0-100 percentage
         return Math.min(((item.avgRating || 0) / maxRating) * 100, 100);
@@ -3297,7 +3305,7 @@ function AnalyticsGraph({ title, subtitle, items, accentColor, byVisits = false,
                 })}
                 {Array.from({ length: axisSteps + 1 }, (_, k) => k).map(g => {
                   const gy = PADTOP + (1 - g / axisSteps) * (H - PADTOP - PADBOT);
-                  const val = g * 10;
+                  const val = byCount ? Math.round((g / axisSteps) * maxCount) : g * 10;
                   return (
                     <text key={g} x={PADX - 4} y={gy + 3} fontSize="8" fontWeight="700" fill="#cbd5e1" textAnchor="end">
                       {val}
