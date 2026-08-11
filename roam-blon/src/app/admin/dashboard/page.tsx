@@ -249,11 +249,19 @@ export default function AdminDashboardPage() {
   // All-destinations series for the analytics graph — every destination on the X-axis,
   // counting live QR scan reviews, sorted by most visited.
   const allDestinationsSeries = (() => {
+    // Dining spot names must never appear on the destination panel
+    const DINING_NAMES = [
+      "Marble City Café & Bistro", "El Krimphoff Resort", "Horizon Seaside Restaurant",
+      "Italian Trattoria", "Mama Lois Kitchen", "Seaview Restobar",
+      "Panublion Heritage Diner", "Reggae Bar & Grill", "Sunbird Cafe & Lounge",
+      "Yurich Food House", "Gangnam Korean Grill", "El Hotel & Restaurant"
+    ].map(n => n.toLowerCase());
+    const isDiningName = (n: string) => DINING_NAMES.includes(n.toLowerCase());
     // Start from every registered destination (X-axis includes all of them)
-    const names = destinations.map((d: any) => d.name).filter((n: any) => n);
+    const names = destinations.map((d: any) => d.name).filter((n: any) => n && !isDiningName(n));
     // Also include destinations that were scanned but aren't in the list yet
     Object.keys(scanVisits).forEach(n => {
-      if (!names.some((x: string) => x.toLowerCase() === n.toLowerCase())) names.push(n);
+      if (!names.some((x: string) => x.toLowerCase() === n.toLowerCase()) && !isDiningName(n)) names.push(n);
     });
     return names.map(name => {
       const scanKey = Object.keys(scanVisits).find(k => k.toLowerCase() === name.toLowerCase());
