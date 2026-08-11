@@ -132,78 +132,6 @@ export default function AdminDashboardPage() {
     });
   };
 
-  // One-time demo seed: 34 QR scans across dining spots & tourist destinations.
-  // Inserts real rows into qr_scans so Total Visitor Logs and Top Nationalities
-  // both reflect the activity, and seeds the graph visit counters (+10 each).
-  const seedScanActivity = async () => {
-    if (typeof window === 'undefined') return;
-    try {
-      if (localStorage.getItem('roam_blon_scan_seed_34')) return;
-      const rows = [
-        { item_type: "destination", item_id: "sd-bonbon",   item_name: "Bonbon Beach",     visitor_type: "local",   nationality: "Local" },
-        { item_type: "destination", item_id: "sd-bonbon",   item_name: "Bonbon Beach",     visitor_type: "foreign", nationality: "Foreign" },
-        { item_type: "destination", item_id: "sd-bonbon",   item_name: "Bonbon Beach",     visitor_type: "local",   nationality: "Local" },
-        { item_type: "destination", item_id: "sd-tiamban",  item_name: "Tiamban Beach",    visitor_type: "local",   nationality: "Local" },
-        { item_type: "destination", item_id: "sd-tiamban",  item_name: "Tiamban Beach",    visitor_type: "foreign", nationality: "Foreign" },
-        { item_type: "destination", item_id: "sd-talipasak",item_name: "Talipasak Beach",  visitor_type: "local",   nationality: "Local" },
-        { item_type: "destination", item_id: "sd-talipasak",item_name: "Talipasak Beach",  visitor_type: "foreign", nationality: "Foreign" },
-        { item_type: "destination", item_id: "sd-lamao",    item_name: "Lamao Beach Resort",visitor_type: "local",  nationality: "Local" },
-        { item_type: "destination", item_id: "sd-lamao",    item_name: "Lamao Beach Resort",visitor_type: "foreign", nationality: "Foreign" },
-        { item_type: "destination", item_id: "sd-dc-logbon",item_name: "DC Munting Paraiso",visitor_type: "local", nationality: "Local" },
-        { item_type: "destination", item_id: "sd-dc-logbon",item_name: "DC Munting Paraiso",visitor_type: "local", nationality: "Local" },
-        { item_type: "destination", item_id: "sd-coco",     item_name: "Coco Cabana",      visitor_type: "foreign", nationality: "Foreign" },
-        { item_type: "destination", item_id: "sd-coco",     item_name: "Coco Cabana",      visitor_type: "local",   nationality: "Local" },
-        { item_type: "destination", item_id: "sd-robinson", item_name: "Robinson's Cove",  visitor_type: "local",   nationality: "Local" },
-        { item_type: "destination", item_id: "sd-robinson", item_name: "Robinson's Cove",  visitor_type: "foreign", nationality: "Foreign" },
-        { item_type: "destination", item_id: "sd-horizon",  item_name: "Horizon Hotel Romblon",visitor_type: "local", nationality: "Local" },
-        { item_type: "destination", item_id: "sd-peable",   item_name: "Pebble Walk Beach Resort", visitor_type: "local",   nationality: "Local" },
-        { item_type: "dining", item_id: "el",       item_name: "El Krimphoff Resort",       visitor_type: "local",   nationality: "Local" },
-        { item_type: "dining", item_id: "el",       item_name: "El Krimphoff Resort",       visitor_type: "local",   nationality: "Local" },
-        { item_type: "dining", item_id: "gangnam",  item_name: "Gangnam Korean Grill",     visitor_type: "local",   nationality: "Local" },
-        { item_type: "dining", item_id: "gangnam",  item_name: "Gangnam Korean Grill",     visitor_type: "foreign", nationality: "Foreign" },
-        { item_type: "dining", item_id: "bistro",   item_name: "Marble City Café & Bistro",visitor_type: "local",   nationality: "Local" },
-        { item_type: "dining", item_id: "bistro",   item_name: "Marble City Café & Bistro",visitor_type: "local",   nationality: "Local" },
-        { item_type: "dining", item_id: "horizon",  item_name: "Horizon Seaside Restaurant",visitor_type: "foreign", nationality: "Foreign" },
-        { item_type: "dining", item_id: "italian",  item_name: "Italian Trattoria",        visitor_type: "foreign", nationality: "Foreign" },
-        { item_type: "dining", item_id: "italian",  item_name: "Italian Trattoria",        visitor_type: "local",   nationality: "Local" },
-        { item_type: "dining", item_id: "mamalois", item_name: "Mama Lois Kitchen",        visitor_type: "local",   nationality: "Local" },
-        { item_type: "dining", item_id: "ocean",    item_name: "Seaview Restobar",          visitor_type: "local",   nationality: "Local" },
-        { item_type: "dining", item_id: "panublion",item_name: "Panublion Heritage Diner", visitor_type: "local",   nationality: "Local" },
-        { item_type: "dining", item_id: "reggae",   item_name: "Reggae Bar & Grill",       visitor_type: "foreign", nationality: "Foreign" },
-        { item_type: "dining", item_id: "sunbird",  item_name: "Sunbird Cafe & Lounge",    visitor_type: "local",   nationality: "Local" },
-        { item_type: "dining", item_id: "yurich",   item_name: "Yurich Food House",        visitor_type: "local",   nationality: "Local" },
-      ];
-      const now = new Date();
-      const withDates = rows.map((r, i) => ({
-        ...r,
-        scanned_at: new Date(now.getTime() - (rows.length - i) * 60000).toISOString(),
-        created_at: new Date(now.getTime() - (rows.length - i) * 60000).toISOString(),
-      }));
-      // Insert into qr_scans (service-role key bypasses RLS).
-      // Suppress realtime bumps so the seed's own rows don't double-count.
-      suppressScanBump.current = true;
-      try {
-        await supabase.from('qr_scans').insert(withDates);
-      } catch { /* ignore */ }
-      setTimeout(() => { suppressScanBump.current = false; }, 5000);
-// Seed the local visit counters so charts show the same data
-      const visits: Record<string, number> = {};
-      rows.forEach(r => {
-        const key = Object.keys(visits).find(k => k.toLowerCase() === r.item_name.toLowerCase()) || r.item_name;
-        visits[key] = (visits[key] || 0) + 1;
-      });
-      setScanVisits(visits);
-      localStorage.setItem('roam_blon_scan_visits', JSON.stringify(visits));
-      const existing = Number(localStorage.getItem('roam_blon_total_scans') || '0');
-      localStorage.setItem('roam_blon_total_scans', String(existing + rows.length));
-      setTotalScans(prev => prev + rows.length);
-      setLiveScanCount(prev => prev + rows.length);
-      localStorage.setItem('roam_blon_scan_seed_34', 'done');
-      fetchDashboardData();
-      loadReviews();
-    } catch { /* ignore */ }
-  };
-  
   // Modal & Editing states
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState<{ type: string; id: string } | null>(null);
@@ -481,10 +409,7 @@ export default function AdminDashboardPage() {
       ).length;
 
       // Visitor logs = QR scans only (new account signups do NOT count as logs)
-      const scanCount = Math.max(
-        scanDbCount,
-        Number(localStorage.getItem('roam_blon_total_scans') || '0')
-      );
+      const scanCount = scanDbCount;
       setTotalScans(scanCount);
 
       setStats(prev => ({ ...prev, totalTourists: combinedTouristCount, destinations: dCount, diningSpots: diningCount }));
@@ -582,7 +507,6 @@ export default function AdminDashboardPage() {
   };
 
   useEffect(() => {
-    seedScanActivity();
     fetchDashboardData();
     loadReviews();
     loadGuideReviews();
