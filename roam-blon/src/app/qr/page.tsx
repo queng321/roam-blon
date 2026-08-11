@@ -463,16 +463,15 @@ function QRScanContent() {
     };
   }, [type, id, item?.name]);
 
-  const [loggedScans] = useState<Set<string>>(new Set());
-
   const logQRScan = async (itemType: string, itemId: string, itemName: string) => {
-    // Dedupe: count each QR only once per browser so refresh doesn't inflate the count
+    // Dedupe only within a short window so a page refresh doesn't double-count,
+    // but every real scan still gets logged (even repeated scans of the same QR).
     const scanKey = `${itemType}:${itemId}`;
-    if (loggedScans.has(scanKey)) return;
-    loggedScans.add(scanKey);
     try {
-      const scanned = JSON.parse(localStorage.getItem("roam_blon_scanned_qrs") || "[]");
-      if (scanned.includes(scanKey)) return;
+      const scanned = JSON.parse(localStorage.getItem("roam_blon_scanned_qrs") || "{}");
+      if (scanned[scanKey] && Date.now() - scanned[scanKey] < 60000) return;
+      scanned[scanKey] = Date.now();
+      localStorage.setItem("roam_blon_scanned_qrs", JSON.stringify(scanned));
     } catch { /* ignore */ }
 
     let inserted = false;
@@ -515,13 +514,6 @@ function QRScanContent() {
           supabase.removeChannel(chan);
         }
       });
-    } catch { /* ignore */ }
-
-    // Mark as scanned (persists across refresh)
-    try {
-      const scanned = JSON.parse(localStorage.getItem("roam_blon_scanned_qrs") || "[]");
-      scanned.push(scanKey);
-      localStorage.setItem("roam_blon_scanned_qrs", JSON.stringify(scanned.slice(-500)));
     } catch { /* ignore */ }
   };
 
