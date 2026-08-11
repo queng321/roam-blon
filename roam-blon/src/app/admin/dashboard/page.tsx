@@ -1760,6 +1760,23 @@ export default function AdminDashboardPage() {
                     byVisits
                     hideLegend
                   />
+                  <div className="mt-8">
+                    <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Top 10 Most Visited Destinations</h4>
+                    <div className="space-y-3">
+                      {allDestinationsSeries.slice(0, 10).map((d: any, idx: number) => (
+                        <div key={d.name} className="flex items-center gap-4 rounded-2xl bg-slate-50 px-4 py-3">
+                          <span className={`w-8 h-8 flex items-center justify-center rounded-xl font-black text-sm shrink-0 ${idx < 3 ? 'bg-rose-100 text-rose-600' : 'bg-slate-100 text-slate-500'}`}>{idx + 1}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-black text-slate-900 truncate">{d.name}</p>
+                          </div>
+                          <span className="text-sm font-black text-rose-500 shrink-0">{d.count} <span className="text-[10px] font-bold text-slate-400 uppercase">scans</span></span>
+                        </div>
+                      ))}
+                      {allDestinationsSeries.slice(0, 10).length === 0 && (
+                        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest text-center py-6">No destination scans yet</p>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Most visited dining spots (based on scans) */}
@@ -1784,6 +1801,23 @@ export default function AdminDashboardPage() {
                     byVisits
                     hideLegend
                   />
+                  <div className="mt-8">
+                    <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Top 10 Most Visited Dining Spots</h4>
+                    <div className="space-y-3">
+                      {allDiningSeries.slice(0, 10).map((d: any, idx: number) => (
+                        <div key={d.name} className="flex items-center gap-4 rounded-2xl bg-slate-50 px-4 py-3">
+                          <span className={`w-8 h-8 flex items-center justify-center rounded-xl font-black text-sm shrink-0 ${idx < 3 ? 'bg-orange-100 text-orange-600' : 'bg-slate-100 text-slate-500'}`}>{idx + 1}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-black text-slate-900 truncate">{d.name}</p>
+                          </div>
+                          <span className="text-sm font-black text-orange-500 shrink-0">{d.count} <span className="text-[10px] font-bold text-slate-400 uppercase">scans</span></span>
+                        </div>
+                      ))}
+                      {allDiningSeries.slice(0, 10).length === 0 && (
+                        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest text-center py-6">No dining scans yet</p>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
