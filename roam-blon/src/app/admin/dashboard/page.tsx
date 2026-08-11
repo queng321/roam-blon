@@ -3244,9 +3244,14 @@ function AnalyticsGraph({ title, subtitle, items, accentColor, byVisits = false,
     return { x, y, item, color: POINT_COLORS[idx % POINT_COLORS.length] };
   });
 
-  const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-  const areaPath = points.length > 0
-    ? `${linePath} L ${points[points.length - 1].x.toFixed(1)},${H - PADBOT} L ${points[0].x.toFixed(1)},${H - PADBOT} Z`
+  // Start the line from the 0 level on the far left so it rises from the bottom
+  const linePoints = points.length > 0
+    ? [{ x: PADX, y: H - PADBOT, item: null, color: points[0].color }, ...points]
+    : points;
+
+  const linePath = linePoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const areaPath = linePoints.length > 0
+    ? `${linePath} L ${linePoints[linePoints.length - 1].x.toFixed(1)},${H - PADBOT} L ${linePoints[0].x.toFixed(1)},${H - PADBOT} Z`
     : '';
 
   return (
