@@ -101,11 +101,7 @@ export default function AdminDashboardPage() {
   const [liveToasts, setLiveToasts] = useState<{id: string; reviewer: string; item: string; rating: number; comment: string; type: 'review' | 'guide_review' | 'scan' | 'booking'}[]>([]);
   const [newReviewCount, setNewReviewCount] = useState(0);
   const [liveScanCount, setLiveScanCount] = useState(0);
-  const [scanVisits, setScanVisits] = useState<Record<string, number>>(
-    () => typeof window !== 'undefined'
-      ? (() => { try { return JSON.parse(localStorage.getItem('roam_blon_scan_visits') || '{}'); } catch { return {}; } })()
-      : {}
-  );
+  const [scanVisits, setScanVisits] = useState<Record<string, number>>({});
   const [reviewTabPulse, setReviewTabPulse] = useState(false);
 
   // True while the one-time seed is inserting rows, so realtime scan events from
@@ -253,30 +249,16 @@ export default function AdminDashboardPage() {
   // All-destinations series for the analytics graph — every destination on the X-axis,
   // counting live QR scan reviews, sorted by most visited.
   const allDestinationsSeries = (() => {
-    const revCounts: Record<string, { count: number; totalRating: number }> = {};
-    reviews.forEach(r => {
-      if (r.item_type === 'destination') {
-        if (!revCounts[r.item_name]) revCounts[r.item_name] = { count: 0, totalRating: 0 };
-        revCounts[r.item_name].count += 1;
-        revCounts[r.item_name].totalRating += (r.rating || 0);
-      }
-    });
     // Start from every registered destination (X-axis includes all of them)
     const names = destinations.map((d: any) => d.name).filter((n: any) => n);
     // Also include destinations that were scanned but aren't in the list yet
-    Object.keys(revCounts).forEach(n => {
-      if (!names.some((x: string) => x.toLowerCase() === n.toLowerCase())) names.push(n);
-    });
     Object.keys(scanVisits).forEach(n => {
       if (!names.some((x: string) => x.toLowerCase() === n.toLowerCase())) names.push(n);
     });
     return names.map(name => {
-      const key = Object.keys(revCounts).find(k => k.toLowerCase() === name.toLowerCase());
-      const c = key ? revCounts[key].count : 0;
-      const r = key ? revCounts[key].totalRating : 0;
       const scanKey = Object.keys(scanVisits).find(k => k.toLowerCase() === name.toLowerCase());
       const scanCount = scanKey ? scanVisits[scanKey] : 0;
-      return { name, count: c + scanCount, avgRating: c ? Number((r / c).toFixed(1)) : 0 };
+      return { name, count: scanCount, avgRating: 0 };
     }).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
   })();
 
@@ -284,14 +266,6 @@ export default function AdminDashboardPage() {
   // X-axis (including Gangnam Korean Grill & El Hotel & Restaurant), counting live
   // QR scan reviews, sorted by most visited.
   const allDiningSeries = (() => {
-    const revCounts: Record<string, { count: number; totalRating: number }> = {};
-    reviews.forEach(r => {
-      if (r.item_type === 'dining') {
-        if (!revCounts[r.item_name]) revCounts[r.item_name] = { count: 0, totalRating: 0 };
-        revCounts[r.item_name].count += 1;
-        revCounts[r.item_name].totalRating += (r.rating || 0);
-      }
-    });
     // Start from every registered dining spot (X-axis includes all of them)
     const STATIC_DINING = [
       "Marble City Café & Bistro", "El Krimphoff Resort", "Horizon Seaside Restaurant",
@@ -310,20 +284,13 @@ export default function AdminDashboardPage() {
       known.has(n.toLowerCase()) ||
       /restaur|grill|bistro|caf|diner|lois|trattoria|bar &|food house|seafood|lounge|kitchen/i.test(n)
     );
-    // Also include dining spots that were scanned but aren't in the list yet
-    Object.keys(revCounts).forEach(n => {
-      if (!known.has(n.toLowerCase())) { names.push(n); known.add(n.toLowerCase()); }
-    });
     scannedDiningNames.forEach(n => {
       if (!known.has(n.toLowerCase())) names.push(n);
     });
     return names.map(name => {
-      const key = Object.keys(revCounts).find(k => k.toLowerCase() === name.toLowerCase());
-      const c = key ? revCounts[key].count : 0;
-      const r = key ? revCounts[key].totalRating : 0;
       const scanKey = Object.keys(scanVisits).find(k => k.toLowerCase() === name.toLowerCase());
       const scanCount = scanKey ? scanVisits[scanKey] : 0;
-      return { name, count: c + scanCount, avgRating: c ? Number((r / c).toFixed(1)) : 0 };
+      return { name, count: scanCount, avgRating: 0 };
     }).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
   })();
 
