@@ -895,7 +895,7 @@ export default function Home() {
 
           <div className="flex-1 overflow-y-auto p-4 bg-[#FAEEED]/20">
             {/* Classification Filter Tabs */}
-            <div className="flex gap-2 p-1.5 bg-white rounded-2xl shadow-sm border border-slate-100 mb-6 max-w-2xl mx-auto overflow-x-auto no-scrollbar">
+            <div className="flex gap-2 p-1.5 bg-white rounded-2xl shadow-sm border border-slate-100 mb-6 max-w-2xl mx-auto overflow-x-auto no-scrollbar sticky top-0 z-10">
               {[
                 { id: "ALL", label: "All Destinations" },
                 { id: "Beach", label: "🏖️ Beaches" },
@@ -906,7 +906,7 @@ export default function Home() {
               ].map((cat) => (
                 <button
                   key={cat.id}
-                  onClick={() => setDestCategoryFilter(cat.id)}
+                  onClick={() => { setDestCategoryFilter(cat.id); }}
                   className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap ${
                     destCategoryFilter === cat.id
                       ? "bg-slate-900 text-white shadow-md"
