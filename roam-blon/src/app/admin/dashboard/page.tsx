@@ -102,6 +102,7 @@ export default function AdminDashboardPage() {
   const [newReviewCount, setNewReviewCount] = useState(0);
   const [liveScanCount, setLiveScanCount] = useState(0);
   const [scanVisits, setScanVisits] = useState<Record<string, number>>({});
+  const [scanTypes, setScanTypes] = useState<Record<string, string>>({});
   const [reviewTabPulse, setReviewTabPulse] = useState(false);
 
   // True while the one-time seed is inserting rows, so realtime scan events from
@@ -118,7 +119,7 @@ export default function AdminDashboardPage() {
 
   const dismissToast = (id: string) => setLiveToasts(prev => prev.filter(t => t.id !== id));
 
-  const recordScanVisit = (name: string) => {
+  const recordScanVisit = (name: string, itemType?: string) => {
     if (!name) return;
     setScanVisits(prev => {
       const key = Object.keys(prev).find(k => k.toLowerCase() === name.toLowerCase()) || name;
@@ -126,6 +127,7 @@ export default function AdminDashboardPage() {
       try { localStorage.setItem('roam_blon_scan_visits', JSON.stringify(next)); } catch { /* ignore */ }
       return next;
     });
+    if (itemType) setScanTypes(prev => ({ ...prev, [name]: itemType }));
   };
 
   // Modal & Editing states
@@ -247,7 +249,8 @@ export default function AdminDashboardPage() {
   const scannedDining = getMostVisited('dining', true);
 
   // All-destinations series for the analytics graph — every destination on the X-axis,
-  // counting live QR scan reviews, sorted by most visited.
+  // counting live QR scan reviews, sorted by most visited. Dining spot scans are
+  // excluded using the scan's own item_type (authoritative), with a name fallback.
   const allDestinationsSeries = (() => {
     // Dining spot names must never appear on the destination panel. Match flexibly
     // (short-form scan names like "Panublion" must match "Panublion Heritage Diner").
@@ -264,11 +267,17 @@ export default function AdminDashboardPage() {
         (lower.length >= 4 && (lower.includes(d) || d.includes(lower)))
       );
     };
+    const isDiningScan = (n: string) => {
+      const t = scanTypes[n] || scanTypes[Object.keys(scanTypes).find(k => k.toLowerCase() === n.toLowerCase()) || ''];
+      if (t === 'dining') return true;
+      if (t === 'destination') return false;
+      return isDiningName(n);
+    };
     // Start from every registered destination (X-axis includes all of them)
-    const names = destinations.map((d: any) => d.name).filter((n: any) => n && !isDiningName(n));
+    const names = destinations.map((d: any) => d.name).filter((n: any) => n && !isDiningScan(n));
     // Also include destinations that were scanned but aren't in the list yet
     Object.keys(scanVisits).forEach(n => {
-      if (!names.some((x: string) => x.toLowerCase() === n.toLowerCase()) && !isDiningName(n)) names.push(n);
+      if (!names.some((x: string) => x.toLowerCase() === n.toLowerCase()) && !isDiningScan(n)) names.push(n);
     });
     return names.map(name => {
       const scanKey = Object.keys(scanVisits).find(k => k.toLowerCase() === name.toLowerCase());
@@ -295,10 +304,13 @@ export default function AdminDashboardPage() {
     if (!names.some((x: string) => x.toLowerCase() === "gangnam korean grill")) names.unshift("Gangnam Korean Grill");
     // Fold scanned names into the known-dining set so dining scans count on this panel
     const known = new Set(names.map((n: string) => n.toLowerCase()));
-    const scannedDiningNames = Object.keys(scanVisits).filter(n =>
-      known.has(n.toLowerCase()) ||
-      /restaur|grill|bistro|caf|diner|lois|trattoria|bar &|food house|seafood|lounge|kitchen/i.test(n)
-    );
+    const scannedDiningNames = Object.keys(scanVisits).filter(n => {
+      const t = scanTypes[n] || scanTypes[Object.keys(scanTypes).find(k => k.toLowerCase() === n.toLowerCase()) || ''];
+      if (t === 'dining') return true;
+      if (t === 'destination') return false;
+      return known.has(n.toLowerCase()) ||
+        /restaur|grill|bistro|caf|diner|lois|trattoria|bar &|food house|seafood|lounge|kitchen/i.test(n);
+    });
     scannedDiningNames.forEach(n => {
       if (!known.has(n.toLowerCase())) names.push(n);
     });
@@ -371,18 +383,21 @@ export default function AdminDashboardPage() {
       const { data: diningCountData } = await supabase.from('dining_hubs').select('id');
       const diningCount = diningCountData?.length || 0;
 
-      const { data: scanCountData } = await supabase.from('qr_scans').select('id, nationality, visitor_type, item_name');
+      const { data: scanCountData } = await supabase.from('qr_scans').select('id, nationality, visitor_type, item_name, item_type');
       const scanDbCount = scanCountData?.length || 0;
 
       // Rebuild graph visit counters directly from the qr_scans rows so the charts
       // always equal the total scan count (each scan = 1 visit).
       const visitsFromDb: Record<string, number> = {};
+      const typesFromDb: Record<string, string> = {};
       (scanCountData || []).forEach((s: any) => {
         if (!s.item_name) return;
         const key = Object.keys(visitsFromDb).find(k => k.toLowerCase() === s.item_name.toLowerCase()) || s.item_name;
         visitsFromDb[key] = (visitsFromDb[key] || 0) + 1;
+        if (s.item_type) typesFromDb[key] = s.item_type;
       });
       setScanVisits(visitsFromDb);
+      setScanTypes(typesFromDb);
 
       // Merge tourists table with localStorage (catches any offline/broadcast-only signups)
       const localTourists = JSON.parse(localStorage.getItem('roam_blon_tourists') || '[]');
@@ -806,7 +821,7 @@ export default function AdminDashboardPage() {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'qr_scans' }, (payload) => {
         const s = payload.new as any;
         if (!suppressScanBump.current) setLiveScanCount(prev => prev + 1);
-        if (!suppressScanBump.current) recordScanVisit(s.item_name);
+        if (!suppressScanBump.current) recordScanVisit(s.item_name, s.item_type);
         if (!suppressScanBump.current) {
           setTotalScans(prev => {
             const next = prev + 1;
@@ -878,7 +893,7 @@ export default function AdminDashboardPage() {
       .on('broadcast', { event: 'new_scan' }, ({ payload: s }: any) => {
         // Fallback — catches QR scans broadcast from the QR page if RLS blocks the DB insert
         if (!suppressScanBump.current) setLiveScanCount(prev => prev + 1);
-        if (!suppressScanBump.current) recordScanVisit(s.item_name);
+        if (!suppressScanBump.current) recordScanVisit(s.item_name, s.item_type);
         if (!suppressScanBump.current) {
           setTotalScans(prev => {
             const next = prev + 1;
