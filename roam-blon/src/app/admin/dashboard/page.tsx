@@ -1780,7 +1780,7 @@ export default function AdminDashboardPage() {
                     <div className="space-y-3">
                       {allDestinationsSeries.slice(0, 10).map((d: any, idx: number) => (
                         <div key={d.name} className="flex items-center gap-4 rounded-2xl bg-slate-50 px-4 py-3">
-                          <span className={`w-8 h-8 flex items-center justify-center rounded-xl font-black text-sm shrink-0 ${idx < 3 ? 'bg-rose-100 text-rose-600' : 'bg-slate-100 text-slate-500'}`}>{idx + 1}</span>
+                          <span className={`w-8 h-8 flex items-center justify-center rounded-xl font-black text-sm shrink-0 ${idx === 0 ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-300' : idx === 1 ? 'bg-slate-200 text-slate-700 ring-2 ring-slate-300' : idx === 2 ? 'bg-amber-100 text-amber-700 ring-2 ring-amber-300' : 'bg-slate-100 text-slate-500'}`}>{idx + 1}</span>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-black text-slate-900 truncate">{d.name}</p>
                           </div>
@@ -1821,7 +1821,7 @@ export default function AdminDashboardPage() {
                     <div className="space-y-3">
                       {allDiningSeries.slice(0, 10).map((d: any, idx: number) => (
                         <div key={d.name} className="flex items-center gap-4 rounded-2xl bg-slate-50 px-4 py-3">
-                          <span className={`w-8 h-8 flex items-center justify-center rounded-xl font-black text-sm shrink-0 ${idx < 3 ? 'bg-orange-100 text-orange-600' : 'bg-slate-100 text-slate-500'}`}>{idx + 1}</span>
+                          <span className={`w-8 h-8 flex items-center justify-center rounded-xl font-black text-sm shrink-0 ${idx === 0 ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-300' : idx === 1 ? 'bg-slate-200 text-slate-700 ring-2 ring-slate-300' : idx === 2 ? 'bg-amber-100 text-amber-700 ring-2 ring-amber-300' : 'bg-slate-100 text-slate-500'}`}>{idx + 1}</span>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-black text-slate-900 truncate">{d.name}</p>
                           </div>
