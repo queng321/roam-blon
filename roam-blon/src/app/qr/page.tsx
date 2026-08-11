@@ -600,7 +600,7 @@ function QRScanContent() {
   const getStaticBeach = (beachId: string) => {
     const STATIC: Record<string, any> = {
       "sd-bonbon": { id: "sd-bonbon", name: "Bonbon Beach", location: "Brgy. Lonos, Romblon", description: "The crown jewel of Romblon, featuring a world-famous sandbar that appears at low tide.", image_url: "/beach&resorts/bonbon.webp" },
-      "sd-peable": { id: "sd-peable", name: "Peable Walk", location: "Brgy. Ginablan, Romblon", description: "A wide, white-sand haven perfect for long stays with cozy cottages and towering palm trees.", image_url: "/beach&resorts/peable.jpg" },
+      "sd-peable": { id: "sd-peable", name: "Pebble Walk Beach Resort", location: "Brgy. Ginablan, Romblon", description: "A wide, white-sand haven perfect for long stays with cozy cottages and towering palm trees.", image_url: "/beach&resorts/peable.jpg" },
       "sd-tiamban": { id: "sd-tiamban", name: "Tiamban Beach", location: "Brgy. Lonos, Romblon", description: "Crystal clear shallow waters and fine white sand, ideal for families and children.", image_url: "/beach&resorts/tiamban.webp" },
       "sd-talipasak": { id: "sd-talipasak", name: "Talipasak Beach", location: "Brgy. Ginablan, Romblon", description: "A secluded cove offering peace, quiet, and a stunning view of the sunset.", image_url: "/beach&resorts/talipasak.webp" },
       "sd-lamao": { id: "sd-lamao", name: "Lamao Beach Resort", location: "Logbon Island, Romblon", description: "A pristine white beach on Logbon Island with turquoise waters, perfect for island hopping.", image_url: "/beach&resorts/lamao.jpg" },

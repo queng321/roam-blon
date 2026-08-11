@@ -77,7 +77,7 @@ const STATIC_DESTINATIONS = [
     info: { type: "Natural Beach", access: "Tricycle / Motorbike", bestTime: "Low Tide (6AM–9AM)", entranceFee: "₱10 public / ₱60 private", visitingHours: "6:00 AM - 6:00 PM", features: ["Famous Sandbar", "Snorkeling", "Swimming", "Sunset View"] }
   },
   {
-    id: "sd-peable", name: "Peable Walk", barangay: "Brgy. Sablayan",
+    id: "sd-peable", name: "Pebble Walk Beach Resort", barangay: "Brgy. Sablayan",
     address: "Sitio Lahong, Brgy. Sablayan, Romblon Island, 5500 Romblon",
     contact: "+63 928 554 9918",
     desc: "A wide, white-sand paradise bordered by lush coconut groves and cozy beachside cottages. Offers clear turquoise waters for snorkeling, beach volleyball, and relaxed weekend stays.",

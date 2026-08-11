@@ -156,7 +156,7 @@ export default function AdminDashboardPage() {
         { item_type: "destination", item_id: "sd-robinson", item_name: "Robinson's Cove",  visitor_type: "local",   nationality: "Local" },
         { item_type: "destination", item_id: "sd-robinson", item_name: "Robinson's Cove",  visitor_type: "foreign", nationality: "Foreign" },
         { item_type: "destination", item_id: "sd-horizon",  item_name: "Horizon Hotel Romblon",visitor_type: "local", nationality: "Local" },
-        { item_type: "destination", item_id: "sd-peable",   item_name: "Peable Walk",      visitor_type: "local",   nationality: "Local" },
+        { item_type: "destination", item_id: "sd-peable",   item_name: "Pebble Walk Beach Resort", visitor_type: "local",   nationality: "Local" },
         { item_type: "dining", item_id: "el",       item_name: "El Krimphoff Resort",       visitor_type: "local",   nationality: "Local" },
         { item_type: "dining", item_id: "el",       item_name: "El Krimphoff Resort",       visitor_type: "local",   nationality: "Local" },
         { item_type: "dining", item_id: "gangnam",  item_name: "Gangnam Korean Grill",     visitor_type: "local",   nationality: "Local" },
@@ -2720,7 +2720,7 @@ export default function AdminDashboardPage() {
                   };
                   const SHORES = [
                     { id: "sd-bonbon",    name: "Bonbon Beach",         location: "Brgy. Lonos",      tag: "Sandbar",         type: "Natural", category: "Beach",  image: "/beach&resorts/bonbon.jpg" },
-                    { id: "sd-peable",    name: "Peable Walk",          location: "Brgy. Ginablan",   tag: "Top Rated",       type: "Resort",  category: "Resort", image: "/beach&resorts/peabble.jpg" },
+                    { id: "sd-peable",    name: "Pebble Walk Beach Resort", location: "Brgy. Ginablan",   tag: "Top Rated",       type: "Resort",  category: "Resort", image: "/beach&resorts/peabble.jpg" },
                     { id: "sd-tiamban",   name: "Tiamban Beach",        location: "Brgy. Lonos",      tag: "Family Friendly", type: "Natural", category: "Beach",  image: "/beach&resorts/tiamban.jpg" },
                     { id: "sd-talipasak", name: "Talipasak Beach",      location: "Brgy. Ginablan",   tag: "Hidden Gem",      type: "Natural", category: "Beach",  image: "/beach&resorts/talipasak.jpg" },
                     { id: "sd-lamao",     name: "Lamao Beach Resort",   location: "Logbon Island",    tag: "Pristine",        type: "Natural", category: "Resort", image: "/beach&resorts/lamao.jpg" },
