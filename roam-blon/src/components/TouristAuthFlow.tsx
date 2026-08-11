@@ -19,7 +19,7 @@ interface TouristData {
   adminIdProof?: string;
 }
 
-type Role = "admin" | "rental_owner" | "tourist" | "tour_guide" | "";
+type Role = "admin" | "tourist" | "tour_guide" | "";
 
 type Screen =
   | "landing"
@@ -619,14 +619,6 @@ function ScreenRolePicker({ onSelectRole, onBack }: ScreenRolePickerProps) {
       lightBg: "#e8ecf4",
     },
     {
-      key: "rental_owner",
-      emoji: "🏍️",
-      title: "Motorcycle Rental Owner",
-      subtitle: "Manage your vehicle fleet & bookings",
-      color: "#16a34a",
-      lightBg: "#f0fdf4",
-    },
-    {
       key: "tour_guide",
       emoji: "🧭",
       title: "Tour Guide",
@@ -744,7 +736,7 @@ function ScreenSignIn({ role, onNext, onGoSignUp, errorMessage }: ScreenSignInPr
         return;
       }
 
-      const tableName = role === "admin" ? "admins" : role === "rental_owner" ? "rental_owners" : role === "tour_guide" ? "tour_guides" : "tourists";
+      const tableName = role === "admin" ? "admins" : role === "tour_guide" ? "tour_guides" : "tourists";
       let { data: existing } = await supabase
         .from(tableName)
         .select("*")
@@ -1294,7 +1286,7 @@ function ScreenWelcome({ tourist, role, onExplore }: ScreenWelcomeProps) {
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = "translateY(0)";
         }}>
-        {role === "admin" || role === "rental_owner" ? "Enter Dashboard ⚙️" : "Enter Explorer 🌊"}
+        {role === "admin" ? "Enter Dashboard ⚙️" : "Enter Explorer 🌊"}
       </button>
     </div>
   );
@@ -1356,15 +1348,14 @@ export default function TouristAuthFlow({ onComplete, onCancel, initialScreen = 
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         // Try to identify which role/table this user belongs to
-        const [ {data: admin}, {data: rOwner}, {data: guide}, {data: tourist} ] = await Promise.all([
+        const [ {data: admin}, {data: guide}, {data: tourist} ] = await Promise.all([
           supabase.from('admins').select('*').eq('email', user.email).maybeSingle(),
-          supabase.from('rental_owners').select('*').eq('email', user.email).maybeSingle(),
           supabase.from('tour_guides').select('*').eq('email', user.email).maybeSingle(),
           supabase.from('tourists').select('*').eq('email', user.email).maybeSingle()
         ]);
 
-        const extProfile = admin || rOwner || guide || tourist;
-        const detRole: Role = admin ? "admin" : rOwner ? "rental_owner" : guide ? "tour_guide" : tourist ? "tourist" : "";
+        const extProfile = admin || guide || tourist;
+        const detRole: Role = admin ? "admin" : guide ? "tour_guide" : tourist ? "tourist" : "";
 
         if (extProfile && detRole) {
           handleAuthSuccess({ email: user.email!, existingProfile: extProfile, detectedRole: detRole });
@@ -1517,8 +1508,6 @@ export default function TouristAuthFlow({ onComplete, onCancel, initialScreen = 
 
     if (role === 'admin' && currentPath !== '/admin/dashboard') {
       router.push('/admin/dashboard');
-    } else if (role === 'rental_owner' && currentPath !== '/admin/rentals') {
-      router.push('/admin/rentals');
     } else if (role === 'tour_guide' && currentPath !== '/guide/dashboard') {
       router.push('/guide/dashboard');
     }
@@ -1692,7 +1681,6 @@ export default function TouristAuthFlow({ onComplete, onCancel, initialScreen = 
               <h2 style={{ fontSize: "24px", fontWeight: "900", color: C.navy, marginBottom: "24px" }}>Admin Access</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 <button style={S.btnPrimary} onClick={() => { setRole("admin"); setScreen("signin"); }}>Tourism Officer</button>
-                <button style={S.btnPrimary} onClick={() => { setRole("rental_owner"); setScreen("signin"); }}>Rental Owner</button>
                 <button style={S.btnPrimary} onClick={() => { setRole("tour_guide"); setScreen("signin"); }}>Tour Guide</button>
                 <button style={{ ...S.btnSecondary, marginTop: "12px" }} onClick={() => setScreen("landing")}>Back</button>
               </div>

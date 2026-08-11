@@ -727,19 +727,7 @@ export default function AdminDashboardPage() {
           });
           await fetchDashboardData();
         } else {
-          // Check for Rental Owner if admin check fails
-          const { data: rOwner } = await supabase
-            .from('rental_owners')
-            .select('*')
-            .eq('email', user.email)
-            .maybeSingle();
-          
-          if (rOwner) {
-            router.push('/admin/rentals');
-            return;
-          }
-
-          // Logged in but not an admin/rental owner -> route to admin login
+          // Logged in but not an admin -> route to admin login
           router.push('/login?role=admin');
           return;
         }
@@ -1855,9 +1843,9 @@ export default function AdminDashboardPage() {
                     </span>
                   </div>
                   <AnalyticsGraph
-                    title="Most Visited Destinations"
-                    subtitle="All tourist destinations ranked by QR scan visits"
-                    items={allDestinationsSeries}
+                    title="Top 10 Most Visited Destinations"
+                    subtitle="Top 10 tourist destinations ranked by QR scan visits"
+                    items={allDestinationsSeries.slice(0, 10)}
                     accentColor="rose"
                     byVisits
                     hideLegend

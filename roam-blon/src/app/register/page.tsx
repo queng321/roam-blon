@@ -9,8 +9,6 @@ export default function RegisterPage() {
   const handleComplete = (data: any) => {
     if (data?.role === "admin") {
       router.push("/admin/dashboard");
-    } else if (data?.role === "rental_owner") {
-      router.push("/admin/rentals");
     } else if (data?.role === "tour_guide") {
       router.push("/guide/dashboard");
     } else {

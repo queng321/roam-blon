@@ -462,14 +462,7 @@ export default function Home() {
             setShowAuth(false);
             setView('welcome');
           } else {
-            // 1. Check Rental Owner
-            const { data: rOwner } = await supabase.from('rental_owners').select('*').ilike('email', userEmail).maybeSingle();
-            if (rOwner) {
-              router.push('/admin/rentals');
-              return;
-            }
-
-            // 2. Check Tour Guide
+            // 1. Check Tour Guide
             const { data: guide } = await supabase.from('tour_guides').select('*').ilike('email', userEmail).maybeSingle();
             if (guide && guide.status === 'approved') {
               router.push('/guide/dashboard');
@@ -681,8 +674,6 @@ export default function Home() {
 
     if (touristData?.role === 'admin') {
       router.push('/admin/dashboard');
-    } else if (touristData?.role === 'rental_owner') {
-      router.push('/admin/rentals');
     } else if (touristData?.role === 'tour_guide') {
       router.push('/guide/dashboard');
     } else {
