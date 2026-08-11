@@ -525,8 +525,10 @@ function QRScanContent() {
     } catch { /* ignore */ }
   };
 
-  // Ask local/foreign on EVERY scan, then record the scan with their answer
+  // Record the scan immediately (so it ALWAYS shows up in logs), then ask
+  // local/foreign and update the classification if they answer.
   const recordScan = (itemId: string, itemName: string) => {
+    logQRScan(type, itemId, itemName);
     setVisitorPrompt(true);
   };
 
@@ -689,8 +691,15 @@ function QRScanContent() {
     setVisitorType(val);
     setVisitorPrompt(false);
     try { localStorage.setItem("roam_blon_visitor_classified", val); } catch { /* ignore */ }
-    // Record the scan now with the chosen classification
-    logQRScan(type, id, item?.name || "Location");
+    // The scan was already recorded — just update its classification
+    try {
+      supabase.from("qr_scans")
+        .update({ visitor_type: val, nationality: (val === "foreign" ? "Foreign" : "Local") })
+        .eq("item_type", type)
+        .eq("item_id", id)
+        .lt("scanned_at", new Date(Date.now() + 2000).toISOString())
+        .gt("scanned_at", new Date(Date.now() - 60000).toISOString());
+    } catch { /* ignore */ }
   };
 
   if (loading) return (
