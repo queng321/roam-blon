@@ -440,14 +440,8 @@ export default function AdminDashboardPage() {
         t => t.created_at && new Date(t.created_at) >= oneWeekAgo
       ).length;
 
-      // Compute top nationalities (tourists + anonymous QR scan visitors)
+      // Compute top nationalities from QR scan visitors only
       const natMap: Record<string, number> = {};
-      combinedTourists.forEach(t => {
-        if (t.nationality) {
-          const n = t.nationality.toLowerCase() === 'local' ? 'Local' : 'Foreign';
-          natMap[n] = (natMap[n] || 0) + 1;
-        }
-      });
       // Merge in every scan's recorded nationality so scanned Local/Foreign visitors count too
       let scanNatData: any[] = [];
       try {
