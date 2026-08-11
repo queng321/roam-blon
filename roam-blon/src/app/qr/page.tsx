@@ -525,13 +525,9 @@ function QRScanContent() {
     } catch { /* ignore */ }
   };
 
-  // Ask local/foreign FIRST, then record the scan with their answer
+  // Ask local/foreign on EVERY scan, then record the scan with their answer
   const recordScan = (itemId: string, itemName: string) => {
-    if (localStorage.getItem("roam_blon_visitor_classified")) {
-      logQRScan(type, itemId, itemName);
-    } else {
-      setVisitorPrompt(true);
-    }
+    setVisitorPrompt(true);
   };
 
   const fetchItem = async () => {
