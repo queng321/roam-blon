@@ -1608,10 +1608,10 @@ export default function AdminDashboardPage() {
             {activeTab === 'dashboard' && (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                  <StatCard label="Total Number of Visitor Logs" value={totalVisitorLogs} icon={<Users />} color="bg-rose-100 text-rose-700" />
-                  <StatCard label="Total Number of Destinations" value={destinations.length > 0 ? destinations.length : stats.destinations} icon={<MapPin />} color="bg-orange-100 text-orange-700" />
-                  <StatCard label="Total Number of Dining Spots" value={allServices.dining.length > 0 ? allServices.dining.length : stats.diningSpots} icon={<Building />} color="bg-violet-100 text-violet-700" />
-                  <StatCard label="Booked Tour Guides" value={guideBookings.filter((b: any) => !b.status || b.status === 'pending').length} icon={<Users />} color="bg-blue-100 text-blue-700" />
+                  <StatCard label="Total Number of Visitor Logs" value={totalVisitorLogs} icon={<Users />} color="bg-rose-100 text-rose-700" onClick={() => setActiveTab('tourists')} />
+                  <StatCard label="Total Number of Destinations" value={destinations.length > 0 ? destinations.length : stats.destinations} icon={<MapPin />} color="bg-orange-100 text-orange-700" onClick={() => setActiveTab('destinations')} />
+                  <StatCard label="Total Number of Dining Spots" value={allServices.dining.length > 0 ? allServices.dining.length : stats.diningSpots} icon={<Building />} color="bg-violet-100 text-violet-700" onClick={() => setActiveTab('services')} />
+                  <StatCard label="Booked Tour Guides" value={guideBookings.filter((b: any) => !b.status || b.status === 'pending').length} icon={<Users />} color="bg-blue-100 text-blue-700" onClick={() => setActiveTab('bookings')} />
                 </div>
 
                 {/* --- TOURIST INSIGHTS PANEL --- */}
@@ -3104,9 +3104,12 @@ function SidebarLink({ icon, label, active = false, onClick }: any) {
   );
 }
 
-function StatCard({ label, value, icon, color, isDecimal = false }: any) {
+function StatCard({ label, value, icon, color, isDecimal = false, onClick }: any) {
   return (
-    <div className="bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-[#EBEBEB] shadow-sm hover:shadow-xl transition-all">
+    <button
+      onClick={onClick}
+      className="text-left bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-[#EBEBEB] shadow-sm hover:shadow-xl transition-all hover:-translate-y-1"
+    >
       <div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-6 ${color}`}>
         {React.cloneElement(icon as React.ReactElement<any>, { size: 24 })}
       </div>
@@ -3114,7 +3117,7 @@ function StatCard({ label, value, icon, color, isDecimal = false }: any) {
       <div className="text-3xl md:text-5xl font-black text-slate-900 italic leading-none tracking-tighter">
         {isDecimal ? value.toFixed(1) : value.toLocaleString()}
       </div>
-    </div>
+    </button>
   );
 }
 
