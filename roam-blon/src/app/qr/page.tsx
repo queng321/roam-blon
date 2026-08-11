@@ -492,30 +492,30 @@ function QRScanContent() {
     } catch {
       /* ignore if table not present */
     }
-    if (!inserted) {
-      // Broadcast fallback — catches scans when the DB insert fails (missing table / RLS)
-      try {
-        const classified = (typeof localStorage !== "undefined" ? localStorage.getItem("roam_blon_visitor_classified") : null) as "local" | "foreign" | null;
-        const vType = visitorType || classified || "local";
-        const chan = supabase.channel('admin-live-feed');
-        await chan.subscribe((status) => {
-          if (status === 'SUBSCRIBED') {
-            chan.send({
-              type: 'broadcast',
-              event: 'new_scan',
-              payload: {
-                item_type: itemType,
-                item_id: itemId,
-                item_name: itemName,
-                visitor_type: vType,
-                nationality: (vType === "foreign" ? "Foreign" : "Local"),
-              },
-            });
-            supabase.removeChannel(chan);
-          }
-        });
-      } catch { /* ignore */ }
-    }
+    // Always broadcast the scan so the admin dashboard updates in real time,
+    // even when the DB insert succeeds but the table isn't in the realtime
+    // publication (postgres_changes won't fire in that case).
+    try {
+      const classified = (typeof localStorage !== "undefined" ? localStorage.getItem("roam_blon_visitor_classified") : null) as "local" | "foreign" | null;
+      const vType = visitorType || classified || "local";
+      const chan = supabase.channel('admin-live-feed');
+      await chan.subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          chan.send({
+            type: 'broadcast',
+            event: 'new_scan',
+            payload: {
+              item_type: itemType,
+              item_id: itemId,
+              item_name: itemName,
+              visitor_type: vType,
+              nationality: (vType === "foreign" ? "Foreign" : "Local"),
+            },
+          });
+          supabase.removeChannel(chan);
+        }
+      });
+    } catch { /* ignore */ }
 
     // Mark as scanned (persists across refresh)
     try {
