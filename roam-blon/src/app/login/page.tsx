@@ -10,6 +10,7 @@ function LoginPageInner() {
   const initialRole = (params.get("role") as "admin" | "tour_guide" | "tourist") || "tourist";
 
   const handleComplete = (data: any) => {
+    if (data?.role) localStorage.setItem("roam_blon_active_role", data.role);
     if (data?.role === "admin") {
       router.push("/admin/dashboard");
     } else if (data?.role === "tour_guide") {
