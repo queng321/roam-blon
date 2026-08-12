@@ -1579,6 +1579,7 @@ export default function Home() {
               <div className="flex flex-col">
                 <span className="font-black text-2xl md:text-3xl text-slate-900 uppercase tracking-tighter leading-none">ROAM-BLON</span>
                 <span className="text-[10px] md:text-xs font-bold text-rose-500 tracking-[0.2em] uppercase">AI Integrated Travel Buddy</span>
+                <span className="text-[9px] md:text-[10px] font-bold text-slate-400 tracking-wide" style={{ maxWidth: 300 }}>This is a Capstone Project of 4th year BSIT Students of RSU - Romblon Campus</span>
               </div>
             </div>
 
