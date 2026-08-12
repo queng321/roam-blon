@@ -267,8 +267,10 @@ function Brand() {
 function ScreenLanding({ onTourist, onAdmin, onScanQR }: ScreenLandingProps) {
   return (
     <div style={{ ...S.card, textAlign: "center", padding: "48px 40px" }}>
-      {/* Animated travel icon */}
-      <div style={{ fontSize: "72px", marginBottom: "20px", lineHeight: 1, animation: "float 3s ease-in-out infinite" }}>🌏</div>
+      {/* Logo */}
+      <div style={{ width: 96, height: 96, margin: "0 auto 20px", borderRadius: 24, overflow: "hidden", border: `3px solid ${C.bg}`, boxShadow: "0 8px 24px rgba(0,0,0,0.08)", background: "#fff", animation: "float 3s ease-in-out infinite" }}>
+        <img src="/logo.jpg" alt="Roam-Blon Logo" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+      </div>
 
       <div style={{ fontSize: "12px", color: C.coral, fontWeight: "800", letterSpacing: "0.2em", marginBottom: "8px", textTransform: "uppercase" }}>
         Welcome to the Marble Capital of the Philippines
