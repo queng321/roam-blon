@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { Loader2, CheckCircle2, ClipboardList, X } from "lucide-react";
+import { Loader2, CheckCircle2, ClipboardList, X, ArrowLeft } from "lucide-react";
 
 interface EvaluationData {
   name: string;
@@ -45,7 +46,8 @@ const QUESTIONS: { key: keyof Omit<EvaluationData, 'name' | 'email' | 'age' | 'g
   { key: "flexibility", sub: "Flexibility", question: "The system easily adapts to different travel scenarios, locations, and user needs." },
 ];
 
-export default function EvaluationForm() {
+export default function EvaluationForm({ standalone = false }: { standalone?: boolean }) {
+  const router = useRouter();
   const [form, setForm] = useState<EvaluationData>({
     name: "", email: "", age: "", gender: "", nationality: "",
     effectiveness: 0, efficiency: 0, usefulness: 0, trust: 0, pleasure: 0, comfort: 0,
@@ -54,7 +56,7 @@ export default function EvaluationForm() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(standalone);
 
   const handleSubmit = async () => {
     setError("");
@@ -107,12 +109,18 @@ export default function EvaluationForm() {
 
   if (submitted) {
     return (
-      <div className="bg-emerald-50 border-2 border-emerald-100 rounded-[2rem] p-10 text-center mb-10">
+      <div className="bg-emerald-50 border-2 border-emerald-100 rounded-[2rem] p-10 text-center">
         <CheckCircle2 size={48} className="text-emerald-500 mx-auto mb-4" />
         <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter italic">Thank You!</h3>
         <p className="text-slate-500 font-bold text-sm mt-2 max-w-md mx-auto">
-          Your responses have been recorded. Thank you for your expertise and time in evaluating our system.
+          Thank you for answering this evaluation. Your responses have been recorded and will be used solely for research purposes.
         </p>
+        <button
+          onClick={() => router.push("/")}
+          className="mt-6 inline-flex items-center gap-2 px-8 py-3 bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest rounded-xl text-xs transition-all"
+        >
+          <ArrowLeft size={14} /> Back to Roam-Blon
+        </button>
       </div>
     );
   }
@@ -121,7 +129,7 @@ export default function EvaluationForm() {
     return (
       <div className="mb-3">
         <button
-          onClick={() => setOpen(true)}
+          onClick={() => router.push("/evaluation")}
           className="inline-flex items-center gap-2 px-3 py-1 bg-rose-50 rounded-full border border-rose-100 hover:bg-rose-100 transition-all"
         >
           <ClipboardList size={12} className="text-rose-500" />
@@ -141,13 +149,15 @@ export default function EvaluationForm() {
           <h3 className="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter italic">Help Us Improve Our System</h3>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">By answering this evaluation form</p>
         </div>
-        <button
-          onClick={() => setOpen(false)}
-          className="ml-auto w-9 h-9 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-all"
-          title="Close"
-        >
-          <X size={16} />
-        </button>
+        {!standalone && (
+          <button
+            onClick={() => setOpen(false)}
+            className="ml-auto w-9 h-9 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-all"
+            title="Close"
+          >
+            <X size={16} />
+          </button>
+        )}
       </div>
 
       <p className="text-xs md:text-sm text-slate-500 font-medium leading-relaxed mb-6">
