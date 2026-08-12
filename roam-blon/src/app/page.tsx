@@ -424,7 +424,7 @@ export default function Home() {
   const isOverlayOpen = showMap || showDestinations || showLogoutConfirm || showAuth;
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    try { await supabase.auth.signOut(); } catch { /* ignore — always clear local state */ }
     localStorage.removeItem("roam_blon_tourist_user");
     localStorage.removeItem("roam_blon_active_role");
     setTourist(null);
@@ -703,6 +703,22 @@ export default function Home() {
     } else {
       setView(targetView);
     }
+  };
+
+  const openProfile = () => {
+    setMobileMenuOpen(false);
+    if (!tourist) {
+      setAuthInitialScreen('signin');
+      setShowAuth(true);
+    } else {
+      handleNavClick("profile");
+    }
+  };
+
+  const openLogin = () => {
+    setMobileMenuOpen(false);
+    setAuthInitialScreen('signin');
+    setShowAuth(true);
   };
 
   return (
@@ -1596,8 +1612,8 @@ export default function Home() {
                 {mobileMenuOpen ? <X size={24} className="text-slate-900" /> : <Menu size={24} className="text-slate-900" />}
               </button>
               <button
-                onClick={() => handleNavClick("profile")}
-                title="My Profile"
+                onClick={openProfile}
+                title={tourist ? "My Profile" : "Login"}
                 className={`w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-white font-black text-sm uppercase transition-all shadow-sm ${
                   view === 'profile' ? 'bg-rose-600 ring-2 ring-rose-200' : 'bg-slate-900 hover:bg-rose-600'
                 }`}
@@ -1621,18 +1637,28 @@ export default function Home() {
               ))}
               <button onClick={() => handleNavClick("emergency")} className="px-3 py-2 rounded-lg text-sm font-black text-red-600 hover:bg-red-50 transition-all uppercase tracking-widest">EMERGENCY</button>
               <div className="w-px h-4 bg-slate-300 mx-1"></div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowLogoutConfirm(true)}
-                className="text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full w-9 h-9"
-              >
-                <LogOut size={18} />
-              </Button>
+              {tourist ? (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowLogoutConfirm(true)}
+                  title="Logout"
+                  className="text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full w-9 h-9"
+                >
+                  <LogOut size={18} />
+                </Button>
+              ) : (
+                <button
+                  onClick={openLogin}
+                  className="px-4 py-2 rounded-lg text-sm font-black text-white bg-slate-900 hover:bg-rose-600 transition-all uppercase tracking-widest"
+                >
+                  Login
+                </button>
+              )}
             </nav>
             <button
-              onClick={() => handleNavClick("profile")}
-              title="My Profile"
+              onClick={openProfile}
+              title={tourist ? "My Profile" : "Login"}
               className={`w-11 h-11 rounded-full overflow-hidden flex items-center justify-center text-white font-black text-sm uppercase transition-all shadow-sm ${
                 view === 'profile' ? 'bg-rose-600 ring-2 ring-rose-200' : 'bg-slate-900 hover:bg-rose-600'
               }`}
@@ -1662,20 +1688,22 @@ export default function Home() {
                 </button>
                 <div className="border-t-2 border-slate-100 my-3"></div>
                 <button
-                  onClick={() => handleNavClick("profile")}
+                  onClick={openProfile}
                   className={`w-full px-6 py-4 rounded-xl text-lg font-black transition-all text-left flex items-center gap-3 ${view === 'profile' ? 'bg-rose-50 text-rose-600 border-2 border-rose-200' : 'bg-slate-50 text-slate-700 border-2 border-slate-100 hover:bg-slate-100'}`}
                 >
                   <span className={`w-9 h-9 rounded-full overflow-hidden flex items-center justify-center text-white font-black text-sm uppercase ${view === 'profile' ? 'bg-rose-600' : 'bg-slate-900'}`}>
                     <TouristAvatar tourist={tourist} />
                   </span>
-                  My Profile
+                  {tourist ? 'My Profile' : 'Login / Sign Up'}
                 </button>
-                <button
-                  onClick={() => setShowLogoutConfirm(true)}
-                  className="w-full px-6 py-4 rounded-xl text-lg font-black text-slate-500 bg-slate-50 border-2 border-slate-100 hover:bg-red-50 hover:text-red-600 transition-all text-left flex items-center gap-3"
-                >
-                  <LogOut size={20} /> Logout
-                </button>
+                {tourist && (
+                  <button
+                    onClick={() => setShowLogoutConfirm(true)}
+                    className="w-full px-6 py-4 rounded-xl text-lg font-black text-slate-500 bg-slate-50 border-2 border-slate-100 hover:bg-red-50 hover:text-red-600 transition-all text-left flex items-center gap-3"
+                  >
+                    <LogOut size={20} /> Logout
+                  </button>
+                )}
               </div>
             </div>
           )}
@@ -1793,6 +1821,19 @@ export default function Home() {
 
         {view === "dining" && <section className="py-8 px-6 max-w-7xl mx-auto"><DiningList onLocate={handleViewLocation} /></section>}
         {view === "profile" && tourist && <TouristProfile tourist={tourist} onUpdate={setTourist} />}
+        {view === "profile" && !tourist && (
+          <section className="max-w-3xl mx-auto py-20 px-6 text-center">
+            <div className="text-5xl mb-4">🔒</div>
+            <h3 className="text-2xl font-black uppercase tracking-tighter italic text-slate-900 mb-2">Please Log In</h3>
+            <p className="text-slate-500 font-bold mb-8">Sign in to view and manage your tourist profile.</p>
+            <button
+              onClick={openLogin}
+              className="inline-flex items-center gap-2 bg-slate-900 hover:bg-rose-600 text-white font-black uppercase tracking-widest text-[12px] px-8 py-4 rounded-2xl transition-all shadow-lg"
+            >
+              Login / Sign Up
+            </button>
+          </section>
+        )}
         {view === "emergency" && (
           <section className="py-10 px-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* HERO */}
