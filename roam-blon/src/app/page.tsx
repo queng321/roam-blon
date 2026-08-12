@@ -1683,11 +1683,11 @@ export default function Home() {
       <div className="flex-1 pt-20 md:pt-28">
         {view === "welcome" && (
           <section className="max-w-7xl mx-auto py-6 px-6 animate-in fade-in duration-700">
-            {/* System evaluation survey checklist */}
-            <EvaluationForm />
-
             <div className="flex flex-col lg:flex-row gap-10 items-center mb-8 relative">
               <div className="flex-1 space-y-4">
+                {/* System evaluation survey checklist */}
+                <EvaluationForm />
+
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-rose-50 rounded-full border border-rose-100">
                   <Sparkles size={12} className="text-rose-500" />
                   <span className="text-[10px] font-black text-rose-600 uppercase tracking-widest">Experience More</span>

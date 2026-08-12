@@ -119,7 +119,7 @@ export default function EvaluationForm() {
 
   if (!open) {
     return (
-      <div className="mb-1">
+      <div className="-mb-2">
         <button
           onClick={() => setOpen(true)}
           className="inline-flex items-center gap-2 px-3 py-1 bg-rose-50 rounded-full border border-rose-100 hover:bg-rose-100 transition-all"
