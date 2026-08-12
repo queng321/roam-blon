@@ -248,8 +248,8 @@ export default function DiningList({ onLocate }: DiningListProps) {
     if (activeCategory === "all") return true;
     const cat = (shop.category || "").toLowerCase();
     if (activeCategory === "cafe") return cat.includes("coffee") || cat.includes("cafe") || cat.includes("café") || cat.includes("bistro") || cat.includes("lounge");
-    if (activeCategory === "bar") return cat.includes("bar");
-    if (activeCategory === "restaurant") return !cat.includes("coffee") && !cat.includes("cafe") && !cat.includes("café") && !cat.includes("bar") && !cat.includes("lounge");
+    if (activeCategory === "bar") return cat.includes("bar") || cat.includes("grill") || cat.includes("bbq");
+    if (activeCategory === "restaurant") return !cat.includes("coffee") && !cat.includes("cafe") && !cat.includes("café") && !cat.includes("bar") && !cat.includes("grill") && !cat.includes("bbq") && !cat.includes("lounge");
     return true;
   });
 
