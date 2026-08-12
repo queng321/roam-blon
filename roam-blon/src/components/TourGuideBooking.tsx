@@ -30,6 +30,7 @@ interface TourGuide {
   specialties?: string;
   specialty?: string;
   rate_per_day?: number;
+  rate_label?: string;
   bio?: string;
   rating?: number;
   status?: string;
@@ -49,77 +50,33 @@ interface BookingConfirmation {
 
 const STATIC_GUIDES: TourGuide[] = [
   {
-    id: "sg-marco",
-    name: "Marco Dela Cruz",
-    full_name: "Marco Dela Cruz",
-    photo_url: "/guides/boy.png",
-    email: "marco@roam-blon.com",
-    contact_number: "+63 917 555 1243",
-    languages: ["Filipino", "English", "Cebuano"],
-    specialties: "Island Hopping & Sandbars",
-    rate_per_day: 1500,
-    bio: "Born and raised in Romblon, Marco has spent over 8 years guiding travelers through the island's best-kept sandbar and snorkeling spots.",
-    rating: 4.9,
-    status: "approved",
-    is_available: true,
-  },
-  {
-    id: "sg-liza",
-    name: "Liza Fajardo",
-    full_name: "Liza Fajardo",
-    photo_url: "/guides/woman.png",
-    email: "liza@roam-blon.com",
-    contact_number: "+63 917 555 2109",
+    id: "sg-reynan",
+    name: "Reynan Jess Rivas",
+    full_name: "Reynan Jess Rivas",
+    photo_url: "/guides/barney.jpg",
+    email: "reynanjesse@gmail.com",
+    contact_number: "092772185",
     languages: ["Filipino", "English"],
-    specialties: "Heritage & Marble Sites",
-    rate_per_day: 1200,
-    bio: "A certified local historian, Liza specializes in walking tours through Romblon's marble quarries and centuries-old churches.",
-    rating: 4.8,
-    status: "approved",
-    is_available: true,
-  },
-  {
-    id: "sg-jun",
-    name: "Jun Rosales",
-    full_name: "Jun Rosales",
-    photo_url: "/guides/boy.png",
-    email: "jun@roam-blon.com",
-    contact_number: "+63 917 555 3397",
-    languages: ["Filipino", "English", "Japanese"],
-    specialties: "Diving & Marine Tours",
-    rate_per_day: 1800,
-    bio: "A licensed dive instructor with a passion for marine conservation, Jun leads reef tours and beginner-friendly diving trips around Logbon Island.",
-    rating: 5.0,
-    status: "approved",
-    is_available: true,
-  },
-  {
-    id: "sg-carlo",
-    name: "Carlo Versoza",
-    full_name: "Carlo Versoza",
-    photo_url: "/guides/boy.png",
-    email: "carlo@roam-blon.com",
-    contact_number: "+63 917 555 4462",
-    languages: ["Filipino", "English", "Hiligaynon"],
-    specialties: "Waterfalls & Hiking",
-    rate_per_day: 1300,
-    bio: "An avid trekker and nature lover, Carlo guides adventurous visitors through Romblon's lush mountain trails, hidden waterfalls, and jungle paths that most tourists never get to see.",
-    rating: 4.7,
-    status: "approved",
-    is_available: true,
-  },
-  {
-    id: "sg-ana",
-    name: "Ana Reyes",
-    full_name: "Ana Reyes",
-    photo_url: "/guides/woman.png",
-    email: "ana@roam-blon.com",
-    contact_number: "+63 917 555 5531",
-    languages: ["Filipino", "English", "German"],
-    specialties: "Snorkeling & Photography",
-    rate_per_day: 1600,
-    bio: "A certified underwater photographer and snorkeling instructor, Ana brings the vibrant coral reefs of Romblon to life. She crafts personalized photo-tour packages to help you capture the island beautifully.",
+    specialties: "Beach Tour Guide",
+    rate_per_day: 2000,
+    bio: "An experienced beach tour guide from Romblon, Reynan takes travelers to the island's finest white-sand beaches and crystal-clear waters, including the famous Bonbon Beach sandbar — always with a friendly, safe, and unforgettable island experience.",
     rating: 4.9,
+    status: "approved",
+    is_available: true,
+  },
+  {
+    id: "sg-jon",
+    name: "Jon Michael Musico",
+    full_name: "Jon Michael Musico",
+    photo_url: "/guides/jon.jpg",
+    email: "musicomagayamjonmichael@gmail.com",
+    contact_number: "09987266791",
+    languages: ["Filipino", "English"],
+    specialties: "Island Hopping, Land Tour",
+    rate_per_day: 1500,
+    rate_label: "₱1,000 - ₱1,500",
+    bio: "Jon is a certified local guide who leads unforgettable island-hopping adventures and scenic land tours around Romblon. He brings you to the island's best-kept coves, marine spots, and cultural landmarks, blending fun, history, and genuine local hospitality.",
+    rating: 4.8,
     status: "approved",
     is_available: true,
   },
@@ -136,7 +93,7 @@ function generateReferenceCode() {
 
 export default function TourGuideBooking({ tourist, initialDestination = "", compact = false }: { tourist: any; initialDestination?: string; compact?: boolean }) {
   const [guides, setGuides] = useState<TourGuide[]>(STATIC_GUIDES);
-  const [loading, setLoading] = useState(true);
+  const [loading] = useState(false);
 
   const [selectedGuide, setSelectedGuide] = useState<TourGuide | null>(null);
 
@@ -150,37 +107,6 @@ export default function TourGuideBooking({ tourist, initialDestination = "", com
   const [submitError, setSubmitError] = useState("");
 
   const [confirmation, setConfirmation] = useState<BookingConfirmation | null>(null);
-
-  useEffect(() => {
-    async function fetchGuides() {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from("tour_guides")
-          .select("*")
-          .eq("status", "approved");
-
-        if (error) throw error;
-        if (data && data.length > 0) {
-          // Normalize guide object field names
-          const formatted = data.map((g: any) => ({
-            ...g,
-            name: g.full_name || g.name,
-            photo_url: g.profile_image_url || g.photo_url,
-            specialties: Array.isArray(g.specialty) ? g.specialty.join(", ") : (g.specialty || g.specialties),
-            languages: Array.isArray(g.languages) ? g.languages : (g.languages ? g.languages.split(",").map((s: string) => s.trim()) : []),
-            is_available: g.is_available !== undefined ? g.is_available : true
-          }));
-          setGuides(formatted);
-        }
-      } catch (err) {
-        console.error("Failed to load tour guides", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchGuides();
-  }, []);
 
   const openBookingForm = (guide: TourGuide) => {
     if (guide.is_available === false) return;
@@ -450,7 +376,7 @@ export default function TourGuideBooking({ tourist, initialDestination = "", com
                   <div className="mt-auto flex items-center justify-between pt-3 border-t border-slate-100">
                     {guide.rate_per_day ? (
                       <span className="text-[12px] font-black text-slate-900">
-                        ₱{guide.rate_per_day.toLocaleString()}
+                        {guide.rate_label || `₱${guide.rate_per_day.toLocaleString()}`}
                         <span className="text-slate-400 font-bold">/day</span>
                       </span>
                     ) : null}
@@ -535,7 +461,7 @@ export default function TourGuideBooking({ tourist, initialDestination = "", com
                   {selectedGuide.rate_per_day && (
                     <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] font-bold text-slate-500">
                       <span className="bg-white px-3 py-2 rounded-2xl border border-slate-200">
-                        ₱{selectedGuide.rate_per_day.toLocaleString()}/day
+                        {selectedGuide.rate_label || `₱${selectedGuide.rate_per_day.toLocaleString()}`}/day
                       </span>
                     </div>
                   )}
