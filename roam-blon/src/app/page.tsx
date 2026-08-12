@@ -1268,7 +1268,7 @@ export default function Home() {
             <div className="text-rose-600 font-black text-xs md:text-sm tracking-[0.3em] uppercase mb-6 drop-shadow-sm">Welcome to the Marble Capital</div>
             <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tighter text-[#1a2236] leading-none">ROAM-BLON</h1>
             <div className="text-[11px] md:text-xs font-black text-slate-900 uppercase tracking-[0.25em] mb-3">Your AI Integrated Travel Buddy</div>
-            <p className="text-[10px] md:text-[11px] font-black text-slate-900 tracking-wide mb-12 uppercase">This is a Capstone Project of 4th year BSIT Students of RSU - Romblon Campus</p>
+            <p className="text-[10px] md:text-[11px] font-black text-slate-400 tracking-wide mb-12 uppercase">This is a Capstone Project of 4th year BSIT Students of RSU - Romblon Campus</p>
 
             <div className="bg-[#fdf9f7]/90 backdrop-blur-md p-6 md:p-8 rounded-[3rem] border-2 border-white shadow-[0_20px_40px_rgba(0,0,0,0.04)] mb-12 text-slate-800 relative group overflow-hidden max-w-lg mx-auto">
               {/* Decorative icon */}
@@ -1560,7 +1560,7 @@ export default function Home() {
               <div className="flex flex-col">
                 <span className="font-black text-2xl md:text-3xl text-slate-900 uppercase tracking-tighter leading-none">ROAM-BLON</span>
                 <span className="text-[10px] md:text-xs font-bold text-rose-500 tracking-[0.2em] uppercase">AI Integrated Travel Buddy</span>
-                <span className="text-[9px] md:text-[10px] font-black text-slate-900 tracking-wide uppercase" style={{ maxWidth: 300 }}>This is a Capstone Project of 4th year BSIT Students of RSU - Romblon Campus</span>
+                <span className="text-[9px] md:text-[10px] font-black text-slate-400 tracking-wide uppercase" style={{ maxWidth: 300 }}>This is a Capstone Project of 4th year BSIT Students of RSU - Romblon Campus</span>
               </div>
             </div>
 
