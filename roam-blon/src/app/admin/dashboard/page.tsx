@@ -98,6 +98,18 @@ export default function AdminDashboardPage() {
   const [reviews, setReviews] = useState<any[]>([]);
   const [reviewFilter, setReviewFilter] = useState<string>("all");
 
+  // Add Tour Guide state (managed from the Bookings tab)
+  const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
+  const [tourGuideForm, setTourGuideForm] = useState({
+    full_name: "",
+    email: "",
+    contact_number: "",
+    specialties: "",
+    languages: "",
+    rate_per_day: "",
+    bio: ""
+  });
+
   // Real-time notification state
   const [liveToasts, setLiveToasts] = useState<{id: string; reviewer: string; item: string; rating: number; comment: string; type: 'review' | 'guide_review' | 'scan' | 'booking'}[]>([]);
   const [newReviewCount, setNewReviewCount] = useState(0);
@@ -330,10 +342,60 @@ export default function AdminDashboardPage() {
     } catch (err) {
       console.warn("Could not update guide availability in DB, fallback to state update", err);
     }
+    // Persist to the shared local store so tourists see the change instantly too
+    const stored = JSON.parse(localStorage.getItem('roam_blon_tour_guides') || '[]');
+    const updated = stored.map((g: any) => g.id === guideId ? { ...g, is_available: newStatus } : g);
+    localStorage.setItem('roam_blon_tour_guides', JSON.stringify(updated));
     setAllServices(prev => ({
       ...prev,
       tourGuides: prev.tourGuides.map(g => g.id === guideId ? { ...g, is_available: newStatus } : g)
     }));
+    // Broadcast so open tourist booking panels update in real time
+    const guide = allServices.tourGuides.find((g: any) => g.id === guideId);
+    const guideName = guide?.full_name || guide?.name || "";
+    try {
+      const chan = supabase.channel('admin-live-feed');
+      await chan.subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          chan.send({ type: 'broadcast', event: 'guide_availability', payload: { guide_name: guideName, guide_id: guideId, is_available: newStatus } });
+          supabase.removeChannel(chan);
+        }
+      });
+    } catch { /* ignore */ }
+  };
+
+  // Mark a tour guide as unavailable (used when the admin accepts a booking)
+  const markGuideUnavailable = async (guideName: string) => {
+    if (!guideName) return;
+    try {
+      await supabase.from('tour_guides').update({ is_available: false }).ilike('full_name', `%${guideName}%`);
+    } catch (err) {
+      console.warn("Could not update guide availability in DB on accept", err);
+    }
+    const stored = JSON.parse(localStorage.getItem('roam_blon_tour_guides') || '[]');
+    const updated = stored.map((g: any) =>
+      (g.full_name || g.name || '').toLowerCase() === guideName.toLowerCase()
+        ? { ...g, is_available: false }
+        : g
+    );
+    localStorage.setItem('roam_blon_tour_guides', JSON.stringify(updated));
+    setAllServices(prev => ({
+      ...prev,
+      tourGuides: prev.tourGuides.map(g =>
+        (g.full_name || g.name || '').toLowerCase() === guideName.toLowerCase()
+          ? { ...g, is_available: false }
+          : g
+      )
+    }));
+    try {
+      const chan = supabase.channel('admin-live-feed');
+      await chan.subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          chan.send({ type: 'broadcast', event: 'guide_availability', payload: { guide_name: guideName, is_available: false } });
+          supabase.removeChannel(chan);
+        }
+      });
+    } catch { /* ignore */ }
   };
 
   // Status update for tour guide bookings
@@ -354,6 +416,13 @@ export default function AdminDashboardPage() {
 
     // Find the full booking from state for the broadcast payload
     const full = updatedBooking || stored.find((b: any) => b.id === bookingId) || guideBookings.find((b: any) => b.id === bookingId);
+
+    // When the admin accepts a booking, automatically mark the booked guide as unavailable
+    // so tourists can no longer book them for that date.
+    if ((newStatus === 'approved' || newStatus === 'confirmed') && full?.guide_name) {
+      await markGuideUnavailable(full.guide_name);
+    }
+
     if (full) {
       try {
         const chan = supabase.channel('admin-live-feed');
@@ -472,11 +541,21 @@ export default function AdminDashboardPage() {
       });
       setGuideBookings(combinedGuideBookings);
 
+      // Merge Supabase tour_guides with the shared local store so guides added
+      // from the Bookings tab appear here too.
+      const localGuides = JSON.parse(localStorage.getItem('roam_blon_tour_guides') || '[]');
+      const mergedGuides = [...(tourGuides || [])];
+      localGuides.forEach((lg: any) => {
+        if (!mergedGuides.some(dg => dg.id === lg.id || (dg.full_name || dg.name || '').toLowerCase() === (lg.full_name || lg.name || '').toLowerCase())) {
+          mergedGuides.push(lg);
+        }
+      });
+
       setAllServices({ 
         dining: dining || [], 
         souvenirs: souvenirs || [], 
         emergency: hotlines || [], 
-        tourGuides: (tourGuides || []).map((g: any) => ({
+        tourGuides: mergedGuides.map((g: any) => ({
           ...g,
           is_available: g.is_available !== undefined ? g.is_available : true
         })) 
@@ -611,6 +690,151 @@ export default function AdminDashboardPage() {
       alert(`${r.reviewer_name || 'Anonymous'}'s review has been removed!`);
     } catch (err: any) {
       alert(`Error removing review: ${err.message}`);
+    }
+  };
+
+  // ── TOUR GUIDE REVIEW MANAGEMENT ──
+  // Remove a single tour guide review (localStorage + DB + live sync)
+  const deleteGuideReview = async (r: any) => {
+    if (!confirm(`Remove review by ${r.tourist_name || r.tourist_email || 'Anonymous'} for "${r.guide_name || 'Tour Guide'}"?`)) return;
+    try {
+      // 1. Remove from localStorage cache
+      const stored = JSON.parse(localStorage.getItem('roam_blon_guide_reviews') || '[]');
+      const filtered = stored.filter((lr: any) =>
+        lr.id !== r.id &&
+        !(lr.guide_name === r.guide_name && lr.tourist_email === r.tourist_email &&
+          (lr.booking_id || lr.reference_code) === (r.booking_id || r.reference_code) &&
+          (lr.comment || '') === (r.comment || ''))
+      );
+      localStorage.setItem('roam_blon_guide_reviews', JSON.stringify(filtered));
+
+      // 2. Remove from Supabase via API route if it's a DB review
+      if (r.id && !String(r.id).startsWith('local_')) {
+        try {
+          await fetch(`/api/guide-reviews?id=${encodeURIComponent(r.id)}`, { method: 'DELETE' });
+        } catch { /* ignore */ }
+      }
+
+      // 3. Broadcast the removal so other open dashboards drop it too
+      try {
+        const chan = supabase.channel('admin-live-feed');
+        await chan.subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            chan.send({ type: 'broadcast', event: 'remove_guide_review', payload: { id: r.id, guide_name: r.guide_name, tourist_email: r.tourist_email, booking_id: r.booking_id, reference_code: r.reference_code } });
+            supabase.removeChannel(chan);
+          }
+        });
+      } catch { /* ignore */ }
+
+      setGuideReviews(prev => prev.filter((x: any) =>
+        x.id !== r.id &&
+        !(x.guide_name === r.guide_name && x.tourist_email === r.tourist_email &&
+          (x.booking_id || x.reference_code) === (r.booking_id || r.reference_code) &&
+          (x.comment || '') === (r.comment || ''))
+      ));
+      alert(`${r.tourist_name || r.tourist_email || 'Anonymous'}'s review for "${r.guide_name}" has been removed!`);
+    } catch (err: any) {
+      alert(`Error removing review: ${err.message}`);
+    }
+  };
+
+  // Remove ALL reviews for a specific tour guide (e.g. old/demo guide)
+  const clearGuideReviews = async (guideName: string) => {
+    if (!guideName) return;
+    if (!confirm(`Remove ALL reviews for "${guideName}"? This cleans up the old guide's ratings.`)) return;
+    try {
+      // 1. localStorage cache
+      const stored = JSON.parse(localStorage.getItem('roam_blon_guide_reviews') || '[]');
+      const filtered = stored.filter((lr: any) => !lr.guide_name || lr.guide_name.toLowerCase() !== guideName.toLowerCase());
+      localStorage.setItem('roam_blon_guide_reviews', JSON.stringify(filtered));
+
+      // 2. DB removal — try row-by-row then a bulk delete by name
+      const toDelete = guideReviews.filter(r => r.guide_name && r.guide_name.toLowerCase() === guideName.toLowerCase());
+      for (const r of toDelete) {
+        if (r.id && !String(r.id).startsWith('local_')) {
+          try { await fetch(`/api/guide-reviews?id=${encodeURIComponent(r.id)}`, { method: 'DELETE' }); } catch { /* ignore */ }
+        }
+      }
+      try { await fetch(`/api/guide-reviews?guide_name=${encodeURIComponent(guideName)}`, { method: 'DELETE' }); } catch { /* ignore */ }
+
+      // 3. Broadcast so other open dashboards drop them too
+      try {
+        const chan = supabase.channel('admin-live-feed');
+        await chan.subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            chan.send({ type: 'broadcast', event: 'clear_guide_reviews', payload: { guide_name: guideName } });
+            supabase.removeChannel(chan);
+          }
+        });
+      } catch { /* ignore */ }
+
+      setGuideReviews(prev => prev.filter(r => !r.guide_name || r.guide_name.toLowerCase() !== guideName.toLowerCase()));
+      alert(`All reviews for "${guideName}" have been removed!`);
+    } catch (err: any) {
+      alert(`Error clearing reviews: ${err.message}`);
+    }
+  };
+
+  // ── ADD NEW TOUR GUIDE (from Bookings tab) ──
+  const handleAddTourGuide = async () => {
+    if (!tourGuideForm.full_name.trim()) {
+      alert("Please enter the tour guide's full name.");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const newGuide: any = {
+        id: `guide-${Date.now()}`,
+        full_name: tourGuideForm.full_name.trim(),
+        name: tourGuideForm.full_name.trim(),
+        email: tourGuideForm.email.trim() || null,
+        contact_number: tourGuideForm.contact_number.trim() || null,
+        specialties: tourGuideForm.specialties.trim() || null,
+        specialty: tourGuideForm.specialties.trim() || null,
+        languages: tourGuideForm.languages.trim()
+          ? tourGuideForm.languages.split(",").map((s: string) => s.trim()).filter(Boolean)
+          : ["Filipino", "English"],
+        rate_per_day: Number(tourGuideForm.rate_per_day) || 1500,
+        bio: tourGuideForm.bio.trim() || null,
+        status: "approved",
+        is_available: true,
+        created_at: new Date().toISOString(),
+      };
+
+      // Try to persist to DB (falls back silently if the table isn't provisioned yet)
+      try {
+        const { error } = await supabase.from('tour_guides').insert([newGuide]);
+        if (error) console.warn("Tour guide DB insert notice:", error.message);
+      } catch (err) { console.warn("Tour guide DB insert fallback", err); }
+
+      // Persist to shared local store so tourists see the new guide immediately
+      const stored = JSON.parse(localStorage.getItem('roam_blon_tour_guides') || '[]');
+      if (!stored.some((g: any) => g.full_name && g.full_name.toLowerCase() === newGuide.full_name.toLowerCase())) {
+        stored.unshift(newGuide);
+      }
+      localStorage.setItem('roam_blon_tour_guides', JSON.stringify(stored));
+
+      // Update roster state
+      setAllServices(prev => ({ ...prev, tourGuides: [newGuide, ...prev.tourGuides.filter((g: any) => (g.full_name || g.name || '').toLowerCase() !== newGuide.full_name.toLowerCase())] }));
+
+      // Broadcast so open tourist booking panels refresh
+      try {
+        const chan = supabase.channel('admin-live-feed');
+        await chan.subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            chan.send({ type: 'broadcast', event: 'new_tour_guide', payload: newGuide });
+            supabase.removeChannel(chan);
+          }
+        });
+      } catch { /* ignore */ }
+
+      setIsGuideModalOpen(false);
+      setTourGuideForm({ full_name: "", email: "", contact_number: "", specialties: "", languages: "", rate_per_day: "", bio: "" });
+      alert(`Tour guide "${newGuide.full_name}" has been added and is now available!`);
+    } catch (err: any) {
+      alert(`Error adding tour guide: ${err.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -1004,6 +1228,42 @@ export default function AdminDashboardPage() {
         setGuideReviews(prev => {
           const rest = prev.filter((x: any) => !(x.booking_id && r.booking_id && x.booking_id === r.booking_id));
           return [{ ...r, id: r.id || `live_${Date.now()}` }, ...rest];
+        });
+      })
+      .on('broadcast', { event: 'remove_guide_review' }, ({ payload: r }: any) => {
+        // Another dashboard removed a guide review — drop it locally too
+        setGuideReviews(prev => prev.filter((x: any) =>
+          x.id !== r.id &&
+          !(x.guide_name === r.guide_name && x.tourist_email === r.tourist_email &&
+            (x.booking_id || x.reference_code) === (r.booking_id || r.reference_code))
+        ));
+      })
+      .on('broadcast', { event: 'clear_guide_reviews' }, ({ payload: r }: any) => {
+        // Another dashboard cleared all reviews for a guide — drop them locally too
+        if (r?.guide_name) {
+          setGuideReviews(prev => prev.filter((x: any) => !x.guide_name || x.guide_name.toLowerCase() !== r.guide_name.toLowerCase()));
+        }
+      })
+      .on('broadcast', { event: 'guide_availability' }, ({ payload: g }: any) => {
+        // Guide availability changed (accepted booking / manual toggle) — update roster live
+        setAllServices(prev => ({
+          ...prev,
+          tourGuides: prev.tourGuides.map((x: any) => {
+            const match = (g.guide_id && x.id === g.guide_id) ||
+              ((x.full_name || x.name || '').toLowerCase() === (g.guide_name || '').toLowerCase());
+            return match ? { ...x, is_available: g.is_available } : x;
+          })
+        }));
+      })
+      .on('broadcast', { event: 'new_tour_guide' }, ({ payload: g }: any) => {
+        // A new tour guide was added from the admin Bookings tab — show it in the roster
+        if (!g?.full_name) return;
+        setAllServices(prev => {
+          const exists = prev.tourGuides.some((x: any) =>
+            x.id === g.id || (x.full_name || x.name || '').toLowerCase() === g.full_name.toLowerCase()
+          );
+          if (exists) return prev;
+          return { ...prev, tourGuides: [g, ...prev.tourGuides] };
         });
       })
       .on('broadcast', { event: 'new_evaluation' }, () => {
@@ -2276,6 +2536,12 @@ export default function AdminDashboardPage() {
                       </span>
                     )}
                   </span>
+                  <button
+                    onClick={() => setIsGuideModalOpen(true)}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-black uppercase tracking-widest shadow-md transition-all"
+                  >
+                    <PlusCircle size={16} /> Add Tour Guide
+                  </button>
                 </div>
 
                 <div className="bg-white rounded-[3rem] p-10 border border-slate-100 shadow-sm overflow-x-auto">
@@ -2361,30 +2627,48 @@ export default function AdminDashboardPage() {
                                     })()}
                                  </td>
                                  <td className="py-6 px-4">
-                                    <div className="flex items-center gap-3">
-                                       <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm ${
-                                          b.status === 'approved' || b.status === 'confirmed' ? 'bg-emerald-500 text-white' : 
-                                          b.status === 'declined' || b.status === 'rejected' ? 'bg-rose-500 text-white' : 'bg-amber-100 text-amber-700'
-                                       }`}>{b.status || 'pending'}</span>
-                                       
-                                       <div className="flex gap-1">
-                                          {(b.status === undefined || b.status === null || b.status === 'pending') && (
-                                             <>
-                                             <button 
-                                                onClick={() => handleGuideBookingStatus(b.id, 'approved')}
-                                                className="px-3 py-1 bg-slate-900 hover:bg-emerald-600 text-white text-[9px] font-black uppercase rounded-lg transition-all"
-                                             >
-                                                ✓ Accept
-                                             </button>
-                                             <button 
-                                                onClick={() => handleGuideBookingStatus(b.id, 'declined')}
-                                                className="px-3 py-1 bg-slate-100 hover:bg-rose-500 hover:text-white text-slate-600 text-[9px] font-black uppercase rounded-lg transition-all"
-                                             >
-                                                ✗ Decline
-                                             </button>
-                                             </>
-                                          )}
+                                    <div className="flex flex-col items-start gap-2">
+                                       <div className="flex items-center gap-3">
+                                          <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm ${
+                                             b.status === 'approved' || b.status === 'confirmed' ? 'bg-emerald-500 text-white' : 
+                                             b.status === 'declined' || b.status === 'rejected' ? 'bg-rose-500 text-white' : 'bg-amber-100 text-amber-700'
+                                          }`}>{b.status || 'pending'}</span>
+                                          
+                                          <div className="flex gap-1">
+                                             {(b.status === undefined || b.status === null || b.status === 'pending') && (
+                                                <>
+                                                <button 
+                                                   onClick={() => handleGuideBookingStatus(b.id, 'approved')}
+                                                   className="px-3 py-1 bg-slate-900 hover:bg-emerald-600 text-white text-[9px] font-black uppercase rounded-lg transition-all"
+                                                >
+                                                   ✓ Accept
+                                                </button>
+                                                <button 
+                                                   onClick={() => handleGuideBookingStatus(b.id, 'declined')}
+                                                   className="px-3 py-1 bg-slate-100 hover:bg-rose-500 hover:text-white text-slate-600 text-[9px] font-black uppercase rounded-lg transition-all"
+                                                >
+                                                   ✗ Decline
+                                                </button>
+                                                </>
+                                             )}
+                                          </div>
                                        </div>
+                                       {/* Guide availability status for this booking */}
+                                       {(() => {
+                                          const guide = allServices.tourGuides.find((g: any) =>
+                                             (g.full_name || g.name || '').toLowerCase() === (b.guide_name || '').toLowerCase()
+                                          );
+                                          const avail = guide ? guide.is_available !== false : undefined;
+                                          if (avail === undefined) return null;
+                                          return (
+                                             <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                                                avail ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-slate-100 text-slate-500 border border-slate-200'
+                                             }`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full ${avail ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
+                                                Guide: {avail ? 'Available' : 'Unavailable'}
+                                             </div>
+                                          );
+                                       })()}
                                     </div>
                                  </td>
                               </tr>
@@ -2671,6 +2955,100 @@ export default function AdminDashboardPage() {
                       ))}
                   </div>
                 )}
+
+                {/* ── TOUR GUIDE REVIEWS ── */}
+                <div className="bg-white rounded-[3rem] p-10 border border-slate-100 shadow-sm space-y-6">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500">
+                        <Users size={20} />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-black italic uppercase text-[#111]">Tour Guide Reviews</h3>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Star ratings tourists gave their booked guides</p>
+                      </div>
+                      <span className="ml-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest">Live</span>
+                    </div>
+                    {guideReviews.length > 0 && (
+                      <button
+                        onClick={async () => {
+                          const names = [...new Set(guideReviews.map(r => r.guide_name).filter(Boolean))];
+                          if (names.length === 0) return;
+                          if (!confirm(`Clear ALL tour guide reviews (${guideReviews.length})?`)) return;
+                          for (const n of names) { await clearGuideReviews(n); }
+                        }}
+                        className="px-5 py-2.5 bg-rose-50 border border-rose-100 text-rose-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all"
+                      >
+                        Clear All Guide Reviews
+                      </button>
+                    )}
+                  </div>
+
+                  {guideReviews.length === 0 ? (
+                    <p className="text-slate-300 text-xs italic text-center py-8 border-2 border-dashed border-slate-100 rounded-2xl">No tour guide reviews yet.</p>
+                  ) : (
+                    <div className="space-y-8">
+                      {Object.entries(
+                        guideReviews.reduce((acc: Record<string, any[]>, r) => {
+                          const name = r.guide_name || 'Tour Guide';
+                          (acc[name] = acc[name] || []).push(r);
+                          return acc;
+                        }, {})
+                      ).map(([guideName, list]) => (
+                        <div key={guideName} className="rounded-3xl border border-slate-100 p-6">
+                          <div className="flex flex-wrap items-center gap-3 mb-4">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-xl bg-blue-500 text-white flex items-center justify-center text-xs font-black">{guideName[0]?.toUpperCase() || 'G'}</div>
+                              <div>
+                                <p className="font-black text-slate-900 uppercase tracking-tight">{guideName}</p>
+                                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{list.length} review{list.length !== 1 ? 's' : ''}</p>
+                              </div>
+                            </div>
+                            <div className="ml-auto flex items-center gap-3">
+                              <div className="flex items-center gap-0.5">
+                                {[1,2,3,4,5].map(s => {
+                                  const avg = list.reduce((a, b) => a + (b.rating || 0), 0) / list.length;
+                                  return <Star key={s} size={12} className={s <= Math.round(avg) ? 'text-amber-400 fill-amber-400' : 'text-slate-200 fill-slate-200'} />;
+                                })}
+                              </div>
+                              <button
+                                onClick={() => clearGuideReviews(guideName)}
+                                className="px-4 py-2 bg-rose-50 border border-rose-100 text-rose-600 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all"
+                              >
+                                Remove All for {guideName}
+                              </button>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                            {list.map((r: any, i: number) => (
+                              <div key={i} className="rounded-2xl bg-slate-50 border border-slate-100 p-4">
+                                <div className="flex items-start justify-between gap-3">
+                                  <div>
+                                    <p className="font-black text-slate-900 text-sm">{r.tourist_name || r.tourist_email || 'Anonymous'}</p>
+                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{new Date(r.created_at).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                                  </div>
+                                  <div className="flex gap-0.5">
+                                    {[1,2,3,4,5].map(s => (
+                                      <Star key={s} size={11} className={s <= r.rating ? 'text-amber-400 fill-amber-400' : 'text-slate-200 fill-slate-200'} />
+                                    ))}
+                                  </div>
+                                </div>
+                                {r.comment && <p className="text-[11px] text-slate-600 font-medium italic mt-2.5 bg-white rounded-lg p-2.5 border border-slate-100">"{r.comment}"</p>}
+                                {r.reference_code && <p className="text-[9px] font-black text-rose-500 uppercase tracking-widest mt-2">Ref: {r.reference_code}</p>}
+                                <button
+                                  onClick={() => deleteGuideReview(r)}
+                                  className="mt-3 w-full bg-white border border-rose-100 text-rose-600 px-3 py-2 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all"
+                                >
+                                  Remove Review
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
@@ -3039,6 +3417,62 @@ export default function AdminDashboardPage() {
       )}
       
       {qrItem && <QRItemModal item={qrItem} onClose={() => setQrItem(null)} />}
+
+      {/* --- ADD NEW TOUR GUIDE MODAL --- */}
+      {isGuideModalOpen && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsGuideModalOpen(false)} />
+          <div className="relative bg-white w-full max-w-2xl rounded-[2.5rem] p-8 md:p-12 shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setIsGuideModalOpen(false)} className="absolute top-8 right-8 p-2 hover:bg-slate-100 rounded-xl transition-all">
+              <X size={24} className="text-slate-400" />
+            </button>
+
+            <div className="flex items-center gap-4 mb-8">
+              <div className="h-14 w-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500">
+                <Users size={28} />
+              </div>
+              <div>
+                <h3 className="text-2xl font-black uppercase tracking-tighter text-slate-900 leading-none">Add New Tour Guide</h3>
+                <p className="text-slate-500 font-medium text-sm mt-1 uppercase tracking-widest font-black opacity-50">Register a local expert for tourist bookings</p>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="md:col-span-2">
+                  <FormInput label="Full Name" value={tourGuideForm.full_name} onChange={(v: string) => setTourGuideForm({ ...tourGuideForm, full_name: v })} placeholder="e.g. Carlo Versosa" />
+                </div>
+                <FormInput label="Email" value={tourGuideForm.email} onChange={(v: string) => setTourGuideForm({ ...tourGuideForm, email: v })} placeholder="guide@example.com" />
+                <FormInput label="Contact Number" value={tourGuideForm.contact_number} onChange={(v: string) => setTourGuideForm({ ...tourGuideForm, contact_number: v })} placeholder="0917 123 4567" />
+                <div className="md:col-span-2">
+                  <FormInput label="Specialties" value={tourGuideForm.specialties} onChange={(v: string) => setTourGuideForm({ ...tourGuideForm, specialties: v })} placeholder="e.g. Beach Tour, Island Hopping, Land Tour" />
+                </div>
+                <FormInput label="Languages (comma separated)" value={tourGuideForm.languages} onChange={(v: string) => setTourGuideForm({ ...tourGuideForm, languages: v })} placeholder="Filipino, English" />
+                <FormInput label="Rate per Day (₱)" value={tourGuideForm.rate_per_day} onChange={(v: string) => setTourGuideForm({ ...tourGuideForm, rate_per_day: v })} placeholder="1500" />
+                <div className="md:col-span-2">
+                  <FormTextArea label="Description" value={tourGuideForm.bio} onChange={(v: string) => setTourGuideForm({ ...tourGuideForm, bio: v })} placeholder="Short bio / description of the guide..." />
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setIsGuideModalOpen(false)}
+                  className="px-6 py-5 bg-slate-100 text-slate-600 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddTourGuide}
+                  disabled={isSubmitting}
+                  className="flex-1 py-5 bg-blue-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-200 hover:bg-blue-600 transition-all disabled:opacity-50"
+                >
+                  {isSubmitting ? "Adding Guide..." : "Save Tour Guide"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

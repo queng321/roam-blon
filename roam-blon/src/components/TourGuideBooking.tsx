@@ -91,9 +91,27 @@ function generateReferenceCode() {
   return code;
 }
 
+// Merge guides from multiple sources (DB → localStorage → static fallback).
+// The first source that has a guide wins, static guides only fill gaps so a real
+// guide added/updated by the admin is never shadowed by the fallback list.
+function mergeGuides(sources: TourGuide[][]): TourGuide[] {
+  const map = new Map<string, TourGuide>();
+  const addList = (list: TourGuide[]) => {
+    list.forEach(g => {
+      if (!g) return;
+      const key = g.id || (g.name || g.full_name || '').trim().toLowerCase();
+      if (key && !map.has(key)) map.set(key, g);
+    });
+  };
+  addList(sources[0] || []);
+  addList(sources[1] || []);
+  addList(sources[2] || []);
+  return Array.from(map.values());
+}
+
 export default function TourGuideBooking({ tourist, initialDestination = "", compact = false }: { tourist: any; initialDestination?: string; compact?: boolean }) {
   const [guides, setGuides] = useState<TourGuide[]>(STATIC_GUIDES);
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [selectedGuide, setSelectedGuide] = useState<TourGuide | null>(null);
 
@@ -107,6 +125,65 @@ export default function TourGuideBooking({ tourist, initialDestination = "", com
   const [submitError, setSubmitError] = useState("");
 
   const [confirmation, setConfirmation] = useState<BookingConfirmation | null>(null);
+
+  // Load the live guide roster: approved DB guides + the shared local store that
+  // the admin updates when adding guides or toggling availability.
+  const fetchGuides = async () => {
+    try {
+      let dbGuides: TourGuide[] = [];
+      try {
+        const { data, error } = await supabase
+          .from('tour_guides')
+          .select('*')
+          .eq('status', 'approved')
+          .order('created_at', { ascending: false });
+        if (!error && data) {
+          dbGuides = data.map((g: any) => ({
+            id: g.id,
+            name: g.full_name || g.name,
+            full_name: g.full_name || g.name,
+            email: g.email,
+            contact_number: g.contact_number || g.phone,
+            phone: g.phone || g.contact_number,
+            specialties: g.specialties || g.specialty,
+            specialty: g.specialty || g.specialties,
+            rate_per_day: g.rate_per_day || g.price,
+            rate_label: g.rate_label,
+            bio: g.bio,
+            languages: g.languages,
+            experience_years: g.experience_years,
+            photo_url: g.profile_image_url || g.photo_url,
+            profile_image_url: g.profile_image_url || g.photo_url,
+            status: g.status,
+            is_available: g.is_available,
+          }));
+        }
+      } catch { /* ignore DB errors */ }
+
+      let localGuides: TourGuide[] = [];
+      try {
+        localGuides = JSON.parse(localStorage.getItem("roam_blon_tour_guides") || "[]");
+      } catch { /* ignore */ }
+
+      const merged = mergeGuides([dbGuides, localGuides, STATIC_GUIDES]);
+      setGuides(merged.length > 0 ? merged : STATIC_GUIDES);
+    } catch { /* ignore */ } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchGuides();
+
+    // Live updates: new guide added / availability toggled by the admin
+    const channel = supabase
+      .channel('tourist-guide-roster')
+      .on('broadcast', { event: 'new_tour_guide' }, () => fetchGuides())
+      .on('broadcast', { event: 'guide_availability' }, () => fetchGuides())
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   const openBookingForm = (guide: TourGuide) => {
     if (guide.is_available === false) return;

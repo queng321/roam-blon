@@ -69,3 +69,46 @@ export async function GET() {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const url = new URL(req.url);
+    const id = url.searchParams.get('id');
+    const guideName = url.searchParams.get('guide_name');
+
+    // Option A: delete by row id
+    if (id) {
+      const { error } = await supabaseAdmin
+        .from('guide_reviews')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Supabase guide review delete error:', error.message);
+        return NextResponse.json({ success: false, error: error.message }, { status: 200 });
+      }
+
+      return NextResponse.json({ success: true }, { status: 200 });
+    }
+
+    // Option B: delete every review for a specific guide name
+    if (guideName) {
+      const { error } = await supabaseAdmin
+        .from('guide_reviews')
+        .delete()
+        .ilike('guide_name', `%${guideName}%`);
+
+      if (error) {
+        console.error('Supabase guide review delete-all error:', error.message);
+        return NextResponse.json({ success: false, error: error.message }, { status: 200 });
+      }
+
+      return NextResponse.json({ success: true }, { status: 200 });
+    }
+
+    return NextResponse.json({ error: 'Missing review id or guide_name' }, { status: 400 });
+  } catch (err: any) {
+    console.error('API route delete error:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
