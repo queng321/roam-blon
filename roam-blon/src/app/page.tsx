@@ -264,7 +264,7 @@ interface BeachReview {
 }
 
 export default function Home() {
-  const [view, setView] = useState("welcome");
+  const [view, setView] = useState("landing");
   const [showAuth, setShowAuth] = useState(false);
   const [authInitialScreen, setAuthInitialScreen] = useState<"landing" | "signin">("signin");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -428,7 +428,7 @@ export default function Home() {
     localStorage.removeItem("roam_blon_tourist_user");
     localStorage.removeItem("roam_blon_active_role");
     setTourist(null);
-    setView("welcome");
+    setView("landing");
     setShowAuth(false);
     setShowLogoutConfirm(false);
     setMobileMenuOpen(false);
@@ -468,7 +468,7 @@ export default function Home() {
             localStorage.removeItem("roam_blon_active_role");
             setTourist(null);
             setShowAuth(false);
-            setView('welcome');
+            setView('landing');
             return;
           }
 
@@ -491,7 +491,7 @@ export default function Home() {
           localStorage.removeItem("roam_blon_active_role");
           setTourist(null);
           setShowAuth(false);
-          setView('welcome');
+          setView('landing');
         }
         const { data: dbDests } = await supabase.from('destinations').select('*');
         if (dbDests && dbDests.length > 0) {
