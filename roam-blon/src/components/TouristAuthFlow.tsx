@@ -1349,36 +1349,35 @@ export default function TouristAuthFlow({ onComplete, onCancel, initialScreen = 
         return;
       }
 
-      const [touristRes, adminRes] = await Promise.all([
-        supabase.auth.getUser(),
-        adminSupabase.auth.getUser(),
-      ]);
-      const user = touristRes.data.user || adminRes.data.user;
+      // This check only runs on the tourist-facing app (no explicit role was
+      // passed), so an admin/guide session must never auto-complete here — that
+      // would bounce the visitor to an admin dashboard. Clear stale sessions
+      // instead and let them log in as a tourist.
+      const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        // Try to identify which role/table this user belongs to
         const [ {data: admin}, {data: guide}, {data: tourist} ] = await Promise.all([
           supabase.from('admins').select('*').eq('email', user.email).maybeSingle(),
           supabase.from('tour_guides').select('*').eq('email', user.email).maybeSingle(),
           supabase.from('tourists').select('*').eq('email', user.email).maybeSingle()
         ]);
 
-        // Tourist profile takes priority so a tourist is never auto-detected as an
-        // admin/guide just because the same email also exists in those tables.
-        const extProfile = tourist || admin || guide;
-        const detRole: Role = tourist ? "tourist" : guide ? "tour_guide" : admin ? "admin" : "";
-
-        if (extProfile && detRole) {
-          handleAuthSuccess({ email: user.email!, existingProfile: extProfile, detectedRole: detRole });
+        // Stale admin/guide session in the tourist client: clear it, no redirect.
+        if (admin || guide) {
+          await supabase.auth.signOut();
           setSessionChecked(true);
           return;
         }
 
-        if (!extProfile) {
-          // Authenticated user without a profile yet: treat as tourist onboarding.
-          setRole("tourist");
-          setData((prev) => ({ ...prev, email: user.email || "" }));
-          setScreen("nationality");
+        if (tourist) {
+          handleAuthSuccess({ email: user.email!, existingProfile: tourist, detectedRole: "tourist" });
+          setSessionChecked(true);
+          return;
         }
+
+        // Authenticated user without a tourist profile yet: treat as tourist onboarding.
+        setRole("tourist");
+        setData((prev) => ({ ...prev, email: user.email || "" }));
+        setScreen("nationality");
       }
       setSessionChecked(true);
     }
