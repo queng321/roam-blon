@@ -83,6 +83,7 @@ export default function AdminDashboardPage() {
   });
   const [guideBookings, setGuideBookings] = useState<any[]>([]);
   const [guideReviews, setGuideReviews] = useState<any[]>([]);
+  const [evaluations, setEvaluations] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [unauthorized, setUnauthorized] = useState(false);
 
@@ -412,15 +413,17 @@ export default function AdminDashboardPage() {
       setStats(prev => ({ ...prev, totalTourists: combinedTouristCount, destinations: dCount, diningSpots: diningCount }));
 
       // 2. Tab Data
-      const [ {data: tData}, {data: destData}, {data: dining}, {data: souvenirs}, {data: hotlines}, {data: tourGuides}, {data: gBookingsData} ] = await Promise.all([
+      const [ {data: tData}, {data: destData}, {data: dining}, {data: souvenirs}, {data: hotlines}, {data: tourGuides}, {data: gBookingsData}, {data: evalData} ] = await Promise.all([
         supabase.from('tourists').select('*').order('id', { ascending: false }),
         supabase.from('destinations').select('*').order('name'),
         supabase.from('dining_hubs').select('*').order('name'),
         supabase.from('souvenirs').select('*').order('name'),
         supabase.from('emergency_hotlines').select('*').order('label'),
         supabase.from('tour_guides').select('*').order('id', { ascending: false }),
-        supabase.from('tour_guide_bookings').select('*').order('id', { ascending: false })
+        supabase.from('tour_guide_bookings').select('*').order('id', { ascending: false }),
+        supabase.from('evaluations').select('*').order('id', { ascending: false })
       ]);
+      if (evalData) setEvaluations(evalData);
 
       const combinedTourists = [...(tData || [])];
       localTourists.forEach((lt: any) => {
@@ -1001,6 +1004,12 @@ export default function AdminDashboardPage() {
         setGuideReviews(prev => {
           const rest = prev.filter((x: any) => !(x.booking_id && r.booking_id && x.booking_id === r.booking_id));
           return [{ ...r, id: r.id || `live_${Date.now()}` }, ...rest];
+        });
+      })
+      .on('broadcast', { event: 'new_evaluation' }, () => {
+        // Live evaluation — refresh the survey responses instantly
+        supabase.from('evaluations').select('*').order('id', { ascending: false }).then(({ data }) => {
+          if (data) setEvaluations(data);
         });
       })
       .subscribe();
@@ -1751,6 +1760,107 @@ export default function AdminDashboardPage() {
                       </div>
                     </div>
                   </div>
+                </div>
+
+                {/* System evaluation survey responses */}
+                <div className="bg-white rounded-[3rem] p-8 md:p-10 border border-slate-100 shadow-sm">
+                  <div className="flex items-center gap-3 mb-8">
+                    <div className="h-10 w-10 bg-violet-50 rounded-xl flex items-center justify-center text-violet-500">
+                      <ClipboardList size={20} />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-black italic uppercase text-[#111]">System Evaluations</h3>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Likert survey answers from the evaluation form</p>
+                    </div>
+                    <span className="ml-auto px-3 py-1 rounded-full bg-violet-50 text-violet-600 text-[9px] font-black uppercase tracking-widest">
+                      {evaluations.length} responses
+                    </span>
+                  </div>
+
+                  {evaluations.length === 0 ? (
+                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest text-center py-10">
+                      No evaluations yet — waiting for tourists to submit the form
+                    </p>
+                  ) : (
+                    <div className="space-y-6">
+                      {/* Average scores per dimension */}
+                      <div>
+                        <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Average Scores per Dimension</h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {[
+                            { label: "Effectiveness", key: "effectiveness" },
+                            { label: "Efficiency", key: "efficiency" },
+                            { label: "Usefulness", key: "usefulness" },
+                            { label: "Trust", key: "trust" },
+                            { label: "Pleasure", key: "pleasure" },
+                            { label: "Comfort", key: "comfort" },
+                            { label: "Economic Risk", key: "economic_risk" },
+                            { label: "Health & Safety Risk", key: "health_safety_risk" },
+                            { label: "Environmental Risk", key: "environmental_risk" },
+                            { label: "Context Completeness", key: "context_completeness" },
+                            { label: "Flexibility", key: "flexibility" },
+                          ].map(dim => {
+                            const vals = evaluations.map(e => Number(e[dim.key]) || 0).filter(v => v > 0);
+                            const avg = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length) : 0;
+                            const pct = (avg / 5) * 100;
+                            return (
+                              <div key={dim.key} className="rounded-2xl bg-slate-50 p-4">
+                                <div className="flex items-center justify-between mb-2">
+                                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{dim.label}</p>
+                                  <p className="text-sm font-black text-violet-600">{avg ? avg.toFixed(2) : "—"}</p>
+                                </div>
+                                <div className="h-2.5 rounded-full bg-slate-200 overflow-hidden">
+                                  <div className="h-full rounded-full bg-gradient-to-r from-violet-400 to-violet-600" style={{ width: `${pct}%` }} />
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Individual responses */}
+                      <div>
+                        <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Individual Responses</h4>
+                        <div className="space-y-4">
+                          {evaluations.slice(0, 20).map((e, i) => (
+                            <div key={e.id || i} className="rounded-2xl border border-slate-100 p-5">
+                              <div className="flex flex-wrap items-center gap-3 mb-3">
+                                <span className="w-7 h-7 flex items-center justify-center rounded-lg bg-violet-100 text-violet-600 text-xs font-black">{i + 1}</span>
+                                <p className="text-sm font-black text-slate-900 uppercase tracking-wide">{e.name || "Anonymous"}</p>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{e.age ? `Age ${e.age}` : ""} {e.gender ? `· ${e.gender}` : ""} {e.nationality ? `· ${e.nationality}` : ""}</span>
+                                {e.email && <span className="text-[10px] font-bold text-slate-400">{e.email}</span>}
+                              </div>
+                              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                                {[
+                                  { label: "Effectiveness", key: "effectiveness" },
+                                  { label: "Efficiency", key: "efficiency" },
+                                  { label: "Usefulness", key: "usefulness" },
+                                  { label: "Trust", key: "trust" },
+                                  { label: "Pleasure", key: "pleasure" },
+                                  { label: "Comfort", key: "comfort" },
+                                  { label: "Economic Risk", key: "economic_risk" },
+                                  { label: "Health & Safety", key: "health_safety_risk" },
+                                  { label: "Environmental", key: "environmental_risk" },
+                                  { label: "Context Completeness", key: "context_completeness" },
+                                  { label: "Flexibility", key: "flexibility" },
+                                ].map(dim => (
+                                  <div key={dim.key} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
+                                    <span className="text-[9px] font-black uppercase tracking-wider text-slate-400">{dim.label}</span>
+                                    <span className={`text-sm font-black ${Number(e[dim.key]) >= 4 ? 'text-emerald-600' : Number(e[dim.key]) >= 3 ? 'text-amber-500' : 'text-red-500'}`}>
+                                      {e[dim.key] || "—"}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                          {evaluations.length > 20 && (
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Showing 20 of {evaluations.length} responses</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Most visited places (based on scans) */}
