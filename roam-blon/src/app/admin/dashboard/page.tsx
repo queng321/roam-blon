@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { supabase, adminSupabase } from "@/lib/supabase";
 import {
   LayoutDashboard,
   MapPin,
@@ -616,7 +616,7 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     async function checkUser() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await adminSupabase.auth.getUser();
       if (user) {
         // Only the single official admin account is allowed
         if ((user.email || "").toLowerCase() !== "admin@roam-blon.com") {
@@ -1274,7 +1274,7 @@ export default function AdminDashboardPage() {
   };
 
   const processLogout = async () => {
-    await supabase.auth.signOut();
+    await adminSupabase.auth.signOut();
     setCurrentTourist(null);
     setIsLogoutModalOpen(false);
     router.push('/login');
@@ -1305,7 +1305,7 @@ export default function AdminDashboardPage() {
           </p>
           <div className="flex flex-col gap-3">
             <button
-              onClick={() => { supabase.auth.signOut(); router.push('/'); }}
+              onClick={() => { adminSupabase.auth.signOut(); router.push('/'); }}
               className="w-full bg-slate-900 hover:bg-rose-600 text-white font-black uppercase tracking-widest text-[11px] py-4 rounded-2xl transition-all"
             >
               Back to Home

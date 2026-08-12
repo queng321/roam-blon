@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, ChangeEvent, KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { supabase, adminSupabase } from "@/lib/supabase";
 import { MapPin, Compass, Sparkles, Eye, EyeOff } from "lucide-react";
 
 /* Only this single account may access the admin panel */
@@ -727,7 +727,8 @@ function ScreenSignIn({ role, onNext, onGoSignUp, errorMessage }: ScreenSignInPr
     setErr("");
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const client = role === "admin" ? adminSupabase : supabase;
+      const { error } = await client.auth.signInWithPassword({
         email: form.email.trim(),
         password: form.password,
       });
@@ -930,7 +931,8 @@ function ScreenSignUp({ role, onNext, onGoSignIn }: ScreenSignUpProps) {
     setErr("");
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const client = role === "admin" ? adminSupabase : supabase;
+      const { error } = await client.auth.signUp({
         email: form.email.trim(),
         password: form.password,
       });
@@ -1347,7 +1349,11 @@ export default function TouristAuthFlow({ onComplete, onCancel, initialScreen = 
         return;
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const [touristRes, adminRes] = await Promise.all([
+        supabase.auth.getUser(),
+        adminSupabase.auth.getUser(),
+      ]);
+      const user = touristRes.data.user || adminRes.data.user;
       if (user) {
         // Try to identify which role/table this user belongs to
         const [ {data: admin}, {data: guide}, {data: tourist} ] = await Promise.all([
@@ -1419,7 +1425,7 @@ export default function TouristAuthFlow({ onComplete, onCancel, initialScreen = 
         return;
       }
 
-      const { error } = await supabase.from("admins").insert({
+      const { error } = await adminSupabase.from("admins").insert({
         email,
         first_name: "Admin",
         last_name: "User",

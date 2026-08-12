@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { supabase, adminSupabase } from "@/lib/supabase";
 import { 
   LayoutDashboard, 
   Compass, 
@@ -67,7 +67,7 @@ export default function GuideAdminDashboard() {
 
   useEffect(() => {
     async function checkUser() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await adminSupabase.auth.getUser();
       if (user) {
         if ((user.email || "").toLowerCase() !== 'admin@roam-blon.com') {
           setLoading(false);
@@ -158,7 +158,7 @@ export default function GuideAdminDashboard() {
             <span className="text-rose-600">admin@roam-blon.com</span>.
           </p>
           <button
-            onClick={() => { supabase.auth.signOut(); router.push('/'); }}
+            onClick={() => { adminSupabase.auth.signOut(); router.push('/'); }}
             className="w-full bg-slate-900 hover:bg-rose-600 text-white font-black uppercase tracking-widest text-[11px] py-4 rounded-2xl transition-all"
           >
             Back to Home
@@ -357,7 +357,7 @@ export default function GuideAdminDashboard() {
             <h3 className="text-2xl font-black uppercase italic tracking-tighter text-slate-900 mb-8">Exit Admin Console?</h3>
             <div className="flex gap-4">
               <button onClick={() => setIsLogoutModalOpen(false)} className="flex-1 px-6 py-4 bg-slate-100 rounded-2xl font-black text-[10px] uppercase">No</button>
-              <button onClick={() => { supabase.auth.signOut(); router.push('/'); }} className="flex-1 px-6 py-4 bg-rose-500 text-white rounded-2xl font-black text-[10px] uppercase">Yes</button>
+              <button onClick={() => { adminSupabase.auth.signOut(); router.push('/'); }} className="flex-1 px-6 py-4 bg-rose-500 text-white rounded-2xl font-black text-[10px] uppercase">Yes</button>
             </div>
           </div>
         </div>

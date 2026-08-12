@@ -663,8 +663,13 @@ export default function Home() {
     setTourist(touristData);
     setShowAuth(false);
     if (touristData) {
-      localStorage.setItem("roam_blon_tourist_user", JSON.stringify(touristData));
       localStorage.setItem("roam_blon_active_role", touristData?.role || "tourist");
+      // Admin/guide sessions are kept separate and must never appear as a tourist profile
+      if (touristData?.role === 'admin' || touristData?.role === 'tour_guide') {
+        localStorage.removeItem("roam_blon_tourist_user");
+      } else {
+        localStorage.setItem("roam_blon_tourist_user", JSON.stringify(touristData));
+      }
     }
 
     if (touristData?.role === 'admin') {
