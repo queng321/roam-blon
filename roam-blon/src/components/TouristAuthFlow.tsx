@@ -1356,8 +1356,10 @@ export default function TouristAuthFlow({ onComplete, onCancel, initialScreen = 
           supabase.from('tourists').select('*').eq('email', user.email).maybeSingle()
         ]);
 
-        const extProfile = admin || guide || tourist;
-        const detRole: Role = admin ? "admin" : guide ? "tour_guide" : tourist ? "tourist" : "";
+        // Tourist profile takes priority so a tourist is never auto-detected as an
+        // admin/guide just because the same email also exists in those tables.
+        const extProfile = tourist || admin || guide;
+        const detRole: Role = tourist ? "tourist" : guide ? "tour_guide" : admin ? "admin" : "";
 
         if (extProfile && detRole) {
           handleAuthSuccess({ email: user.email!, existingProfile: extProfile, detectedRole: detRole });

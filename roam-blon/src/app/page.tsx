@@ -463,7 +463,19 @@ export default function Home() {
             setShowAuth(false);
             setView('welcome');
           } else {
-            // 1. Check Tour Guide
+            // 1. Check Tourist Profile FIRST — a logged-in tourist must always land
+            //    on the tourist dashboard, never on the admin/guide dashboard (even
+            //    if the same email also exists in the admins table).
+            const { data: tProfile } = await supabase.from('tourists').select('*').ilike('email', userEmail).maybeSingle();
+            if (tProfile) {
+              setTourist(tProfile);
+              localStorage.setItem("roam_blon_tourist_user", JSON.stringify(tProfile));
+              setShowAuth(false);
+              setView('welcome');
+              return;
+            }
+
+            // 2. Check Tour Guide
             const { data: guide } = await supabase.from('tour_guides').select('*').ilike('email', userEmail).maybeSingle();
             if (guide && guide.status === 'approved') {
               router.push('/guide/dashboard');
@@ -477,9 +489,8 @@ export default function Home() {
               return;
             }
 
-            // 4. Check Tourist Profile
-            const { data: tProfile } = await supabase.from('tourists').select('*').ilike('email', userEmail).maybeSingle();
-            const touristData = tProfile || {
+            // 4. No profile yet — show tourist onboarding fallback
+            const touristData = {
               email: user.email,
               gender: "",
               age: "",
