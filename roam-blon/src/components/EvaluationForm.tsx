@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Loader2, CheckCircle2, ClipboardList } from "lucide-react";
+import { Loader2, CheckCircle2, ClipboardList, X } from "lucide-react";
 
 interface EvaluationData {
   name: string;
@@ -54,6 +54,7 @@ export default function EvaluationForm() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [open, setOpen] = useState(false);
 
   const handleSubmit = async () => {
     setError("");
@@ -116,6 +117,20 @@ export default function EvaluationForm() {
     );
   }
 
+  if (!open) {
+    return (
+      <div className="text-center mb-10">
+        <button
+          onClick={() => setOpen(true)}
+          className="inline-flex items-center gap-2 px-8 py-4 bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-widest rounded-2xl text-sm transition-all"
+        >
+          <ClipboardList size={18} />
+          Answer Evaluation Form
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div id="evaluation-form" className="bg-white border-2 border-[#FAEEED] rounded-[2rem] shadow-sm p-5 md:p-8 mb-10">
       <div className="flex items-center gap-3 mb-6">
@@ -126,6 +141,13 @@ export default function EvaluationForm() {
           <h3 className="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter italic">Help Us Improve Our System</h3>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">By answering this evaluation form</p>
         </div>
+        <button
+          onClick={() => setOpen(false)}
+          className="ml-auto w-9 h-9 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-all"
+          title="Close"
+        >
+          <X size={16} />
+        </button>
       </div>
 
       <p className="text-xs md:text-sm text-slate-500 font-medium leading-relaxed mb-6">
