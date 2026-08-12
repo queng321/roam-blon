@@ -296,8 +296,8 @@ export default function DiningList({ onLocate }: DiningListProps) {
         </div>
 
         {/* CATEGORY FILTER */}
-        <div className="w-full overflow-x-auto no-scrollbar mb-8 px-2">
-          <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-full shadow-sm px-2 py-2 w-max mx-auto min-w-full sm:min-w-0">
+        <div className="sticky top-0 z-40 w-full overflow-x-auto no-scrollbar mb-8 px-2 py-3 -mt-3 bg-gradient-to-b from-white via-white/95 to-transparent">
+          <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-full shadow-md px-2 py-2 w-max mx-auto min-w-full sm:min-w-0">
             {DINING_CATEGORIES.map(cat => {
               const active = activeCategory === cat.id;
               return (
