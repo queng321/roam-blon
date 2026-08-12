@@ -855,6 +855,7 @@ export default function Home() {
             <div>
               <h3 className="text-3xl font-black text-slate-900 tracking-tighter uppercase leading-none mb-1">Tourist Destinations</h3>
               <p className="text-rose-500 font-bold text-sm tracking-widest uppercase">Explore the Marble Capital's Top Destinations</p>
+              <p className="text-slate-400 font-bold text-[10px] tracking-widest uppercase">This Is a Capstone Project of 4th Year BSIT Student of RSU-Romblon Campus</p>
             </div>
             <div className="flex items-center gap-2">
               <button
