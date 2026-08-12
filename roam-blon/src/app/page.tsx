@@ -454,7 +454,22 @@ export default function Home() {
         if (user) {
           const userEmail = user.email?.toLowerCase().trim() || "";
 
-          // Always show the tourist dashboard for any logged-in user. The admin and
+          // Admins and tour guides must NOT appear as tourist profiles — send
+          // them to their own dashboards when they sign in on the tourist app.
+          const { data: adminProfile } = await supabase.from('admins').select('email').ilike('email', userEmail).maybeSingle();
+          if (adminProfile) {
+            localStorage.setItem("roam_blon_active_role", "admin");
+            router.push('/admin/dashboard');
+            return;
+          }
+          const { data: guideProfile } = await supabase.from('tour_guides').select('email').ilike('email', userEmail).maybeSingle();
+          if (guideProfile) {
+            localStorage.setItem("roam_blon_active_role", "tour_guide");
+            router.push('/guide/dashboard');
+            return;
+          }
+
+          // Always show the tourist dashboard for any logged-in tourist. The admin and
           // guide dashboards are only opened through their own login links, so
           // opening the site never bounces anyone to /admin/dashboard or /guide/dashboard.
           const { data: tProfile } = await supabase.from('tourists').select('*').ilike('email', userEmail).maybeSingle();
