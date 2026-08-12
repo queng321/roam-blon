@@ -264,7 +264,7 @@ interface BeachReview {
 }
 
 export default function Home() {
-  const [view, setView] = useState("landing");
+  const [view, setView] = useState("welcome");
   const [showAuth, setShowAuth] = useState(false);
   const [authInitialScreen, setAuthInitialScreen] = useState<"landing" | "signin">("signin");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -428,7 +428,7 @@ export default function Home() {
     localStorage.removeItem("roam_blon_tourist_user");
     localStorage.removeItem("roam_blon_active_role");
     setTourist(null);
-    setView("landing");
+    setView("welcome");
     setShowAuth(false);
     setShowLogoutConfirm(false);
     setMobileMenuOpen(false);
@@ -454,18 +454,21 @@ export default function Home() {
         if (user) {
           const userEmail = user.email?.toLowerCase().trim() || "";
 
-          // Admins and tour guides must NOT appear as tourist profiles — send
-          // them to their own dashboards when they sign in on the tourist app.
-          const { data: adminProfile } = await supabase.from('admins').select('email').ilike('email', userEmail).maybeSingle();
-          if (adminProfile) {
-            localStorage.setItem("roam_blon_active_role", "admin");
-            router.push('/admin/dashboard');
-            return;
-          }
-          const { data: guideProfile } = await supabase.from('tour_guides').select('email').ilike('email', userEmail).maybeSingle();
-          if (guideProfile) {
-            localStorage.setItem("roam_blon_active_role", "tour_guide");
-            router.push('/guide/dashboard');
+          // Admin and guide sessions live in their own separate storage keys, so a
+          // profile found here means a stale session from before the separation.
+          // Never bounce the visitor to an admin/guide login — just clear the stale
+          // session and show the tourist welcome page.
+          const [{ data: adminProfile }, { data: guideProfile }] = await Promise.all([
+            supabase.from('admins').select('email').ilike('email', userEmail).maybeSingle(),
+            supabase.from('tour_guides').select('email').ilike('email', userEmail).maybeSingle(),
+          ]);
+          if (adminProfile || guideProfile) {
+            await supabase.auth.signOut();
+            localStorage.removeItem("roam_blon_tourist_user");
+            localStorage.removeItem("roam_blon_active_role");
+            setTourist(null);
+            setShowAuth(false);
+            setView('welcome');
             return;
           }
 
@@ -488,7 +491,7 @@ export default function Home() {
           localStorage.removeItem("roam_blon_active_role");
           setTourist(null);
           setShowAuth(false);
-          setView('landing');
+          setView('welcome');
         }
         const { data: dbDests } = await supabase.from('destinations').select('*');
         if (dbDests && dbDests.length > 0) {
