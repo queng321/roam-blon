@@ -1286,7 +1286,8 @@ export default function Home() {
           <div className="max-w-xl w-full px-6 animate-in fade-in zoom-in duration-1000 relative z-10">
             <div className="text-rose-600 font-black text-xs md:text-sm tracking-[0.3em] uppercase mb-6 drop-shadow-sm">Welcome to the Marble Capital</div>
             <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tighter text-[#1a2236] leading-none">ROAM-BLON</h1>
-            <div className="text-[11px] md:text-xs font-black text-slate-400 uppercase tracking-[0.25em] mb-12">Your AI Integrated Travel Buddy</div>
+            <div className="text-[11px] md:text-xs font-black text-slate-400 uppercase tracking-[0.25em] mb-3">Your AI Integrated Travel Buddy</div>
+            <p className="text-[10px] md:text-[11px] font-bold text-slate-400/80 tracking-wide mb-12">This is a Capstone Project of 4th year BSIT Students of RSU - Romblon Campus</p>
 
             <div className="bg-[#fdf9f7]/90 backdrop-blur-md p-6 md:p-8 rounded-[3rem] border-2 border-white shadow-[0_20px_40px_rgba(0,0,0,0.04)] mb-12 text-slate-800 relative group overflow-hidden max-w-lg mx-auto">
               {/* Decorative icon */}
