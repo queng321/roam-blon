@@ -440,6 +440,51 @@ export default function AdminDashboardPage() {
     }
   };
 
+  // Remove a tour guide booking entirely (localStorage + DB + live sync)
+  const removeBooking = async (b: any) => {
+    if (!window.confirm(`Remove the booking by ${b.tourist_name || b.tourist_email || 'this guest'} for "${b.guide_name || 'the guide'}"? This cannot be undone.`)) return;
+    try {
+      // 1. Remove from Supabase if it's a DB-backed row (local-only bookings have ref codes)
+      if (b.id && !String(b.id).startsWith('local_') && !/^RB-/.test(String(b.id))) {
+        try { await supabase.from('tour_guide_bookings').delete().eq('id', b.id); } catch { /* ignore */ }
+      }
+
+      // 2. Remove from localStorage
+      const stored = JSON.parse(localStorage.getItem('roam_blon_tour_guide_bookings') || '[]');
+      const filtered = stored.filter((x: any) =>
+        x.id !== b.id &&
+        !(x.reference_code && b.reference_code && x.reference_code === b.reference_code) &&
+        !(x.guide_name === b.guide_name && x.booking_date === b.booking_date && x.tourist_email === b.tourist_email)
+      );
+      localStorage.setItem('roam_blon_tour_guide_bookings', JSON.stringify(filtered));
+
+      // 3. Update admin state
+      setGuideBookings(prev => prev.filter(x =>
+        x.id !== b.id &&
+        !(x.reference_code && b.reference_code && x.reference_code === b.reference_code)
+      ));
+
+      // 4. Broadcast so other open dashboards drop it too
+      try {
+        const chan = supabase.channel('admin-live-feed');
+        await chan.subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            chan.send({
+              type: 'broadcast',
+              event: 'remove_booking',
+              payload: { id: b.id, reference_code: b.reference_code, guide_name: b.guide_name, tourist_email: b.tourist_email, booking_date: b.booking_date },
+            });
+            supabase.removeChannel(chan);
+          }
+        });
+      } catch { /* ignore */ }
+
+      alert(`${b.tourist_name || 'Booking'} has been removed!`);
+    } catch (err: any) {
+      alert(`Error removing booking: ${err.message}`);
+    }
+  };
+
   // Fetch initial data & recent activity
   const fetchDashboardData = async () => {
     try {
@@ -1243,6 +1288,15 @@ export default function AdminDashboardPage() {
         if (r?.guide_name) {
           setGuideReviews(prev => prev.filter((x: any) => !x.guide_name || x.guide_name.toLowerCase() !== r.guide_name.toLowerCase()));
         }
+      })
+      .on('broadcast', { event: 'remove_booking' }, ({ payload: r }: any) => {
+        // Another dashboard removed a booking — drop it locally too
+        setGuideBookings(prev => prev.filter((x: any) =>
+          x.id !== r?.id &&
+          !(r?.reference_code && x.reference_code && x.reference_code === r.reference_code) &&
+          !(r?.guide_name && r?.booking_date && r?.tourist_email &&
+            x.guide_name === r.guide_name && x.booking_date === r.booking_date && x.tourist_email === r.tourist_email)
+        ));
       })
       .on('broadcast', { event: 'guide_availability' }, ({ payload: g }: any) => {
         // Guide availability changed (accepted booking / manual toggle) — update roster live
@@ -2635,22 +2689,29 @@ export default function AdminDashboardPage() {
                                           }`}>{b.status || 'pending'}</span>
                                           
                                           <div className="flex gap-1">
-                                             {(b.status === undefined || b.status === null || b.status === 'pending') && (
+{(b.status === undefined || b.status === null || b.status === 'pending') && (
                                                 <>
-                                                <button 
-                                                   onClick={() => handleGuideBookingStatus(b.id, 'approved')}
-                                                   className="px-3 py-1 bg-slate-900 hover:bg-emerald-600 text-white text-[9px] font-black uppercase rounded-lg transition-all"
-                                                >
-                                                   ✓ Accept
-                                                </button>
-                                                <button 
-                                                   onClick={() => handleGuideBookingStatus(b.id, 'declined')}
-                                                   className="px-3 py-1 bg-slate-100 hover:bg-rose-500 hover:text-white text-slate-600 text-[9px] font-black uppercase rounded-lg transition-all"
-                                                >
-                                                   ✗ Decline
-                                                </button>
-                                                </>
-                                             )}
+                                                  <button 
+                                                     onClick={() => handleGuideBookingStatus(b.id, 'approved')}
+                                                     className="px-3 py-1 bg-slate-900 hover:bg-emerald-600 text-white text-[9px] font-black uppercase rounded-lg transition-all"
+                                                  >
+                                                     ✓ Accept
+                                                  </button>
+                                                  <button 
+                                                     onClick={() => handleGuideBookingStatus(b.id, 'declined')}
+                                                     className="px-3 py-1 bg-slate-100 hover:bg-rose-500 hover:text-white text-slate-600 text-[9px] font-black uppercase rounded-lg transition-all"
+                                                  >
+                                                     ✗ Decline
+                                                  </button>
+                                                  </>
+                                               )}
+                                               <button 
+                                                  onClick={() => removeBooking(b)}
+                                                  title="Remove this booking"
+                                                  className="px-3 py-1 bg-rose-50 hover:bg-rose-500 hover:text-white text-rose-500 text-[9px] font-black uppercase rounded-lg transition-all"
+                                               >
+                                                  <Trash2 size={12} /> Remove
+                                               </button>
                                           </div>
                                        </div>
                                        {/* Guide availability status for this booking */}
