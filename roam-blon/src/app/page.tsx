@@ -1266,7 +1266,7 @@ export default function Home() {
           <div className="max-w-xl w-full px-6 animate-in fade-in zoom-in duration-1000 relative z-10">
             <div className="text-rose-600 font-black text-xs md:text-sm tracking-[0.3em] uppercase mb-6 drop-shadow-sm">Welcome to the Marble Capital</div>
             <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tighter text-[#1a2236] leading-none">ROAM-BLON</h1>
-            <div className="text-[11px] md:text-xs font-black text-slate-400 uppercase tracking-[0.25em] mb-3">Your AI Integrated Travel Buddy</div>
+            <div className="text-[11px] md:text-xs font-black text-slate-900 uppercase tracking-[0.25em] mb-3">Your AI Integrated Travel Buddy</div>
             <p className="text-[10px] md:text-[11px] font-black text-slate-900 tracking-wide mb-12 uppercase">This is a Capstone Project of 4th year BSIT Students of RSU - Romblon Campus</p>
 
             <div className="bg-[#fdf9f7]/90 backdrop-blur-md p-6 md:p-8 rounded-[3rem] border-2 border-white shadow-[0_20px_40px_rgba(0,0,0,0.04)] mb-12 text-slate-800 relative group overflow-hidden max-w-lg mx-auto">
@@ -1278,7 +1278,7 @@ export default function Home() {
 
               <div className="w-10 h-0.5 bg-rose-500/20 mx-auto mb-6 rounded-full"></div>
 
-              <p className="text-[13px] md:text-sm font-bold leading-relaxed text-slate-500/90 max-w-sm mx-auto">
+              <p className="text-[13px] md:text-sm font-bold leading-relaxed text-slate-900 max-w-sm mx-auto">
                 Roam-Blon is your AI Integrated Travel Buddy designed to elevate the tourism experience in Romblon, Philippines.
               </p>
             </div>
@@ -1308,7 +1308,7 @@ export default function Home() {
                 <h2 className="text-2xl md:text-3xl font-black text-slate-900 leading-tight mb-3 tracking-tight">
                   Everything you need to travel smarter
                 </h2>
-                <p className="text-sm text-slate-500 font-medium max-w-md mx-auto leading-relaxed">
+                <p className="text-sm text-slate-900 font-medium max-w-md mx-auto leading-relaxed">
                   From AI itineraries to interactive maps — Roam-Blon handles the planning so you can enjoy every moment of your journey.
                 </p>
               </div>
