@@ -119,13 +119,13 @@ export default function EvaluationForm() {
 
   if (!open) {
     return (
-      <div className="mb-3">
+      <div className="mb-1">
         <button
           onClick={() => setOpen(true)}
           className="inline-flex items-center gap-2 px-3 py-1 bg-rose-50 rounded-full border border-rose-100 hover:bg-rose-100 transition-all"
         >
           <ClipboardList size={12} className="text-rose-500" />
-          <span className="text-[10px] font-black text-rose-600 uppercase tracking-widest">Answer Evaluation Form</span>
+          <span className="text-[10px] font-black text-rose-600 uppercase tracking-widest">Help us to improve our system by answering this evaluation form</span>
         </button>
       </div>
     );
