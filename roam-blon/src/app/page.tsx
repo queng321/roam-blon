@@ -439,16 +439,10 @@ export default function Home() {
       try {
         // Fast restore from localStorage on refresh
         const cachedUser = localStorage.getItem("roam_blon_tourist_user");
-        // The role the user chose when they last logged in — lets us keep a
-        // logged-in tourist on the tourist dashboard after a refresh instead of
-        // bouncing them to the admin/guide dashboard.
-        const activeRole = localStorage.getItem("roam_blon_active_role");
-        let hadCachedTourist = false;
         if (cachedUser) {
           try {
             const parsed = JSON.parse(cachedUser);
             if (parsed && parsed.email) {
-              hadCachedTourist = true;
               setTourist(parsed);
               setShowAuth(false);
               setView('welcome');
@@ -460,61 +454,20 @@ export default function Home() {
         if (user) {
           const userEmail = user.email?.toLowerCase().trim() || "";
 
-          // A logged-in tourist (or anyone who explicitly chose the tourist role)
-          // must always land on the tourist dashboard — never the admin/guide one.
-          // Also fall back to checking the tourists table so users who logged in
-          // before the role flag existed are never bounced either.
-          let showTourist = hadCachedTourist || activeRole === "tourist";
-          let tProfile: any = null;
-          if (!showTourist) {
-            const { data: touristRow } = await supabase.from('tourists').select('*').ilike('email', userEmail).maybeSingle();
-            tProfile = touristRow;
-            showTourist = !!touristRow;
-          }
-
-          if (showTourist) {
-            if (!tProfile) {
-              const { data: touristRow } = await supabase.from('tourists').select('*').ilike('email', userEmail).maybeSingle();
-              tProfile = touristRow;
-            }
-            const touristData = tProfile || {
-              email: user.email,
-              gender: "",
-              age: "",
-              nationality: "local",
-            };
-            setTourist(touristData);
-            localStorage.setItem("roam_blon_tourist_user", JSON.stringify(touristData));
-            setShowAuth(false);
-            setView('welcome');
-          } else {
-            // 1. Check Tour Guide
-            const { data: guide } = await supabase.from('tour_guides').select('*').ilike('email', userEmail).maybeSingle();
-            if (guide && guide.status === 'approved') {
-              router.push('/guide/dashboard');
-              return;
-            }
-
-            // 2. Check Admin
-            const { data: admin } = await supabase.from('admins').select('*').ilike('email', userEmail).maybeSingle();
-            if (admin) {
-              router.push('/admin/dashboard');
-              return;
-            }
-
-            // 3. No profile yet — show tourist onboarding fallback
-            const touristData = {
-              email: user.email,
-              gender: "",
-              age: "",
-              nationality: "local",
-            };
-
-            setTourist(touristData);
-            localStorage.setItem("roam_blon_tourist_user", JSON.stringify(touristData));
-            setShowAuth(false);
-            setView('welcome');
-          }
+          // Always show the tourist dashboard for any logged-in user. The admin and
+          // guide dashboards are only opened through their own login links, so
+          // opening the site never bounces anyone to /admin/dashboard or /guide/dashboard.
+          const { data: tProfile } = await supabase.from('tourists').select('*').ilike('email', userEmail).maybeSingle();
+          const touristData = tProfile || {
+            email: user.email,
+            gender: "",
+            age: "",
+            nationality: "local",
+          };
+          setTourist(touristData);
+          localStorage.setItem("roam_blon_tourist_user", JSON.stringify(touristData));
+          setShowAuth(false);
+          setView('welcome');
         } else {
           localStorage.removeItem("roam_blon_tourist_user");
           localStorage.removeItem("roam_blon_active_role");
