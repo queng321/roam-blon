@@ -18,6 +18,11 @@ export const metadata: Metadata = {
   title: "Roam-blon",
   description: "Your AI Travel Buddy for Romblon, Philippines",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/logo.jpg",
+    shortcut: "/logo.jpg",
+    apple: "/logo.jpg",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
