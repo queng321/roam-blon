@@ -3541,6 +3541,45 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       )}
+
+      {/* Decline Booking with Reason Modal */}
+      {declineBooking && (
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6 animate-in fade-in duration-300">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setDeclineBooking(null)} />
+          <div className="relative bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in duration-300">
+            <div className="absolute top-0 left-0 w-full h-2 bg-rose-500" />
+            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-slate-900 text-center mb-2">Decline Booking</h3>
+            <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest text-center mb-6">Enter a reason for declining this booking</p>
+
+            <textarea
+              value={declineBooking.reason}
+              onChange={(e) => setDeclineBooking({ ...declineBooking, reason: e.target.value })}
+              rows={4}
+              placeholder="Reason for declining (e.g., guide unavailable, schedule conflict, etc.)"
+              className="w-full px-4 py-3 rounded-2xl border-2 border-slate-100 focus:border-rose-300 outline-none font-medium text-slate-700 text-sm resize-none mb-4"
+            />
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  handleGuideBookingStatus(declineBooking.bookingId, 'declined', declineBooking.reason);
+                  setDeclineBooking(null);
+                }}
+                disabled={!declineBooking.reason.trim()}
+                className="flex-1 py-3 bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Confirm Decline
+              </button>
+              <button
+                onClick={() => setDeclineBooking(null)}
+                className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -4052,44 +4091,5 @@ function CustomQRTool() {
         </div>
       </div>
     </div>
-
-    {/* Decline Booking with Reason Modal */}
-    {declineBooking && (
-      <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6 animate-in fade-in duration-300">
-        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setDeclineBooking(null)} />
-        <div className="relative bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in duration-300">
-          <div className="absolute top-0 left-0 w-full h-2 bg-rose-500" />
-          <h3 className="text-2xl font-black uppercase italic tracking-tighter text-slate-900 text-center mb-2">Decline Booking</h3>
-          <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest text-center mb-6">Enter a reason for declining this booking</p>
-          
-          <textarea
-            value={declineBooking.reason}
-            onChange={(e) => setDeclineBooking({ ...declineBooking, reason: e.target.value })}
-            rows={4}
-            placeholder="Reason for declining (e.g., guide unavailable, schedule conflict, etc.)"
-            className="w-full px-4 py-3 rounded-2xl border-2 border-slate-100 focus:border-rose-300 outline-none font-medium text-slate-700 text-sm resize-none mb-4"
-          />
-          
-          <div className="flex gap-3">
-            <button
-              onClick={() => {
-                handleGuideBookingStatus(declineBooking.bookingId, 'declined', declineBooking.reason);
-                setDeclineBooking(null);
-              }}
-              disabled={!declineBooking.reason.trim()}
-              className="flex-1 py-3 bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Confirm Decline
-            </button>
-            <button
-              onClick={() => setDeclineBooking(null)}
-              className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    )
   );
 }
