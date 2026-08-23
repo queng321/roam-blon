@@ -230,6 +230,12 @@ function PhotoGallery({ images, name, contain }: { images: string[]; name: strin
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
 
+        {/* Photo credit */}
+        <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-sm text-white/80 text-[9px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 max-w-[60%]">
+          <Camera size={9} className="shrink-0" />
+          <span className="truncate">Photo credits to the rightful owner</span>
+        </div>
+
         {/* Navigation arrows */}
         {images.length > 1 && (
           <>
@@ -1260,8 +1266,11 @@ const DINING_MENUS: Record<string, string[]> = {
 
           {/* Main Image */}
           {imageUrl && (
-            <div className="rounded-3xl overflow-hidden h-56 border-4 border-white shadow-xl">
+            <div className="relative rounded-3xl overflow-hidden h-56 border-4 border-white shadow-xl">
               <img src={imageUrl} alt={item.name} className="w-full h-full object-cover" />
+              <span className="absolute bottom-2 left-2 bg-black/50 backdrop-blur-sm text-white/80 text-[9px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+                <Camera size={9} /> Photo credits to the rightful owner
+              </span>
             </div>
           )}
 

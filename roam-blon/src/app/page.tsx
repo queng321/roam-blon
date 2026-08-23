@@ -1000,6 +1000,10 @@ export default function Home() {
                       alt={`${dest.name} photo ${currentPhotoIdx + 1}`}
                       className="w-full h-full object-cover transition-all duration-500"
                     />
+                    {/* Photo credit */}
+                    <span className="absolute bottom-3 left-3 z-10 bg-black/50 backdrop-blur-sm text-white/80 text-[8px] md:text-[9px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
+                      <Camera size={8} /> Photo credits to the rightful owner
+                    </span>
                     {/* Expand to gallery button */}
                     <button
                       onClick={() => { setActiveGallery(dest); setGalleryIdx(currentPhotoIdx); }}
@@ -1191,6 +1195,10 @@ export default function Home() {
                 className="max-h-full max-w-full object-contain rounded-xl shadow-2xl select-none"
                 style={{ maxHeight: 'calc(100vh - 220px)' }}
               />
+              {/* Photo credit */}
+              <span className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 bg-black/60 backdrop-blur-sm text-white/80 text-[10px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                <Camera size={10} /> Photo credits to the rightful owner
+              </span>
               {total > 1 && (
                 <>
                   <button

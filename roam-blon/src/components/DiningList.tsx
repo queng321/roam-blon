@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
   Utensils, Flame, Star, MapPin, ChefHat, 
-  MessageCircle, Trophy, ChevronLeft, ChevronRight, Images, X, Phone, Facebook, FileText, Eye
+  MessageCircle, Trophy, ChevronLeft, ChevronRight, Images, X, Phone, Facebook, FileText, Eye, Camera
 } from "lucide-react";
 
 interface DiningReview {
@@ -349,6 +349,10 @@ export default function DiningList({ onLocate }: DiningListProps) {
                 ) : (
                   <Utensils className="text-slate-200 h-8 w-8 m-auto absolute inset-0" />
                 )}
+                {/* Photo credit */}
+                <span className="absolute bottom-2 left-2 z-10 bg-black/50 backdrop-blur-sm text-white/80 text-[8px] md:text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <Camera size={8} /> Photo credits to the rightful owner
+                </span>
                 {/* Category badge */}
                 <div className="absolute top-3 right-3 z-10">
                   <Badge className="bg-white/95 text-rose-600 font-black text-[7px] md:text-[8px] uppercase px-2.5 py-1 border-none shadow-sm backdrop-blur-sm">
@@ -514,6 +518,10 @@ export default function DiningList({ onLocate }: DiningListProps) {
                 alt={`${activeGallery.name} - Photo ${galleryIdx + 1}`}
                 className="max-h-[70vh] max-w-full object-contain rounded-2xl shadow-2xl"
               />
+              {/* Photo credit */}
+              <span className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 bg-black/60 backdrop-blur-sm text-white/80 text-[10px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                <Camera size={10} /> Photo credits to the rightful owner
+              </span>
               <button onClick={goNext} className="absolute right-4 md:right-8 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-all z-10">
                 <ChevronRight size={24} />
               </button>
@@ -572,6 +580,10 @@ export default function DiningList({ onLocate }: DiningListProps) {
                 alt={`${activeMenuGallery.name} - Menu ${menuGalleryIdx + 1}`}
                 className="max-h-[70vh] max-w-full object-contain rounded-2xl shadow-2xl"
               />
+              {/* Photo credit */}
+              <span className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 bg-black/60 backdrop-blur-sm text-white/80 text-[10px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                <Camera size={10} /> Menu photo credits to the rightful owner
+              </span>
               <button onClick={goNext} className="absolute right-4 md:right-8 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-all z-10">
                 <ChevronRight size={24} />
               </button>
@@ -630,6 +642,9 @@ export default function DiningList({ onLocate }: DiningListProps) {
                 {photos.length > 0 && (
                   <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-100">
                     <img src={photos[detailsPhotoIdx]} alt={`${shop.name} photo ${detailsPhotoIdx + 1}`} className="w-full h-56 md:h-72 object-cover" />
+                    <span className="absolute bottom-3 left-3 z-10 bg-black/50 backdrop-blur-sm text-white/80 text-[9px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+                      <Camera size={9} /> Photo credits to the rightful owner
+                    </span>
                     {total > 1 && (
                       <>
                         <button onClick={goPrevPhoto} className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all">
