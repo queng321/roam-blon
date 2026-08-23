@@ -1537,12 +1537,12 @@ export default function TouristAuthFlow({ onComplete, onCancel, initialScreen = 
         <div style={{ position: "absolute", bottom: -80, left: -80, width: 280, height: 280, borderRadius: "50%", background: "radial-gradient(circle, rgba(26,34,54,0.10) 0%, transparent 70%)", pointerEvents: "none" }} />
 
         <div style={{
-          width: 112, height: 112, borderRadius: "50%",
+          width: 88, height: 88, borderRadius: "50%",
           background: C.white, boxShadow: C.cardShadow,
           display: "flex", alignItems: "center", justifyContent: "center",
           marginBottom: "28px", animation: "float 2.4s ease-in-out infinite",
         }}>
-          <img src="/logo.jpg" alt="Roam-Blon" style={{ width: 72, height: 72, objectFit: "cover", borderRadius: "50%" }} />
+          <img src="/logo.jpg" alt="Roam-Blon" style={{ width: 56, height: 56, objectFit: "cover", borderRadius: "50%" }} />
         </div>
 
         <div style={{
