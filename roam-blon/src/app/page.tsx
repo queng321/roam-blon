@@ -1299,8 +1299,8 @@ export default function Home() {
           {/* Subtle background floating circle */}
           <div className="absolute top-1/4 -right-20 w-80 h-80 bg-rose-200/20 rounded-full blur-3xl pointer-events-none"></div>
 
-          <div className="w-20 h-20 bg-white rounded-3xl mb-8 flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-rose-100/50 animate-bounce relative z-10 flex-shrink-0">
-            <img src="/logo.jpg" alt="Logo" className="w-14 h-14 object-cover rounded-xl" />
+          <div className="w-28 h-28 bg-white rounded-full mb-8 flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-rose-100/50 animate-bounce relative z-10 flex-shrink-0">
+            <img src="/logo.jpg" alt="Logo" className="w-20 h-20 object-cover rounded-full" />
           </div>
 
           <div className="max-w-xl w-full px-6 animate-in fade-in zoom-in duration-1000 relative z-10">
