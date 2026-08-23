@@ -15,4 +15,5 @@ alter table public.tour_guide_bookings
   add column if not exists day_of_tour text,
   add column if not exists destinations text,
   add column if not exists notes text,
-  add column if not exists reference_code text;
+  add column if not exists reference_code text,
+  add column if not exists rejection_reason text;

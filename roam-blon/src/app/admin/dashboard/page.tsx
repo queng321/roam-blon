@@ -149,6 +149,9 @@ export default function AdminDashboardPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [qrItem, setQrItem] = useState<any>(null);
 
+  // Decline booking with reason modal
+  const [declineBooking, setDeclineBooking] = useState<{ bookingId: string; reason: string } | null>(null);
+
   const openAddModal = (modalType: string) => {
     setEditingItem(null);
     setActiveModal(modalType);
@@ -399,19 +402,23 @@ export default function AdminDashboardPage() {
   };
 
   // Status update for tour guide bookings
-  const handleGuideBookingStatus = async (bookingId: string, newStatus: string) => {
+  const handleGuideBookingStatus = async (bookingId: string, newStatus: string, rejectionReason?: string) => {
     let updatedBooking: any = null;
+    const updateData: any = { status: newStatus };
+    if (rejectionReason && (newStatus === 'declined' || newStatus === 'rejected')) {
+      updateData.rejection_reason = rejectionReason;
+    }
     try {
-      const { data } = await supabase.from('tour_guide_bookings').update({ status: newStatus }).eq('id', bookingId).select();
+      const { data } = await supabase.from('tour_guide_bookings').update(updateData).eq('id', bookingId).select();
       if (data && data[0]) updatedBooking = data[0];
     } catch (err) {
       console.warn("Status update fallback", err);
     }
-    setGuideBookings(prev => prev.map(b => b.id === bookingId ? { ...b, status: newStatus } : b));
+    setGuideBookings(prev => prev.map(b => b.id === bookingId ? { ...b, status: newStatus, rejection_reason: updateData.rejection_reason } : b));
     
     // Update local storage
     const stored = JSON.parse(localStorage.getItem('roam_blon_tour_guide_bookings') || '[]');
-    const updated = stored.map((b: any) => b.id === bookingId ? { ...b, status: newStatus } : b);
+    const updated = stored.map((b: any) => b.id === bookingId ? { ...b, status: newStatus, rejection_reason: updateData.rejection_reason } : b);
     localStorage.setItem('roam_blon_tour_guide_bookings', JSON.stringify(updated));
 
     // Find the full booking from state for the broadcast payload
@@ -431,7 +438,7 @@ export default function AdminDashboardPage() {
             chan.send({
               type: 'broadcast',
               event: 'booking_status',
-              payload: { ...full, status: newStatus },
+              payload: { ...full, status: newStatus, rejection_reason: updateData.rejection_reason },
             });
             supabase.removeChannel(chan);
           }
@@ -2688,23 +2695,23 @@ export default function AdminDashboardPage() {
                                              b.status === 'declined' || b.status === 'rejected' ? 'bg-rose-500 text-white' : 'bg-amber-100 text-amber-700'
                                           }`}>{b.status || 'pending'}</span>
                                           
-                                          <div className="flex gap-1">
+<div className="flex gap-1">
 {(b.status === undefined || b.status === null || b.status === 'pending') && (
                                                 <>
                                                   <button 
                                                      onClick={() => handleGuideBookingStatus(b.id, 'approved')}
                                                      className="px-3 py-1 bg-slate-900 hover:bg-emerald-600 text-white text-[9px] font-black uppercase rounded-lg transition-all"
-                                                  >
-                                                     ✓ Accept
-                                                  </button>
-                                                  <button 
-                                                     onClick={() => handleGuideBookingStatus(b.id, 'declined')}
-                                                     className="px-3 py-1 bg-slate-100 hover:bg-rose-500 hover:text-white text-slate-600 text-[9px] font-black uppercase rounded-lg transition-all"
-                                                  >
-                                                     ✗ Decline
-                                                  </button>
-                                                  </>
-                                               )}
+                                                   >
+                                                      ✓ Accept
+                                                   </button>
+                                                   <button 
+                                                      onClick={() => setDeclineBooking({ bookingId: b.id, reason: '' })}
+                                                      className="px-3 py-1 bg-slate-100 hover:bg-rose-500 hover:text-white text-slate-600 text-[9px] font-black uppercase rounded-lg transition-all"
+                                                   >
+                                                      ✗ Decline
+                                                   </button>
+                                                   </>
+                                                )}
                                                <button 
                                                   onClick={() => removeBooking(b)}
                                                   title="Remove this booking"
@@ -4045,5 +4052,44 @@ function CustomQRTool() {
         </div>
       </div>
     </div>
+
+    {/* Decline Booking with Reason Modal */}
+    {declineBooking && (
+      <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6 animate-in fade-in duration-300">
+        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setDeclineBooking(null)} />
+        <div className="relative bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in duration-300">
+          <div className="absolute top-0 left-0 w-full h-2 bg-rose-500" />
+          <h3 className="text-2xl font-black uppercase italic tracking-tighter text-slate-900 text-center mb-2">Decline Booking</h3>
+          <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest text-center mb-6">Enter a reason for declining this booking</p>
+          
+          <textarea
+            value={declineBooking.reason}
+            onChange={(e) => setDeclineBooking({ ...declineBooking, reason: e.target.value })}
+            rows={4}
+            placeholder="Reason for declining (e.g., guide unavailable, schedule conflict, etc.)"
+            className="w-full px-4 py-3 rounded-2xl border-2 border-slate-100 focus:border-rose-300 outline-none font-medium text-slate-700 text-sm resize-none mb-4"
+          />
+          
+          <div className="flex gap-3">
+            <button
+              onClick={() => {
+                handleGuideBookingStatus(declineBooking.bookingId, 'declined', declineBooking.reason);
+                setDeclineBooking(null);
+              }}
+              disabled={!declineBooking.reason.trim()}
+              className="flex-1 py-3 bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Confirm Decline
+            </button>
+            <button
+              onClick={() => setDeclineBooking(null)}
+              className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   );
 }
