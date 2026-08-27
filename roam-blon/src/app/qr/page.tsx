@@ -791,7 +791,7 @@ const DINING_MENUS: Record<string, string[]> = {
   "bistro": ["/dining/menu/bistro.jpg"],
   "el": ["/dining/menu/el1.jpg", "/dining/menu/el2.jpg", "/dining/menu/el3.jpg", "/dining/menu/el4.jpg", "/dining/menu/el5.jpg"],
   "gangnam": ["/dining/menu/gangnam.jpg", "/dining/menu/gangnam1.jpg", "/dining/menu/gangnam2.jpg", "/dining/menu/gangnam3.jpg"],
-  "horizon": ["/dining/menu/horizon.jpg", "/dining/menu/horizon1.jpg"],
+  "horizon": ["/dining/menu/horizon (1).jpg", "/dining/menu/horizon (2).jpg", "/dining/menu/horizon (3).jpg", "/dining/menu/horizon (4).jpg", "/dining/menu/horizon (5).jpg"],
   "italian": ["/dining/menu/italian (1).jpg", "/dining/menu/italian (2).jpg", "/dining/menu/italian (3).jpg", "/dining/menu/italian (4).jpg"],
   "mamalois": ["/dining/menu/mamalois1 (1).jpg", "/dining/menu/mamalois1 (2).jpg"],
   "ocean": ["/dining/menu/seaview (1).jpg", "/dining/menu/seaview (2).jpg", "/dining/menu/seaview (3).jpg", "/dining/menu/seaview (4).jpg", "/dining/menu/seaview (5).jpg", "/dining/menu/seaview (6).jpg"],
