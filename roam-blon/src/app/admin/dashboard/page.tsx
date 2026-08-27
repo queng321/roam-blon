@@ -3258,7 +3258,7 @@ export default function AdminDashboardPage() {
                     { id: "bistro", name: "Marble City Café & Bistro", location: "Town Proper", address: "Across Freedom Park, Town Proper, Romblon", category: "Café & Bistro", image_url: "/dining/bistro.jpg" },
                     { id: "el", name: "El Krimphoff Resort & Restaurant", location: "Brgy. Lonos", address: "Sitio Babangtan, Brgy. Lonos, Romblon", category: "Restaurant", image_url: "/dining/el.jpg" },
                     { id: "gangnam", name: "Gangnam Korean Grill", location: "Brgy. Mapula", address: "Sitio Batiano, Brgy. Mapula, Romblon", category: "Korean BBQ", image_url: "/dining/gangnam.jpg" },
-                    { id: "horizon", name: "Horizon Seaside Restaurant", location: "Brgy. Lonos", address: "Sitio Upper Lusod, Brgy. Lonos", category: "Seafood & Grill", image_url: "/dining/horizon.jpg" },
+                    { id: "horizon", name: "Horizon Seaside Restaurant", location: "Brgy. Lonos", address: "Sitio Upper Lusod, Brgy. Lonos", category: "Filipino & Spanish Cuisine", image_url: "/dining/horizon.jpg" },
                     { id: "italian", name: "Italian Trattoria", location: "Republika St, Brgy. 1 Poblacion", address: "Republika St, Brgy. 1 Poblacion, Romblon", category: "Italian & Pizza", image_url: "/dining/italian.jpg" },
                     { id: "mamalois", name: "Mama Lois Kitchen", location: "Town Proper", address: "Beside Romblon Port Terminal, Town Proper, Romblon", category: "Local Eat", image_url: "/dining/mamalois.jpg" },
                     { id: "ocean", name: "Seaview Restobar", location: "Brgy. Lonos", address: "Sitio Suwa, Brgy. Lonos, Romblon", category: "Seafood", image_url: "/dining/ocean.jpg" },
