@@ -23,18 +23,20 @@ const STATIC_DESTINATIONS = [
 ];
 
 const STATIC_DINING = [
-  { id: "bistro", name: "Marble City Café & Bistro", address: "Across Freedom Park, Town Proper, Romblon", description: "A cozy café serving artisanal espresso, freshly baked pastries, and local snacks.", category: "Café & Bistro", image_url: "/dining/bistro.jpg", images: ["/dining/bistro.jpg"] },
-  { id: "el", name: "El Krimphoff Resort & Restaurant", address: "Sitio Babangtan, Brgy. Lonos, Romblon", description: "Full-service resort restaurant offering fresh seafood, Filipino favorites, and cold beverages.", category: "Restaurant", image_url: "/dining/el.jpg", images: ["/dining/el.jpg"] },
-  { id: "gangnam", name: "Gangnam Korean Grill", address: "Sitio Batiano, Brgy. Mapula, Romblon", description: "Unlimited Korean BBQ and Samgyeopsal with authentic banchan side dishes.", category: "Korean BBQ", image_url: "/dining/gangnam.jpg", images: ["/dining/gangnam.jpg"] },
-  { id: "horizon", name: "Horizon Seaside Restaurant", address: "Brgy. Lonos", description: "Ross's Restaurant offers Filipino & Spanish cuisine by Horizon Hotel Romblon. Experience the rich flavors of the Philippines with a touch of Spanish culinary heritage—from beloved Filipino comfort food to Spanish-inspired favorites, every dish is thoughtfully prepared to bring together tradition, flavor, and modern dining, served with the warm hospitality Romblon is known for. \"Where Every Bite Becomes Part of Your Romblon Story.\"", category: "Seafood & Grill", image_url: "/dining/horizon.jpg", images: ["/dining/horizon.jpg"] },
-  { id: "italian", name: "Italian Trattoria", address: "Republika St, Brgy. 1 Poblacion, Romblon", description: "Authentic wood-fired pizzas, fresh homemade pasta, and fine Italian wines.", category: "Italian & Pizza", image_url: "/dining/italian.jpg", images: ["/dining/italian.jpg"] },
-  { id: "mamalois", name: "Mama Lois Kitchen", address: "Beside Romblon Port Terminal, Town Proper", description: "Home-cooked Romblon classics with generous servings at affordable prices.", category: "Local Eat", image_url: "/dining/mamalois.jpg", images: ["/dining/mamalois.jpg"] },
-  { id: "ocean", name: "Seaview Restobar", address: "Sitio Suwa, Brgy. Lonos, Romblon", description: "Seaside restobar serving catch-of-the-day seafood with ocean sunset views.", category: "Seafood", image_url: "/dining/ocean.jpg", images: ["/dining/ocean.jpg"] },
-  { id: "panublion", name: "Panublion Heritage Diner", address: "Republika St, Town Proper, Romblon", description: "Heritage Romblon recipes and delicacies in a warm cultural setting.", category: "Heritage Cuisine", image_url: "/dining/panublion.jpg", images: ["/dining/panublion.jpg"] },
-  { id: "reggae", name: "Reggae Bar & Grill", address: "Agpanabat", description: "Bohemian beachfront bar and grill with live music and tropical cocktails.", category: "Bar & Grill", image_url: "/dining/reggae.jpg", images: ["/dining/reggae.jpg"] },
+  { id: "bistro", name: "Marble City Café & Bistro", address: "Across Freedom Park, Town Proper, Romblon", description: "A cozy café serving artisanal espresso, freshly baked pastries, and local snacks.", category: "Café & Bistro", image_url: "/dining/bistro.jpg", images: ["/dining/bistro.jpg"], menus: ["/dining/menu/bistro.jpg"] },
+  { id: "el", name: "El Krimphoff Resort & Restaurant", address: "Sitio Babangtan, Brgy. Lonos, Romblon", description: "Full-service resort restaurant offering fresh seafood, Filipino favorites, and cold beverages.", category: "Restaurant", image_url: "/dining/el.jpg", images: ["/dining/el.jpg"], menus: ["/dining/menu/el1.jpg", "/dining/menu/el2.jpg", "/dining/menu/el3.jpg", "/dining/menu/el4.jpg", "/dining/menu/el5.jpg"] },
+  { id: "gangnam", name: "Gangnam Korean Grill", address: "Sitio Batiano, Brgy. Mapula, Romblon", description: "Unlimited Korean BBQ and Samgyeopsal with authentic banchan side dishes.", category: "Korean BBQ", image_url: "/dining/gangnam.jpg", images: ["/dining/gangnam.jpg"], menus: ["/dining/menu/gangnam.jpg", "/dining/menu/gangnam1.jpg", "/dining/menu/gangnam2.jpg", "/dining/menu/gangnam3.jpg"] },
+  { id: "horizon", name: "Horizon Seaside Restaurant", address: "Brgy. Lonos", description: "Ross's Restaurant offers Filipino & Spanish cuisine by Horizon Hotel Romblon. Experience the rich flavors of the Philippines with a touch of Spanish culinary heritage—from beloved Filipino comfort food to Spanish-inspired favorites, every dish is thoughtfully prepared to bring together tradition, flavor, and modern dining, served with the warm hospitality Romblon is known for. \"Where Every Bite Becomes Part of Your Romblon Story.\"", category: "Seafood & Grill", image_url: "/dining/horizon.jpg", images: ["/dining/horizon.jpg"], menus: ["/dining/menu/horizon (1).jpg", "/dining/menu/horizon (2).jpg", "/dining/menu/horizon (3).jpg", "/dining/menu/horizon (4).jpg", "/dining/menu/horizon (5).jpg"] },
+  { id: "italian", name: "Italian Trattoria", address: "Republika St, Brgy. 1 Poblacion, Romblon", description: "Authentic wood-fired pizzas, fresh homemade pasta, and fine Italian wines.", category: "Italian & Pizza", image_url: "/dining/italian.jpg", images: ["/dining/italian.jpg"], menus: ["/dining/menu/italian (1).jpg", "/dining/menu/italian (2).jpg", "/dining/menu/italian (3).jpg", "/dining/menu/italian (4).jpg"] },
+  { id: "mamalois", name: "Mama Lois Kitchen", address: "Beside Romblon Port Terminal, Town Proper", description: "Home-cooked Romblon classics with generous servings at affordable prices.", category: "Local Eat", image_url: "/dining/mamalois.jpg", images: ["/dining/mamalois.jpg"], menus: ["/dining/menu/mamalois1 (1).jpg", "/dining/menu/mamalois1 (2).jpg"] },
+  { id: "ocean", name: "Seaview Restobar", address: "Sitio Suwa, Brgy. Lonos, Romblon", description: "Seaside restobar serving catch-of-the-day seafood with ocean sunset views.", category: "Seafood", image_url: "/dining/ocean.jpg", images: ["/dining/ocean.jpg"], menus: ["/dining/menu/seaview (1).jpg", "/dining/menu/seaview (2).jpg", "/dining/menu/seaview (3).jpg", "/dining/menu/seaview (4).jpg", "/dining/menu/seaview (5).jpg", "/dining/menu/seaview (6).jpg"] },
+  { id: "panublion", name: "Panublion Heritage Diner", address: "Republika St, Town Proper, Romblon", description: "Heritage Romblon recipes and delicacies in a warm cultural setting.", category: "Heritage Cuisine", image_url: "/dining/panublion.jpg", images: ["/dining/panublion.jpg"], menus: ["/dining/menu/panublion1 (1).jpg", "/dining/menu/panublion1 (2).jpg", "/dining/menu/panublion1 (3).jpg", "/dining/menu/panublion1 (4).jpg", "/dining/menu/panublion1 (5).jpg", "/dining/menu/panublion1 (6).jpg"] },
+  { id: "reggae", name: "Reggae Bar & Grill", address: "Agpanabat", description: "Bohemian beachfront bar and grill with live music and tropical cocktails.", category: "Bar & Grill", image_url: "/dining/reggae.jpg", images: ["/dining/reggae.jpg"], menus: ["/dining/menu/reggae (1).jpg", "/dining/menu/reggae (2).jpg", "/dining/menu/reggae (3).jpg", "/dining/menu/reggae (4).jpg", "/dining/menu/reggae (5).jpg", "/dining/menu/reggae (6).jpg"] },
   { id: "sunbird", name: "Sunbird Ridge Coffee Shop", address: "Ridge above Tiamban Beach, Brgy. Lonos", description: "Specialty coffee and cold brews in a peaceful garden lounge setting.", category: "Café", image_url: "/foods/sarsa.webp", images: ["/foods/sarsa.webp", "/foods/inaslum.webp", "/foods/sihi.webp", "/foods/gayabon.webp"] },
-  { id: "yurich", name: "Yurich Hotel & Caffeinate Co.", address: "Sitio Binagong, Brgy. Bagacay", description: "Premium coffee blends, artisanal pastries, and hearty local dishes in a cozy air-conditioned space.", category: "Local Restaurant", image_url: "/dining/yurich.jpg", images: ["/dining/yurich.jpg"] },
+  { id: "yurich", name: "Yurich Hotel & Caffeinate Co.", address: "Sitio Binagong, Brgy. Bagacay", description: "Premium coffee blends, artisanal pastries, and hearty local dishes in a cozy air-conditioned space.", category: "Local Restaurant", image_url: "/dining/yurich.jpg", images: ["/dining/yurich.jpg"], menus: ["/dining/menu/yurich (1).jpg", "/dining/menu/yurich (2).jpg", "/dining/menu/yurich (3).jpg", "/dining/menu/yurich (4).jpg", "/dining/menu/yurich (5).jpg", "/dining/menu/yurich (6).jpg", "/dining/menu/yurich (7).jpg", "/dining/menu/yurich (8).jpg", "/dining/menu/yurich (9).jpg", "/dining/menu/yurich (10).jpg", "/dining/menu/yurich (11).jpg", "/dining/menu/yurich (12).jpg"] },
 ];
+
+const STATIC_DINING_MAP: Record<string, any> = Object.fromEntries(STATIC_DINING.map(d => [d.id, d]));
 
 const STATIC_LANDMARKS: QRItem[] = [];
 const STATIC_FALLS: QRItem[] = [];
@@ -48,6 +50,7 @@ interface QRItem {
   category?: string;
   image_url?: string;
   images?: string[];
+  menus?: string[];
   opening_time?: string;
   closing_time?: string;
   price?: number;
@@ -77,6 +80,7 @@ export default function QRViewer() {
   const [search, setSearch] = useState("");
   const [selectedItem, setSelectedItem] = useState<QRItem | null>(null);
   const [selectedItemPhotoIdx, setSelectedItemPhotoIdx] = useState(0);
+  const [menuIdx, setMenuIdx] = useState(0);
   const [reviews, setReviews] = useState<Review[]>([]);
 
   const selectedItemImages = selectedItem
@@ -88,7 +92,7 @@ export default function QRViewer() {
     : [];
 
   useEffect(() => {
-    if (selectedItem) setSelectedItemPhotoIdx(0);
+    if (selectedItem) { setSelectedItemPhotoIdx(0); setMenuIdx(0); }
   }, [selectedItem]);
 
   useEffect(() => {
@@ -145,7 +149,17 @@ export default function QRViewer() {
       ]);
 
       const mapDest = (d: any): QRItem => ({ ...d, _type: "destination" });
-      const mapDining = (d: any): QRItem => ({ ...d, _type: "dining" });
+      const mapDining = (d: any): QRItem => {
+        const fb = STATIC_DINING_MAP[String(d?.id || "").toLowerCase()];
+        return {
+          ...fb,
+          ...d,
+          images: (d?.images && d.images.length) ? d.images : (fb?.images || []),
+          menus: (d?.menus && d.menus.length) ? d.menus : (fb?.menus || []),
+          description: d?.description || fb?.description || "",
+          _type: "dining",
+        };
+      };
       const mapLandmark = (d: any): QRItem => ({ ...d, _type: "landmarks" });
       const mapFall = (d: any): QRItem => ({ ...d, _type: "fall" });
 
@@ -449,6 +463,59 @@ export default function QRViewer() {
                   <div className="text-2xl font-black text-rose-500">₱{selectedItem.price}</div>
                 )}
               </div>
+
+              {/* Menus */}
+              {selectedItem._type === "dining" && selectedItem.menus && selectedItem.menus.length > 0 && (
+                <div>
+                  <h4 className="text-lg font-black text-slate-900 uppercase tracking-tighter mb-3 flex items-center gap-2">
+                    <Utensils size={16} className="text-orange-500" /> Menu
+                  </h4>
+                  <div className="space-y-3">
+                    <div className="relative rounded-2xl overflow-hidden h-72 bg-slate-100">
+                      <img
+                        src={selectedItem.menus[menuIdx]}
+                        alt={`${selectedItem.name} menu ${menuIdx + 1}`}
+                        className="w-full h-full object-contain"
+                      />
+                      {selectedItem.menus.length > 1 && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => setMenuIdx(idx => (idx - 1 + selectedItem.menus!.length) % selectedItem.menus!.length)}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 shadow-lg flex items-center justify-center text-slate-900 hover:bg-white transition"
+                          >
+                            <ChevronLeft size={20} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setMenuIdx(idx => (idx + 1) % selectedItem.menus!.length)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 shadow-lg flex items-center justify-center text-slate-900 hover:bg-white transition"
+                          >
+                            <ChevronRight size={20} />
+                          </button>
+                          <div className="absolute bottom-3 right-3 bg-black/60 text-white text-[11px] px-3 py-1.5 rounded-full font-black">
+                            {menuIdx + 1} / {selectedItem.menus.length}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    {selectedItem.menus.length > 1 && (
+                      <div className="flex gap-2 overflow-x-auto no-scrollbar">
+                        {selectedItem.menus.map((img, idx) => (
+                          <button
+                            key={`${img}-${idx}`}
+                            type="button"
+                            onClick={() => setMenuIdx(idx)}
+                            className={`w-16 h-12 rounded-2xl overflow-hidden border-2 transition ${idx === menuIdx ? "border-orange-500" : "border-transparent hover:border-slate-300"}`}
+                          >
+                            <img src={img} alt={`${selectedItem.name} menu thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* QR Code (Large) */}
               <div className="bg-slate-50 rounded-3xl p-6 flex flex-col items-center gap-4 border-2 border-slate-100">
