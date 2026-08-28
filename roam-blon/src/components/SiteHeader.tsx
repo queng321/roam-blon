@@ -116,8 +116,7 @@ export default function SiteHeader() {
   const openProfile = () => {
     setMobileMenuOpen(false);
     if (!tourist) {
-      setAuthInitialScreen("signin");
-      setShowAuth(true);
+      router.push("/");
     } else {
       setShowProfile(true);
     }
@@ -178,7 +177,7 @@ export default function SiteHeader() {
             </button>
             <button
               onClick={openProfile}
-              title={tourist ? "My Profile" : "Login"}
+              title={tourist ? "My Profile" : "Get Started"}
               className={`w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-white font-black text-sm uppercase transition-all shadow-sm ${
                 tourist ? "bg-rose-600 ring-2 ring-rose-200" : "bg-slate-900 hover:bg-rose-600"
               }`}
@@ -218,14 +217,7 @@ export default function SiteHeader() {
               >
                 <LogOut size={18} />
               </Button>
-            ) : (
-              <button
-                onClick={openLogin}
-                className="px-4 py-2 rounded-lg text-sm font-black text-white bg-slate-900 hover:bg-rose-600 transition-all uppercase tracking-widest"
-              >
-                Login
-              </button>
-            )}
+            ) : null}
           </nav>
           <button
             onClick={openProfile}
@@ -285,10 +277,13 @@ export default function SiteHeader() {
               </>
             ) : (
               <button
-                onClick={openLogin}
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  router.push("/");
+                }}
                 className="w-full px-6 py-4 rounded-xl text-lg font-black text-left text-white bg-slate-900 hover:bg-rose-600 uppercase tracking-widest"
               >
-                Login / Sign Up
+                Get Started
               </button>
             )}
           </div>
