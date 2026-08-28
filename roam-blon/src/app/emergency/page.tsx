@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import EmergencySection from "@/components/EmergencySection";
+import SiteHeader from "@/components/SiteHeader";
 
 export const metadata: Metadata = {
   title: "Emergency | Roam-Blon",
@@ -9,8 +10,11 @@ export const metadata: Metadata = {
 
 export default function EmergencyPage() {
   return (
-    <div className="min-h-screen bg-[#FAEEED]/20">
-      <EmergencySection />
-    </div>
+    <>
+      <SiteHeader />
+      <div className="min-h-screen bg-[#FAEEED]/20">
+        <EmergencySection />
+      </div>
+    </>
   );
 }
