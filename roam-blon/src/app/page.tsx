@@ -517,7 +517,13 @@ export default function Home() {
   const handleNavClick = (targetView: string) => {
     setMobileMenuOpen(false);
     if (targetView === "about") {
-      router.push("/about");
+      setView("welcome");
+      setTimeout(() => {
+        const aboutSection = document.getElementById("about-section");
+        if (aboutSection) {
+          aboutSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 100);
     } else {
       setView(targetView);
     }
