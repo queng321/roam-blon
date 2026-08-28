@@ -1471,15 +1471,15 @@ export default function Home() {
                 </Button>
               ) : null}
             </nav>
-            <button
-              onClick={openProfile}
-              title={tourist ? "My Profile" : "Login"}
-              className={`w-11 h-11 rounded-full overflow-hidden flex items-center justify-center text-white font-black text-sm uppercase transition-all shadow-sm ${
-                view === 'profile' ? 'bg-rose-600 ring-2 ring-rose-200' : 'bg-slate-900 hover:bg-rose-600'
-              }`}
-            >
-              <TouristAvatar tourist={tourist} />
-            </button>
+            {!tourist && (
+              <button
+                onClick={openProfile}
+                title="Get Started"
+                className="w-11 h-11 rounded-full overflow-hidden flex items-center justify-center text-white font-black text-sm uppercase transition-all shadow-sm bg-slate-900 hover:bg-rose-600"
+              >
+                <TouristAvatar tourist={tourist} />
+              </button>
+            )}
           </div>
 
           {/* Mobile Menu Overlay */}
@@ -1502,19 +1502,21 @@ export default function Home() {
                   EMERGENCY
                 </button>
                 <div className="border-t-2 border-slate-100 my-3"></div>
-                <button
-                  onClick={openProfile}
-                  className={`w-full px-6 py-4 rounded-xl text-lg font-black transition-all text-left flex items-center gap-3 ${view === 'profile' ? 'bg-rose-50 text-rose-600 border-2 border-rose-200' : 'bg-slate-50 text-slate-700 border-2 border-slate-100 hover:bg-slate-100'}`}
-                >
-                  <span className={`w-9 h-9 rounded-full overflow-hidden flex items-center justify-center text-white font-black text-sm uppercase ${view === 'profile' ? 'bg-rose-600' : 'bg-slate-900'}`}>
-                    <TouristAvatar tourist={tourist} />
-                  </span>
-                  {tourist ? 'My Profile' : 'Get Started'}
-                </button>
+                {!tourist && (
+                  <button
+                    onClick={openProfile}
+                    className="w-full px-6 py-4 rounded-xl text-lg font-black transition-all text-left flex items-center gap-3 bg-slate-50 text-slate-700 border-2 border-slate-100 hover:bg-slate-100"
+                  >
+                    <span className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center text-white font-black text-sm uppercase bg-slate-900">
+                      <TouristAvatar tourist={tourist} />
+                    </span>
+                    Get Started
+                  </button>
+                )}
                 {tourist && (
                   <button
                     onClick={() => setShowLogoutConfirm(true)}
-                    className="w-full px-6 py-4 rounded-xl text-lg font-black text-slate-500 bg-slate-50 border-2 border-slate-100 hover:bg-red-50 hover:text-red-600 transition-all text-left flex items-center gap-3"
+                    className="w-full px-6 py-4 rounded-xl text-lg font-black text-left text-slate-500 bg-slate-50 border-2 border-slate-100 hover:bg-red-50 hover:text-red-600 transition-all text-left flex items-center gap-3"
                   >
                     <LogOut size={20} /> Logout
                   </button>

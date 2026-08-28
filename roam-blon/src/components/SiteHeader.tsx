@@ -218,17 +218,17 @@ export default function SiteHeader() {
                 <LogOut size={18} />
               </Button>
             ) : null}
-          </nav>
-          <button
-            onClick={openProfile}
-            title={tourist ? "My Profile" : "Login"}
-            className={`w-11 h-11 rounded-full overflow-hidden flex items-center justify-center text-white font-black text-sm uppercase transition-all shadow-sm ${
-              tourist ? "bg-rose-600 ring-2 ring-rose-200" : "bg-slate-900 hover:bg-rose-600"
-            }`}
-          >
-            <TouristAvatar tourist={tourist} />
-          </button>
-        </div>
+            </nav>
+            {!tourist && (
+              <button
+                onClick={openProfile}
+                title="Get Started"
+                className="w-11 h-11 rounded-full overflow-hidden flex items-center justify-center text-white font-black text-sm uppercase transition-all shadow-sm bg-slate-900 hover:bg-rose-600"
+              >
+                <TouristAvatar tourist={tourist} />
+              </button>
+            )}
+          </div>
 
         {mobileMenuOpen && (
           <div className="lg:hidden w-full flex flex-col gap-3 mt-2">
@@ -251,31 +251,7 @@ export default function SiteHeader() {
               EMERGENCY
             </button>
             <div className="border-t-2 border-slate-100 my-1"></div>
-            {tourist ? (
-              <>
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setShowProfile(true);
-                  }}
-                  className="w-full px-6 py-4 rounded-xl text-lg font-black text-left bg-slate-50 text-slate-700 border-2 border-slate-100 hover:bg-slate-100 flex items-center gap-3"
-                >
-                  <span className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center text-white font-black text-sm uppercase bg-rose-600">
-                    <TouristAvatar tourist={tourist} />
-                  </span>
-                  My Profile
-                </button>
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setShowLogoutConfirm(true);
-                  }}
-                  className="w-full px-6 py-4 rounded-xl text-lg font-black text-left text-slate-500 bg-slate-50 border-2 border-slate-100 hover:bg-red-50 hover:text-red-600 flex items-center gap-3"
-                >
-                  <LogOut size={18} /> Logout
-                </button>
-              </>
-            ) : (
+            {!tourist && (
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
@@ -284,6 +260,17 @@ export default function SiteHeader() {
                 className="w-full px-6 py-4 rounded-xl text-lg font-black text-left text-white bg-slate-900 hover:bg-rose-600 uppercase tracking-widest"
               >
                 Get Started
+              </button>
+            )}
+            {tourist && (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setShowLogoutConfirm(true);
+                }}
+                className="w-full px-6 py-4 rounded-xl text-lg font-black text-left text-slate-500 bg-slate-50 border-2 border-slate-100 hover:bg-red-50 hover:text-red-600 flex items-center gap-3"
+              >
+                <LogOut size={18} /> Logout
               </button>
             )}
           </div>
