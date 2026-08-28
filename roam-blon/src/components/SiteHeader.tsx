@@ -37,15 +37,18 @@ export default function SiteHeader() {
     async function checkSession() {
       try {
         const cachedUser = localStorage.getItem("roam_blon_tourist_user");
+        let parsed: any = null;
         if (cachedUser) {
           try {
-            const parsed = JSON.parse(cachedUser);
-            if (parsed && parsed.email) {
-              setTourist(parsed);
-              setShowAuth(false);
-            }
+            parsed = JSON.parse(cachedUser);
           } catch {}
         }
+
+        if (parsed && parsed.role !== "admin" && parsed.role !== "tour_guide") {
+          setTourist(parsed);
+          setShowAuth(false);
+        }
+
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           const userEmail = user.email?.toLowerCase().trim() || "";
@@ -70,7 +73,7 @@ export default function SiteHeader() {
           setTourist(touristData);
           localStorage.setItem("roam_blon_tourist_user", JSON.stringify(touristData));
           setShowAuth(false);
-        } else {
+        } else if (!parsed || parsed.role === "admin" || parsed.role === "tour_guide") {
           localStorage.removeItem("roam_blon_tourist_user");
           localStorage.removeItem("roam_blon_active_role");
           setTourist(null);

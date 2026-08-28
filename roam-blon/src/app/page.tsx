@@ -259,17 +259,20 @@ export default function Home() {
   useEffect(() => {
     async function checkSession() {
       try {
-        // Fast restore from localStorage on refresh
+        // Fast restore from localStorage — this also covers guest tourists created
+        // via "Get Started", which have no auth session and no email.
         const cachedUser = localStorage.getItem("roam_blon_tourist_user");
+        let parsed: any = null;
         if (cachedUser) {
           try {
-            const parsed = JSON.parse(cachedUser);
-            if (parsed && parsed.email) {
-              setTourist(parsed);
-              setShowAuth(false);
-              setView('welcome');
-            }
+            parsed = JSON.parse(cachedUser);
           } catch {}
+        }
+
+        if (parsed && parsed.role !== 'admin' && parsed.role !== 'tour_guide') {
+          setTourist(parsed);
+          setShowAuth(false);
+          setView('welcome');
         }
 
         const { data: { user } } = await supabase.auth.getUser();
@@ -308,7 +311,8 @@ export default function Home() {
           localStorage.setItem("roam_blon_tourist_user", JSON.stringify(touristData));
           setShowAuth(false);
           setView('welcome');
-        } else {
+        } else if (!parsed || parsed.role === 'admin' || parsed.role === 'tour_guide') {
+          // No auth session and no cached returning/guest tourist — show the public landing.
           localStorage.removeItem("roam_blon_tourist_user");
           localStorage.removeItem("roam_blon_active_role");
           setTourist(null);
