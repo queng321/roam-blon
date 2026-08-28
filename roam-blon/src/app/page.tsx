@@ -1171,7 +1171,7 @@ export default function Home() {
                   Everything you need to travel smarter
                 </h2>
                 <p className="text-sm text-slate-900 font-medium max-w-md mx-auto leading-relaxed">
-                  From AI itineraries to interactive maps — Roam-Blon handles the planning so you can enjoy every moment of your journey.
+                  From AI itineraries to smart local discovery — Roam-Blon handles the planning so you can enjoy every moment of your journey.
                 </p>
               </div>
 
@@ -1181,11 +1181,6 @@ export default function Home() {
                     icon: "✨",
                     title: "AI Chatbot powered by Gemini 2.5",
                     desc: "Experience smart day-by-day trip generation tailored to your interests and budget. Disclaimer: AI responses may occasionally be inaccurate or outdated.",
-                  },
-                  {
-                    icon: "🗺️",
-                    title: "Interactive Maps",
-                    desc: "Visualize your entire trip on a live map. See distances, routes, and nearby hidden gems at a glance.",
                   },
                   {
                     icon: "⚡",
@@ -1318,13 +1313,12 @@ export default function Home() {
                 <div className="w-8 h-1 bg-rose-500 rounded-full mx-auto mt-2"></div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-                {[
-                  { step: "01", title: "Role & Setup", desc: "Sign in or register as Tourist with fast 1-step setup.", icon: MapPin },
-                  { step: "02", title: "Scan QR & Explore", desc: "Scan QR codes at local dining spots and destinations for instant menus, reviews, and location details.", icon: QrCode },
-                  { step: "03", title: "Book Services", desc: "Reserve accredited tour guides and track bookings.", icon: CalendarCheck },
-                  { step: "04", title: "AI & Emergency", desc: "Get 24/7 personalized travel advice from your AI Buddy and direct emergency responder contacts.", icon: Sparkles }
-                ].map((item, idx) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+                 {[
+                   { step: "01", title: "Scan QR & Explore", desc: "Scan QR codes at local dining spots and destinations for instant menus, reviews, and location details.", icon: QrCode },
+                   { step: "02", title: "Book Services", desc: "Reserve accredited tour guides and track bookings.", icon: CalendarCheck },
+                   { step: "03", title: "AI & Emergency", desc: "Get 24/7 personalized travel advice from your AI Buddy and direct emergency responder contacts.", icon: Sparkles }
+                 ].map((item, idx) => (
                   <div key={idx} className="bg-white/80 backdrop-blur-sm p-6 rounded-3xl border-2 border-[#FAEEED] shadow-sm relative group hover:shadow-md transition-all flex flex-col items-center text-center w-full min-h-[220px]">
                     <div className="absolute top-0 right-0 bg-[#FAEEED]/50 text-rose-600 font-black text-[10px] px-3 py-1.5 rounded-bl-[1rem] rounded-tr-[2rem] group-hover:bg-rose-600 group-hover:text-white transition-all z-10 hidden md:block">
                        STEP {item.step}
