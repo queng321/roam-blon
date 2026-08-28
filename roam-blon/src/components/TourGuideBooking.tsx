@@ -375,13 +375,13 @@ export default function TourGuideBooking({ tourist, initialDestination = "", com
 
       {/* GUIDE GRID */}
       {!loading && guides.length > 0 && (
-        <div className="flex flex-wrap justify-center gap-5">
+        <div className="flex flex-wrap justify-center gap-4">
           {guides.map((guide) => {
             const isAvailable = guide.is_available !== false;
             return (
               <div
                 key={guide.id}
-                className={`w-full sm:w-80 bg-white rounded-[1.25rem] overflow-hidden shadow-sm border ${isAvailable ? 'border-slate-100' : 'border-slate-200 opacity-80'} hover:shadow-md transition-all flex flex-col`}
+                className={`w-full sm:w-80 shrink-0 bg-white rounded-[1.25rem] overflow-hidden shadow-sm border ${isAvailable ? 'border-slate-100' : 'border-slate-200 opacity-80'} hover:shadow-md transition-all flex flex-col`}
               >
                 {/* Card top: gradient bg + circle avatar */}
                 <div className="relative bg-gradient-to-br from-orange-50 to-amber-50 pt-8 pb-4 flex flex-col items-center">
