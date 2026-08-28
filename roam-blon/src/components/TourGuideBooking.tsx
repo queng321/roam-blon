@@ -62,7 +62,7 @@ const STATIC_GUIDES: TourGuide[] = [
     bio: "Experienced beach tour guide from Romblon. Takes you to the island's finest beaches, including Bonbon Beach sandbar.",
     rating: 4.9,
     status: "approved",
-    is_available: true,
+    is_available: false,
   },
   {
     id: "sg-jon",
@@ -78,7 +78,7 @@ const STATIC_GUIDES: TourGuide[] = [
     bio: "Certified local guide leading island-hopping and scenic land tours around Romblon.",
     rating: 4.8,
     status: "approved",
-    is_available: true,
+    is_available: false,
   },
 ];
 
@@ -375,13 +375,13 @@ export default function TourGuideBooking({ tourist, initialDestination = "", com
 
       {/* GUIDE GRID */}
       {!loading && guides.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="flex flex-wrap justify-center gap-5">
           {guides.map((guide) => {
             const isAvailable = guide.is_available !== false;
             return (
               <div
                 key={guide.id}
-                className={`bg-white rounded-[1.25rem] overflow-hidden shadow-sm border ${isAvailable ? 'border-slate-100' : 'border-slate-200 opacity-80'} hover:shadow-md transition-all flex flex-col`}
+                className={`w-full sm:w-80 bg-white rounded-[1.25rem] overflow-hidden shadow-sm border ${isAvailable ? 'border-slate-100' : 'border-slate-200 opacity-80'} hover:shadow-md transition-all flex flex-col`}
               >
                 {/* Card top: gradient bg + circle avatar */}
                 <div className="relative bg-gradient-to-br from-orange-50 to-amber-50 pt-8 pb-4 flex flex-col items-center">
