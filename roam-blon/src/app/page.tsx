@@ -1433,15 +1433,6 @@ export default function Home() {
               >
                 {mobileMenuOpen ? <X size={24} className="text-slate-900" /> : <Menu size={24} className="text-slate-900" />}
               </button>
-              <button
-              onClick={openProfile}
-               title={tourist ? "My Profile" : "Get Started"}
-                className={`w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-white font-black text-sm uppercase transition-all shadow-sm ${
-                  view === 'profile' ? 'bg-rose-600 ring-2 ring-rose-200' : 'bg-slate-900 hover:bg-rose-600'
-                }`}
-              >
-                <TouristAvatar tourist={tourist} />
-              </button>
             </div>
           </div>
 
@@ -1471,15 +1462,6 @@ export default function Home() {
                 </Button>
               ) : null}
             </nav>
-            {!tourist && (
-              <button
-                onClick={openProfile}
-                title="Get Started"
-                className="w-11 h-11 rounded-full overflow-hidden flex items-center justify-center text-white font-black text-sm uppercase transition-all shadow-sm bg-slate-900 hover:bg-rose-600"
-              >
-                <TouristAvatar tourist={tourist} />
-              </button>
-            )}
           </div>
 
           {/* Mobile Menu Overlay */}
