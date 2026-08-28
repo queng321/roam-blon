@@ -369,6 +369,7 @@ function QRScanContent() {
   // Local/Foreign prompt after scanning
   const [visitorPrompt, setVisitorPrompt] = useState(false);
   const [visitorType, setVisitorType] = useState<"local" | "foreign" | null>(null);
+  const [pendingScan, setPendingScan] = useState<{ itemId: string; itemName: string } | null>(null);
 
   useEffect(() => {
     if (!type || !id) { setLoading(false); return; }
@@ -454,7 +455,7 @@ function QRScanContent() {
     };
   }, [type, id, item?.name]);
 
-  const logQRScan = async (itemType: string, itemId: string, itemName: string) => {
+  const logQRScan = async (itemType: string, itemId: string, itemName: string, vType: "local" | "foreign") => {
     // Dedupe only within a short window so a page refresh doesn't double-count,
     // but every real scan still gets logged (even repeated scans of the same QR).
     const scanKey = `${itemType}:${itemId}`;
@@ -465,19 +466,19 @@ function QRScanContent() {
       localStorage.setItem("roam_blon_scanned_qrs", JSON.stringify(scanned));
     } catch { /* ignore */ }
 
-    let inserted = false;
+    const visitor_type = vType;
+    const nationality = (vType === "foreign" ? "Foreign" : "Local");
+    const payload = {
+      item_type: itemType,
+      item_id: itemId,
+      item_name: itemName,
+      visitor_type,
+      nationality,
+      scanned_at: new Date().toISOString(),
+    };
     try {
-      const vType = visitorType || "local";
-      const payload = {
-        item_type: itemType,
-        item_id: itemId,
-        item_name: itemName,
-        visitor_type: vType,
-        nationality: (vType === "foreign" ? "Foreign" : "Local"),
-        scanned_at: new Date().toISOString(),
-      };
       const { error } = await supabase.from("qr_scans").insert([payload]);
-      inserted = !error;
+      void error;
     } catch {
       /* ignore if table not present */
     }
@@ -485,7 +486,6 @@ function QRScanContent() {
     // even when the DB insert succeeds but the table isn't in the realtime
     // publication (postgres_changes won't fire in that case).
     try {
-      const vType = visitorType || "local";
       const chan = supabase.channel('admin-live-feed');
       await chan.subscribe((status) => {
         if (status === 'SUBSCRIBED') {
@@ -496,8 +496,8 @@ function QRScanContent() {
               item_type: itemType,
               item_id: itemId,
               item_name: itemName,
-              visitor_type: vType,
-              nationality: (vType === "foreign" ? "Foreign" : "Local"),
+              visitor_type,
+              nationality,
             },
           });
           supabase.removeChannel(chan);
@@ -506,10 +506,10 @@ function QRScanContent() {
     } catch { /* ignore */ }
   };
 
-  // Record the scan immediately (so it ALWAYS shows up in logs), then ask
-  // local/foreign and update the classification if they answer.
+  // Ask local/foreign BEFORE recording the scan, so nothing is logged
+  // automatically — the scan is only inserted once the visitor picks.
   const recordScan = (itemId: string, itemName: string) => {
-    logQRScan(type, itemId, itemName);
+    setPendingScan({ itemId, itemName });
     setVisitorPrompt(true);
   };
 
@@ -671,15 +671,11 @@ function QRScanContent() {
   const handleSetVisitorType = (val: "local" | "foreign") => {
     setVisitorType(val);
     setVisitorPrompt(false);
-    // The scan was already recorded — just update its classification
-    try {
-      supabase.from("qr_scans")
-        .update({ visitor_type: val, nationality: (val === "foreign" ? "Foreign" : "Local") })
-        .eq("item_type", type)
-        .eq("item_id", id)
-        .lt("scanned_at", new Date(Date.now() + 2000).toISOString())
-        .gt("scanned_at", new Date(Date.now() - 60000).toISOString());
-    } catch { /* ignore */ }
+    // Record the scan now, with the visitor's explicit choice.
+    if (pendingScan) {
+      logQRScan(type, pendingScan.itemId, pendingScan.itemName, val);
+      setPendingScan(null);
+    }
   };
 
   if (loading) return (
@@ -1464,7 +1460,7 @@ const DINING_MENUS: Record<string, string[]> = {
               </button>
             </div>
             <button
-              onClick={() => setVisitorPrompt(false)}
+              onClick={() => { setPendingScan(null); setVisitorPrompt(false); }}
               className="mt-4 text-[11px] text-slate-400 font-bold uppercase tracking-widest hover:text-slate-600"
             >
               Skip
