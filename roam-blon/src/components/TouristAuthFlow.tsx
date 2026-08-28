@@ -1671,7 +1671,9 @@ export default function TouristAuthFlow({ onComplete, onCancel, initialScreen = 
         <div style={{ width: "100%", maxWidth: screen === "landing" ? "520px" : "460px", transition: "max-width 0.3s ease-in-out" }} key={screen}>
           {screen === "landing" && (
             <ScreenLanding 
-              onTourist={() => { setRole("tourist"); setScreen("signin"); }}
+              onTourist={() => {
+                onComplete?.({ role: "tourist", nationality: "local", email: "", gender: "", age: "", name: "Guest" });
+              }}
               onAdmin={() => setScreen("rolePicker")}
               onScanQR={() => {
                 // If a parent QR scanner is available, use it; otherwise navigate to /qr
