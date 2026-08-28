@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { resolveCoords } from "@/lib/coordinates";
 import {
@@ -18,9 +19,11 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  Bell,
 } from "lucide-react";
 import QRItemModal from "@/components/QRItemModal";
 import LeafletRouteMap from "@/components/LeafletRouteMap";
+import BookingNotifications from "@/components/BookingNotifications";
 import { STATIC_DESTINATIONS } from "@/data/staticDestinations";
 
 export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
@@ -34,6 +37,8 @@ export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
   const [selectedQRItem, setSelectedQRItem] = useState<any>(null);
   const [showMap, setShowMap] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
+  const [showGuideBooking, setShowGuideBooking] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
@@ -164,15 +169,35 @@ export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
   return (
     <div className="min-h-screen bg-[#FAEEED]/20">
       <div className="px-4 pt-8 pb-3 max-w-7xl mx-auto">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-rose-500">Romblon, Philippines</span>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-rose-500">Romblon, Philippines</span>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter uppercase leading-none">
+              Tourist Destinations
+            </h1>
+            <p className="text-rose-500 font-bold text-sm tracking-widest uppercase mt-1">
+              Explore the Marble Capital&apos;s Top Destinations
+            </p>
+          </div>
+          <div className="flex items-center gap-2 pt-1">
+            <button
+              onClick={() => setShowGuideBooking(true)}
+              className="w-10 h-10 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition-all shadow-sm"
+              title="Booking Notifications"
+            >
+              <Bell size={18} />
+            </button>
+            <button
+              onClick={() => router.push("/")}
+              className="w-10 h-10 rounded-full bg-slate-900 hover:bg-slate-700 text-white flex items-center justify-center transition-all shadow-sm"
+              title="Back to Home"
+            >
+              <X size={20} />
+            </button>
+          </div>
         </div>
-        <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter uppercase leading-none">
-          Tourist Destinations
-        </h1>
-        <p className="text-rose-500 font-bold text-sm tracking-widest uppercase mt-1">
-          Explore the Marble Capital&apos;s Top Destinations
-        </p>
       </div>
 
       <div className="px-4 pb-10 max-w-7xl mx-auto">
@@ -566,6 +591,39 @@ export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
       {/* QR ITEM MODAL - DESTINATION */}
       {selectedQRItem && (
         <QRItemModal item={selectedQRItem} type="destination" tourist={tourist} onClose={() => setSelectedQRItem(null)} />
+      )}
+
+      {/* TOUR GUIDE BOOKING NOTIFICATIONS OVERLAY */}
+      {showGuideBooking && (
+        <div
+          className="fixed inset-0 z-[900] bg-slate-900/70 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-6 animate-in fade-in duration-300"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowGuideBooking(false);
+          }}
+        >
+          <div className="bg-white rounded-t-[2.5rem] md:rounded-[2.5rem] w-full md:max-w-lg max-h-[93vh] overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 md:slide-in-from-bottom-0 duration-400">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-900 text-white">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white/10 text-rose-300 flex items-center justify-center">
+                  <Bell size={16} />
+                </div>
+                <div>
+                  <h3 className="text-base font-black uppercase tracking-tight">Booking Notifications</h3>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Your tour guide booking updates</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowGuideBooking(false)}
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all flex-shrink-0"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-5 max-h-[78vh] overflow-y-auto bg-[#FAEEED]/20">
+              <BookingNotifications tourist={tourist} />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
