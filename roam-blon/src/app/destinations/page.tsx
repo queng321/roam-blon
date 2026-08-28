@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import DestinationsExplorer from "@/components/DestinationsExplorer";
+import SiteHeader from "@/components/SiteHeader";
 
 export const metadata: Metadata = {
   title: "Tourist Destinations | Roam-Blon",
@@ -8,5 +9,10 @@ export const metadata: Metadata = {
 };
 
 export default function DestinationsPage() {
-  return <DestinationsExplorer />;
+  return (
+    <>
+      <SiteHeader />
+      <DestinationsExplorer />
+    </>
+  );
 }

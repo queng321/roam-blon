@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { resolveCoords } from "@/lib/coordinates";
 import {
@@ -38,7 +37,6 @@ export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
   const [showMap, setShowMap] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
   const [showGuideBooking, setShowGuideBooking] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     (async () => {
@@ -169,34 +167,16 @@ export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
   return (
     <div className="min-h-screen bg-[#FAEEED]/20">
       <div className="px-4 pt-8 pb-3 max-w-7xl mx-auto">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-rose-500">Romblon, Philippines</span>
-            </div>
-            <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter uppercase leading-none">
-              Tourist Destinations
-            </h1>
-            <p className="text-rose-500 font-bold text-sm tracking-widest uppercase mt-1">
-              Explore the Marble Capital&apos;s Top Destinations
-            </p>
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-rose-500">Romblon, Philippines</span>
           </div>
-          <div className="flex items-center gap-2 pt-1">
-            <button
-              onClick={() => setShowGuideBooking(true)}
-              className="w-10 h-10 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition-all shadow-sm"
-              title="Booking Notifications"
-            >
-              <Bell size={18} />
-            </button>
-            <button
-              onClick={() => router.push("/")}
-              className="w-10 h-10 rounded-full bg-slate-900 hover:bg-slate-700 text-white flex items-center justify-center transition-all shadow-sm"
-              title="Back to Home"
-            >
-              <X size={20} />
-            </button>
-          </div>
+          <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter uppercase leading-none">
+            Tourist Destinations
+          </h1>
+          <p className="text-rose-500 font-bold text-sm tracking-widest uppercase mt-1">
+            Explore the Marble Capital&apos;s Top Destinations
+          </p>
         </div>
       </div>
 
