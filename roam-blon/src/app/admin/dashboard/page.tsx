@@ -3137,21 +3137,22 @@ export default function AdminDashboardPage() {
                     Landmark: { badge: 'bg-amber-600', hover: 'hover:bg-amber-600', text: 'text-amber-600' },
                   };
                   const SHORES = [
-                    { id: "sd-bonbon",    name: "Bonbon Beach",         location: "Brgy. Lonos",      tag: "Sandbar",         type: "Natural", category: "Beach",  image: "/beach&resorts/bonbon.jpg" },
-                    { id: "sd-peable",    name: "Pebble Walk Beach Resort", location: "Brgy. Ginablan",   tag: "Top Rated",       type: "Resort",  category: "Resort", image: "/beach&resorts/peabble.jpg" },
-                    { id: "sd-tiamban",   name: "Tiamban Beach",        location: "Brgy. Lonos",      tag: "Family Friendly", type: "Natural", category: "Beach",  image: "/beach&resorts/tiamban.jpg" },
-                    { id: "sd-talipasak", name: "Talipasak Beach",      location: "Brgy. Ginablan",   tag: "Hidden Gem",      type: "Natural", category: "Beach",  image: "/beach&resorts/talipasak.jpg" },
-                    { id: "sd-lamao",     name: "Lamao Beach Resort",   location: "Logbon Island",    tag: "Pristine",        type: "Natural", category: "Resort", image: "/beach&resorts/lamao.jpg" },
-                    { id: "sd-dc-logbon", name: "DC Munting Paraiso",   location: "Brgy. Agnay",      tag: "Island Favorite", type: "Natural", category: "Resort", image: "/beach&resorts/dc.jpg" },
-                    { id: "sd-coco",      name: "Coco Cabana",          location: "Logbon Island",    tag: "Quiet Retreat",   type: "Natural", category: "Resort", image: "/beach&resorts/coco.jpg" },
-                    { id: "sd-reggae",    name: "Reggae Vibes Romblon", location: "Agpanabat",        tag: "Budget Friendly", type: "Resort",  category: "Hotel",  image: "/beach&resorts/reggae.jpg" },
-                    { id: "sd-robinson",  name: "Robinson's Cove",      location: "Brgy. Lonos",      tag: "Photogenic",      type: "Natural", category: "Beach",  image: "/beach&resorts/robinson.jpg" },
-                    { id: "sd-horizon",   name: "Horizon Hotel Romblon", location: "Brgy. Lonos",      tag: "Sea View",        type: "Resort",  category: "Hotel",  image: "/beach&resorts/horizon1.jpg" },
-                    { id: "sd-libtong", name: "Libtong Falls", location: "Sablayan Point", tag: "Waterfall", type: "Falls", category: "Falls", image: "/beach&resorts/libtong.jpg" },
-                    { id: "sd-kipot", name: "Kipot River", location: "SE Romblon Island", tag: "River Canyon", type: "Falls", category: "Falls", image: "/beach&resorts/kipot.jpg" },
-                    { id: "sd-fort-san-andres", name: "Fort San Andres", location: "Town Proper", tag: "Heritage", type: "Landmark", category: "Landmark", image: "/beach&resorts/fort.jpg" },
-                    { id: "sd-cathedral", name: "Saint Joseph Cathedral", location: "Town Proper", tag: "National Treasure", type: "Landmark", category: "Landmark", image: "/beach&resorts/cathedral.jpg" },
-                    { id: "sd-shopping", name: "Romblon Shopping Center", location: "Town Proper", tag: "Marble Souvenirs", type: "Landmark", category: "Landmark", image: "/beach&resorts/shopping1.jpg" },
+                    { id: "sd-bonbon",    name: "Bonbon Beach",         location: "Brgy. Lonos",      tag: "Sandbar",         type: "Natural", category: "Beach",  image: "/beach%26resorts/bonbon.jpg" },
+                    { id: "sd-peable",    name: "Pebble Walk Beach Resort", location: "Brgy. Sablayan",   tag: "Top Rated",       type: "Resort",  category: "Resort", image: "/beach%26resorts/peabble.jpg" },
+                    { id: "sd-tiamban",   name: "Tiamban Beach",        location: "Brgy. Lonos",      tag: "Family Friendly", type: "Natural", category: "Beach",  image: "/beach%26resorts/tiamban.jpg" },
+                    { id: "sd-talipasak", name: "Talipasak Beach",      location: "Brgy. Ginablan",   tag: "Hidden Gem",      type: "Natural", category: "Beach",  image: "/beach%26resorts/talipasak.jpg" },
+                    { id: "sd-lamao",     name: "Lamao Beach Resort",   location: "Brgy. Lamao",      tag: "Pristine",        type: "Resort",  category: "Resort", image: "/beach%26resorts/lamao.jpg" },
+                    { id: "sd-dc-logbon", name: "DC Munting Paraiso",   location: "Brgy. Agnay",      tag: "Island Favorite", type: "Resort",  category: "Resort", image: "/beach%26resorts/dc.jpg" },
+                    { id: "sd-coco",      name: "Coco Cabana",          location: "Brgy. Palje",      tag: "Quiet Retreat",   type: "Resort",  category: "Resort", image: "/beach%26resorts/coco.jpg" },
+                    { id: "sd-reggae",    name: "Reggae Vibes Romblon", location: "Agpanabat",        tag: "Budget Stay",     type: "Hotel",  category: "Hotel",  image: "/beach%26resorts/reggae.jpg" },
+                    { id: "sd-robinson",  name: "Robinson's Cove",      location: "Brgy. Lonos",      tag: "Photogenic",      type: "Natural", category: "Beach",  image: "/beach%26resorts/robinson.jpg" },
+                    { id: "sd-horizon",   name: "Horizon Hotel Romblon", location: "Brgy. Lonos",      tag: "Sea View",        type: "Hotel",  category: "Hotel",  image: "/beach%26resorts/horizon1.jpg" },
+                    { id: "sd-stevejoy",  name: "Stevejoy Beach House", location: "Brgy. Ginablan",   tag: "Beachfront",      type: "Resort",  category: "Resort", image: "/beach%26resorts/peabble.jpg" },
+                    { id: "sd-libtong", name: "Libtong Falls", location: "Sablayan Point", tag: "Waterfall", type: "Falls", category: "Falls", image: "/beach%26resorts/libtong.jpg" },
+                    { id: "sd-kipot", name: "Kipot River", location: "Southeast Romblon", tag: "River Canyon", type: "Falls", category: "Falls", image: "/beach%26resorts/kipot.jpg" },
+                    { id: "sd-fort-san-andres", name: "Fort San Andres", location: "Town Proper", tag: "Heritage", type: "Landmark", category: "Landmark", image: "/beach%26resorts/fort.jpg" },
+                    { id: "sd-cathedral", name: "Saint Joseph Cathedral", location: "Town Proper", tag: "National Treasure", type: "Landmark", category: "Landmark", image: "/beach%26resorts/cathedral.jpg" },
+                    { id: "sd-shopping", name: "Romblon Shopping Center", location: "Town Proper", tag: "Marble Souvenirs", type: "Landmark", category: "Landmark", image: "/beach%26resorts/shopping1.jpg" },
                   ];
                   const BASE = typeof window !== 'undefined' ? window.location.origin : 'https://roam-blon.vercel.app';
                   return (
@@ -3163,7 +3164,7 @@ export default function AdminDashboardPage() {
                         </div>
                         <div>
                           <h3 className="text-2xl font-black uppercase tracking-tighter italic text-rose-600">Tourist Destinations</h3>
-                          <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-0.5">{SHORES.length} locations · Click QR to open the tourist page</p>
+                          <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-0.5">16 locations · Click QR to open the tourist page</p>
                         </div>
                       </div>
 
