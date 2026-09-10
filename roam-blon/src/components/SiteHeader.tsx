@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Menu, X, LogOut } from "lucide-react";
+import { Menu, X, Bell, LogOut } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import TouristAuthFlow from "@/components/TouristAuthFlow";
@@ -200,6 +200,12 @@ export default function SiteHeader() {
             >
               EMERGENCY
             </button>
+            <button
+              onClick={() => router.push("/guide/dashboard")}
+              className="px-3 py-2 rounded-lg text-sm font-black text-orange-600 hover:bg-orange-50 transition-all uppercase tracking-widest"
+            >
+              <Bell size={18} /> Book Guide
+            </button>
             <div className="w-px h-4 bg-slate-300 mx-1"></div>
             {tourist ? (
               <Button
@@ -234,6 +240,12 @@ export default function SiteHeader() {
               className="w-full px-6 py-4 rounded-xl text-lg font-black text-left text-red-600 bg-red-50 border-2 border-red-200 hover:bg-red-100 uppercase tracking-widest"
             >
               EMERGENCY
+            </button>
+            <button
+              onClick={() => router.push("/guide/dashboard")}
+              className="w-full px-6 py-4 rounded-xl text-lg font-black text-left text-orange-600 bg-orange-50 border-2 border-orange-100 uppercase tracking-widest"
+            >
+              <Bell size={24} /> Book Guide
             </button>
             <div className="border-t-2 border-slate-100 my-1"></div>
           </div>
