@@ -236,19 +236,9 @@ export default function SiteHeader() {
               EMERGENCY
             </button>
             <div className="border-t-2 border-slate-100 my-1"></div>
-            {tourist && (
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setShowLogoutConfirm(true);
-                }}
-                className="w-full px-6 py-4 rounded-xl text-lg font-black text-left text-slate-500 bg-slate-50 border-2 border-slate-100 hover:bg-red-50 hover:text-red-600 flex items-center gap-3"
-              >
-                <LogOut size={18} /> Logout
-              </button>
-            )}
           </div>
         )}
+            
       </header>
 
       {showAuth && (
