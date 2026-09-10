@@ -12,13 +12,14 @@ const NAV_ITEMS = [
   { id: "welcome", label: "Home" },
   { id: "about", label: "About" },
   { id: "dining", label: "Dining Spots" },
+  { id: "dashboard", label: "Dashboard" },
 ];
 
 function TouristAvatar({ tourist }: { tourist: any }) {
   if (tourist?.avatar_url) {
     return <img src={tourist.avatar_url} alt="Profile" className="w-full h-full object-cover" />;
   }
-  return <>{String(tourist?.email || "R")[0]}</>;
+  return <>{String(tourist?.email || "")[0]}</>;
 }
 
 export default function SiteHeader() {
@@ -133,7 +134,9 @@ export default function SiteHeader() {
 
   const handleNav = (target: string) => {
     setMobileMenuOpen(false);
-    if (target === "about") {
+    if (target === "dashboard") {
+      router.push("/");
+    } else if (target === "about") {
       if (isHome) {
         const el = document.getElementById("about-section");
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -236,17 +239,6 @@ export default function SiteHeader() {
               EMERGENCY
             </button>
             <div className="border-t-2 border-slate-100 my-1"></div>
-            {!tourist && (
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  router.push("/");
-                }}
-                className="w-full px-6 py-4 rounded-xl text-lg font-black text-left text-white bg-slate-900 hover:bg-rose-600 uppercase tracking-widest"
-              >
-                Get Started
-              </button>
-            )}
             {tourist && (
               <button
                 onClick={() => {
