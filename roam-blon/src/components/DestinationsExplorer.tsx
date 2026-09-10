@@ -166,9 +166,12 @@ export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
 
   return (
     <div className="min-h-screen bg-[#FAEEED]/20">
-      <div className="px-4 pt-4 pb-3 max-w-7xl mx-auto flex items-center justify-between gap-4">
-        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-rose-500">Romblon, Philippines</span>
-        <h1 className="text-lg md:text-xl font-black text-slate-900 uppercase tracking-tighter flex-1 text-center">Tourist Destinations</h1>
+      <div className="px-4 pt-4 pb-3 max-w-7xl mx-auto flex items-start justify-between gap-4">
+        <div className="flex-1">
+          <h1 className="text-lg md:text-xl font-black text-slate-900 uppercase tracking-tighter">Tourist Destinations</h1>
+          <p className="text-sm text-slate-500 mt-1">Discover the best beaches, resorts, waterfalls, and landmarks in the Marble Capital of the Philippines.</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-rose-500 mt-1">Romblon, Romblon Philippines</p>
+        </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => window.history.back()}
