@@ -157,9 +157,9 @@ export default function TouristProfile({ tourist, onUpdate }: TouristProfileProp
               ) : uploading ? (
                 <Loader2 size={28} className="animate-spin text-white" />
               ) : (
-                <span className="text-4xl font-black text-white uppercase tracking-tight">
-                  {emailLocal[0] || "R"}
-                </span>
+<span className="text-4xl font-black text-white uppercase tracking-tight">
+                   {emailLocal[0] || ""}
+                 </span>
               )}
             </button>
             <button

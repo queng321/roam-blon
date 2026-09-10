@@ -60,7 +60,7 @@ function TouristAvatar({ tourist }: { tourist: any }) {
   if (tourist?.avatar_url) {
     return <img src={tourist.avatar_url} alt="Profile" className="w-full h-full object-cover rounded-full" />;
   }
-  return <>{String(tourist?.email || "R")[0]}</>;
+  return <>{String(tourist?.email || "")[0]}</>;
 }
 
 // The DESTINATIONS array is now fetched dynamically from Supabase.
@@ -73,6 +73,7 @@ const NAV_ITEMS = [
   { id: 'welcome', label: 'Home' },
   { id: 'about', label: 'About' },
   { id: 'dining', label: 'Dining Spots' },
+  { id: 'dashboard', label: 'Dashboard' },
 ];
 
 interface BeachReview {
@@ -512,7 +513,9 @@ export default function Home() {
 
   const handleNavClick = (targetView: string) => {
     setMobileMenuOpen(false);
-    if (targetView === "about") {
+    if (targetView === "dashboard") {
+      setView("welcome");
+    } else if (targetView === "about") {
       setView("welcome");
       setTimeout(() => {
         const aboutSection = document.getElementById("about-section");
@@ -1481,14 +1484,14 @@ export default function Home() {
                 >
                   EMERGENCY
                 </button>
-                <div className="border-t-2 border-slate-100 my-3"></div>
+<div className="border-t-2 border-slate-100 my-3"></div>
                 {!tourist && (
                   <button
-                    onClick={openProfile}
+                    onClick={() => { setMobileMenuOpen(false); setView('welcome'); }}
                     className="w-full px-6 py-4 rounded-xl text-lg font-black transition-all text-left flex items-center gap-3 bg-slate-50 text-slate-700 border-2 border-slate-100 hover:bg-slate-100"
                   >
                     <span className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center text-white font-black text-sm uppercase bg-slate-900">
-                      <TouristAvatar tourist={tourist} />
+                      {(tourist?.email || "").charAt(0).toUpperCase() || "?"}
                     </span>
                     Get Started
                   </button>
