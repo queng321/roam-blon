@@ -166,18 +166,15 @@ export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
 
   return (
     <div className="min-h-screen bg-[#FAEEED]/20">
-      <div className="px-4 pt-8 pb-3 max-w-7xl mx-auto">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-rose-500">Romblon, Philippines</span>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter uppercase leading-none">
-            Tourist Destinations
-          </h1>
-          <p className="text-rose-500 font-bold text-sm tracking-widest uppercase mt-1">
-            Explore the Marble Capital&apos;s Top Destinations
-          </p>
-        </div>
+      <div className="px-4 pt-4 pb-3 max-w-7xl mx-auto flex items-center justify-between">
+        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-rose-500">Romblon, Philippines</span>
+        <button
+          onClick={() => setShowGuideBooking(true)}
+          className="w-9 h-9 rounded-full bg-white/80 hover:bg-white border border-slate-100 shadow-sm flex items-center justify-center transition-all text-slate-600 hover:text-rose-500"
+          aria-label="Booking notifications"
+        >
+          <Bell size={18} />
+        </button>
       </div>
 
       <div className="px-4 pb-10 max-w-7xl mx-auto">
