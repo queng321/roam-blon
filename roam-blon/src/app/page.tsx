@@ -73,7 +73,6 @@ const NAV_ITEMS = [
   { id: 'welcome', label: 'Home' },
   { id: 'about', label: 'About' },
   { id: 'dining', label: 'Dining Spots' },
-  { id: 'dashboard', label: 'Dashboard' },
 ];
 
 interface BeachReview {
@@ -513,9 +512,7 @@ export default function Home() {
 
   const handleNavClick = (targetView: string) => {
     setMobileMenuOpen(false);
-    if (targetView === "dashboard") {
-      setView("welcome");
-    } else if (targetView === "about") {
+    if (targetView === "about") {
       setView("welcome");
       setTimeout(() => {
         const aboutSection = document.getElementById("about-section");
