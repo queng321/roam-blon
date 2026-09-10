@@ -12,7 +12,6 @@ const NAV_ITEMS = [
   { id: "welcome", label: "Home" },
   { id: "about", label: "About" },
   { id: "dining", label: "Dining Spots" },
-  { id: "dashboard", label: "Dashboard" },
 ];
 
 function TouristAvatar({ tourist }: { tourist: any }) {
@@ -134,9 +133,7 @@ export default function SiteHeader() {
 
   const handleNav = (target: string) => {
     setMobileMenuOpen(false);
-    if (target === "dashboard") {
-      router.push("/");
-    } else if (target === "about") {
+    if (target === "about") {
       if (isHome) {
         const el = document.getElementById("about-section");
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
