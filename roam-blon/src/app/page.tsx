@@ -101,12 +101,12 @@ export default function Home() {
   const getInitialShowAuth = () => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      if (params.get("view") === "welcome" || params.get("dashboard") === "true") {
-        return false;
+      if (params.get("auth") === "true" || params.get("login") === "true") {
+        return true;
       }
-      return true;
+      return false;
     }
-    return true;
+    return false;
   };
 
   const [mounted, setMounted] = useState(false);
@@ -280,8 +280,7 @@ export default function Home() {
     localStorage.removeItem("roam_blon_active_view");
     setTourist(null);
     setView("landing");
-    setAuthInitialScreen("landing");
-    setShowAuth(true);
+    setShowAuth(false);
     setShowLogoutConfirm(false);
     setMobileMenuOpen(false);
   };
@@ -299,6 +298,7 @@ export default function Home() {
       try {
         const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
         const explicitWelcome = params && (params.get("view") === "welcome" || params.get("dashboard") === "true");
+        const explicitAuth = params && (params.get("auth") === "true" || params.get("login") === "true");
 
         // Restore cached user session if available
         const cachedUser = localStorage.getItem("roam_blon_tourist_user");
@@ -327,8 +327,7 @@ export default function Home() {
             localStorage.removeItem("roam_blon_active_role");
             localStorage.removeItem("roam_blon_active_view");
             setTourist(null);
-            setAuthInitialScreen("landing");
-            setShowAuth(true);
+            setShowAuth(false);
             setView('landing');
             return;
           }
@@ -348,9 +347,12 @@ export default function Home() {
           setShowAuth(false);
           setView('welcome');
           localStorage.setItem("roam_blon_active_view", "welcome");
-        } else {
+        } else if (explicitAuth) {
           setAuthInitialScreen("landing");
           setShowAuth(true);
+          setView('landing');
+        } else {
+          setShowAuth(false);
           setView('landing');
         }
 
