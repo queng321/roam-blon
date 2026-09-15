@@ -147,3 +147,58 @@
 body.hide-ai-chat [class*="fixed bottom-4 right-4"] {
   display: none !important;
 }
+
+/* ── Custom Sleek Scrollbar & Global Aesthetics ────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f4eae4;
+}
+::-webkit-scrollbar-thumb {
+  background: #e0a39c;
+  border-radius: 9999px;
+  border: 2px solid #f4eae4;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #e05a6b;
+}
+
+/* Glassmorphism & Stylish Glow Utilities */
+.glass-card-stylish {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(224, 90, 107, 0.15);
+  box-shadow: 0 12px 32px -8px rgba(26, 34, 54, 0.07);
+}
+
+.glass-nav-header {
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 1.5px solid rgba(250, 238, 237, 0.9) !important;
+}
+
+.gradient-title-rose {
+  background: linear-gradient(135deg, #1a2236 0%, #e05a6b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.btn-stylish-primary {
+  background: linear-gradient(135deg, #e05a6b 0%, #f43f5e 100%);
+  color: #ffffff;
+  box-shadow: 0 8px 20px -4px rgba(224, 90, 107, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-stylish-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -4px rgba(224, 90, 107, 0.55);
+}

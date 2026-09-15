@@ -158,16 +158,16 @@ export default function SiteHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-[60] flex flex-col lg:flex-row items-center justify-between px-4 md:px-8 py-4 md:py-6 bg-white border-b-4 border-[#FAEEED] shadow-lg gap-3 md:gap-4">
+      <header className="sticky top-0 z-[60] flex flex-col lg:flex-row items-center justify-between px-4 md:px-8 py-3.5 md:py-4 bg-white/90 backdrop-blur-md border-b-2 border-rose-100/80 shadow-sm gap-3 md:gap-4 transition-all">
         <div className="flex items-center justify-between w-full lg:w-auto gap-3">
-          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => handleNav("welcome")}>
-            <div className="w-12 h-12 md:w-14 md:h-14 bg-[#FAEEED] rounded-xl flex items-center justify-center border-2 border-rose-200 overflow-hidden shadow-inner">
+          <div className="flex items-center gap-3.5 cursor-pointer group" onClick={() => handleNav("welcome")}>
+            <div className="w-12 h-12 md:w-13 md:h-13 bg-rose-50 rounded-2xl flex items-center justify-center border border-rose-200/80 overflow-hidden shadow-sm group-hover:scale-105 group-hover:border-rose-400 transition-all">
               <img src="/logo.jpg" alt="Logo" className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col">
-              <span className="font-black text-2xl md:text-3xl text-slate-900 uppercase tracking-tighter leading-none">ROAM-BLON</span>
-              <span className="text-[10px] md:text-xs font-bold text-rose-500 tracking-[0.2em] uppercase">AI Integrated Travel Buddy</span>
-              <span className="text-[9px] md:text-[10px] font-black text-slate-400 tracking-wide uppercase" style={{ maxWidth: 300 }}>
+              <span className="font-black text-2xl md:text-3xl text-slate-900 uppercase tracking-tighter leading-none group-hover:text-rose-600 transition-colors">ROAM-BLON</span>
+              <span className="text-[10px] md:text-xs font-black text-rose-500 tracking-[0.22em] uppercase mt-0.5">AI Integrated Travel Buddy</span>
+              <span className="text-[9px] md:text-[10px] font-bold text-slate-400 tracking-wide uppercase" style={{ maxWidth: 300 }}>
                 This is a Capstone Project of 4th year BSIT Students of RSU - Romblon Campus
               </span>
             </div>
@@ -176,7 +176,7 @@ export default function SiteHeader() {
           <div className="flex items-center gap-2 lg:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 transition-all"
+              className="p-2.5 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 transition-all"
               aria-label="Menu"
             >
               {mobileMenuOpen ? <X size={24} className="text-slate-900" /> : <Menu size={24} className="text-slate-900" />}
@@ -185,13 +185,15 @@ export default function SiteHeader() {
         </div>
 
         <div className="hidden lg:flex items-center gap-2">
-          <nav className="flex items-center gap-1 bg-slate-100/50 p-2 rounded-xl border-2 border-slate-200 whitespace-nowrap">
+          <nav className="flex items-center gap-1.5 bg-slate-100/70 p-1.5 rounded-2xl border border-slate-200/80 backdrop-blur-xs whitespace-nowrap shadow-inner">
             {NAV_ITEMS.map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleNav(item.id)}
-                className={`px-3 py-2 rounded-lg text-sm font-black transition-all ${
-                  isHome && item.id === "welcome" ? "bg-white text-rose-600 shadow-sm" : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
+                className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
+                  isHome && item.id === "welcome"
+                    ? "bg-white text-rose-600 shadow-sm scale-102"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
                 }`}
               >
                 {item.label}
@@ -199,7 +201,7 @@ export default function SiteHeader() {
             ))}
             <button
               onClick={() => router.push("/emergency")}
-              className="px-3 py-2 rounded-lg text-sm font-black text-red-600 hover:bg-red-50 transition-all uppercase tracking-widest"
+              className="px-4 py-2 rounded-xl text-xs font-black text-rose-600 bg-rose-50/80 hover:bg-rose-500 hover:text-white border border-rose-200/80 transition-all uppercase tracking-widest shadow-2xs active:scale-95"
             >
               EMERGENCY
             </button>

@@ -1359,30 +1359,33 @@ export default function Home() {
             </div>
 
             {/* HOW IT WORKS SECTION (COMPACT) */}
-            <div className="w-full px-4 md:px-12 xl:px-24 mx-auto max-w-[1800px] animate-in slide-in-from-bottom duration-1000 delay-300 text-left mt-8 mb-4">
-              <div className="mb-5 text-center">
-                <h2 className="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter italic">How Roam-Blon Works</h2>
-                <div className="w-8 h-1 bg-rose-500 rounded-full mx-auto mt-2"></div>
+            <div className="w-full px-4 md:px-12 xl:px-24 mx-auto max-w-[1800px] animate-in slide-in-from-bottom duration-1000 delay-300 text-left mt-12 mb-4">
+              <div className="mb-8 text-center">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-rose-50 rounded-full border border-rose-200/80 mb-2.5 shadow-2xs">
+                  <span className="text-[10px] font-black text-rose-600 uppercase tracking-widest">Simple & Fast</span>
+                </div>
+                <h2 className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tighter italic">How Roam-Blon Works</h2>
+                <div className="w-12 h-1.5 bg-gradient-to-r from-rose-500 to-pink-500 rounded-full mx-auto mt-2.5"></div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                  {[
                    { step: "01", title: "Scan QR & Explore", desc: "Scan QR codes at local dining spots and destinations for instant menus, reviews, and location details.", icon: QrCode },
                    { step: "02", title: "Book Services", desc: "Reserve accredited tour guides and track bookings.", icon: CalendarCheck },
                    { step: "03", title: "AI & Emergency", desc: "Get 24/7 personalized travel advice from your AI Buddy and direct emergency responder contacts.", icon: Sparkles }
                  ].map((item, idx) => (
-                  <div key={idx} className="bg-white/80 backdrop-blur-sm p-6 rounded-3xl border-2 border-[#FAEEED] shadow-sm relative group hover:shadow-md transition-all flex flex-col items-center text-center w-full min-h-[220px]">
-                    <div className="absolute top-0 right-0 bg-[#FAEEED]/50 text-rose-600 font-black text-[10px] px-3 py-1.5 rounded-bl-[1rem] rounded-tr-[2rem] group-hover:bg-rose-600 group-hover:text-white transition-all z-10 hidden md:block">
+                  <div key={idx} className="bg-white/90 backdrop-blur-md p-7 rounded-[2rem] border-2 border-[#FAEEED] shadow-sm relative group hover:shadow-xl hover:border-rose-300 hover:-translate-y-2 transition-all duration-300 flex flex-col items-center text-center w-full min-h-[230px] overflow-hidden">
+                    <div className="absolute top-0 right-0 bg-rose-50 text-rose-600 font-extrabold text-[10px] px-3.5 py-1.5 rounded-bl-[1.25rem] rounded-tr-[1.8rem] group-hover:bg-gradient-to-r group-hover:from-rose-500 group-hover:to-pink-500 group-hover:text-white transition-all z-10 hidden md:block">
                        STEP {item.step}
                     </div>
                     
-                    <div className="w-14 h-14 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-500 mb-4 group-hover:scale-110 transition-transform flex-shrink-0">
-                      <item.icon size={26} />
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-rose-50 via-rose-100/60 to-pink-50 border border-rose-200/60 flex items-center justify-center text-rose-600 mb-5 group-hover:scale-110 group-hover:shadow-md transition-all duration-300 flex-shrink-0">
+                      <item.icon size={28} />
                     </div>
                     
                     <div className="flex flex-col w-full">
-                      <h4 className="text-[16px] font-black text-slate-900 mb-2 uppercase tracking-tighter w-full">{item.title}</h4>
-                      <p className="text-slate-500 text-[12px] font-medium leading-relaxed w-full whitespace-normal">{item.desc}</p>
+                      <h4 className="text-[17px] font-black text-slate-900 mb-2 uppercase tracking-tight group-hover:text-rose-600 transition-colors w-full">{item.title}</h4>
+                      <p className="text-slate-500 text-xs font-medium leading-relaxed w-full whitespace-normal">{item.desc}</p>
                     </div>
                   </div>
                 ))}
