@@ -97,15 +97,8 @@ export default function Home() {
       if (activeView === "welcome") {
         return "welcome";
       }
-      const cachedUser = localStorage.getItem("roam_blon_tourist_user");
-      if (cachedUser) {
-        try {
-          const parsed = JSON.parse(cachedUser);
-          if (parsed && parsed.role !== 'admin' && parsed.role !== 'tour_guide') {
-            return "welcome";
-          }
-        } catch {}
-      }
+      // Always start at landing for new users to see auth flow first
+      return "landing";
     }
     return "landing";
   };
