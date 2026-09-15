@@ -92,6 +92,7 @@ export default function SiteHeader() {
     } catch {}
     localStorage.removeItem("roam_blon_tourist_user");
     localStorage.removeItem("roam_blon_active_role");
+    localStorage.removeItem("roam_blon_active_view");
     setTourist(null);
     setShowAuth(false);
     setShowLogoutConfirm(false);
@@ -105,8 +106,10 @@ export default function SiteHeader() {
       localStorage.setItem("roam_blon_active_role", touristData?.role || "tourist");
       if (touristData?.role === "admin" || touristData?.role === "tour_guide") {
         localStorage.removeItem("roam_blon_tourist_user");
+        localStorage.removeItem("roam_blon_active_view");
       } else {
         localStorage.setItem("roam_blon_tourist_user", JSON.stringify(touristData));
+        localStorage.setItem("roam_blon_active_view", "welcome");
       }
     }
     if (touristData?.role === "admin") {

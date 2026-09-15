@@ -93,6 +93,10 @@ export default function Home() {
       if (params.get("view") === "welcome" || params.get("dashboard") === "true") {
         return "welcome";
       }
+      const activeView = localStorage.getItem("roam_blon_active_view");
+      if (activeView === "welcome") {
+        return "welcome";
+      }
       const cachedUser = localStorage.getItem("roam_blon_tourist_user");
       if (cachedUser) {
         try {
@@ -269,12 +273,21 @@ export default function Home() {
     try { await supabase.auth.signOut(); } catch { /* ignore — always clear local state */ }
     localStorage.removeItem("roam_blon_tourist_user");
     localStorage.removeItem("roam_blon_active_role");
+    localStorage.removeItem("roam_blon_active_view");
     setTourist(null);
     setView("landing");
     setShowAuth(false);
     setShowLogoutConfirm(false);
     setMobileMenuOpen(false);
   };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (view === "welcome") {
+        localStorage.setItem("roam_blon_active_view", "welcome");
+      }
+    }
+  }, [view]);
 
   useEffect(() => {
     async function checkSession() {
@@ -293,6 +306,7 @@ export default function Home() {
           setTourist(parsed);
           setShowAuth(false);
           setView('welcome');
+          localStorage.setItem("roam_blon_active_view", "welcome");
         }
 
         const { data: { user } } = await supabase.auth.getUser();
@@ -311,6 +325,7 @@ export default function Home() {
             await supabase.auth.signOut();
             localStorage.removeItem("roam_blon_tourist_user");
             localStorage.removeItem("roam_blon_active_role");
+            localStorage.removeItem("roam_blon_active_view");
             setTourist(null);
             setShowAuth(false);
             setView('landing');
@@ -329,16 +344,20 @@ export default function Home() {
           };
           setTourist(touristData);
           localStorage.setItem("roam_blon_tourist_user", JSON.stringify(touristData));
+          localStorage.setItem("roam_blon_active_view", "welcome");
           setShowAuth(false);
           setView('welcome');
-        } else if (!parsed || parsed.role === 'admin' || parsed.role === 'tour_guide') {
+        } else {
           const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
-          if (params && (params.get("view") === "welcome" || params.get("dashboard") === "true")) {
+          const activeView = typeof window !== "undefined" ? localStorage.getItem("roam_blon_active_view") : null;
+          if (activeView === "welcome" || (params && (params.get("view") === "welcome" || params.get("dashboard") === "true"))) {
             setShowAuth(false);
             setView('welcome');
-          } else {
+            localStorage.setItem("roam_blon_active_view", "welcome");
+          } else if (!parsed || parsed.role === 'admin' || parsed.role === 'tour_guide') {
             localStorage.removeItem("roam_blon_tourist_user");
             localStorage.removeItem("roam_blon_active_role");
+            localStorage.removeItem("roam_blon_active_view");
             setTourist(null);
             setShowAuth(false);
             setView('landing');
