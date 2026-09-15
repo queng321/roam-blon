@@ -531,7 +531,7 @@ function ScreenLanding({ onTourist, onAdmin, onScanQR }: ScreenLandingProps) {
           style={{ ...S.btnPrimary, fontSize: "18px", padding: "20px 48px", borderRadius: "18px", width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}
           onClick={onTourist}
         >
-          Explore as Tourist 🚀
+          Get Started 🚀
         </button>
 
         {/* QR Scan Button */}

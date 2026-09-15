@@ -112,7 +112,7 @@ export default function Home() {
 
   const [view, setView] = useState(getInitialView);
   const [showAuth, setShowAuth] = useState(false);
-  const [authInitialScreen, setAuthInitialScreen] = useState<"landing" | "signin">("signin");
+  const [authInitialScreen, setAuthInitialScreen] = useState<"landing" | "signin">("landing");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [tourist, setTourist] = useState<any>(null);
   const [showMap, setShowMap] = useState(false);
@@ -359,7 +359,7 @@ export default function Home() {
             localStorage.removeItem("roam_blon_active_role");
             localStorage.removeItem("roam_blon_active_view");
             setTourist(null);
-            setAuthInitialScreen("signin");
+            setAuthInitialScreen("landing");
             setShowAuth(true);
             setView('landing');
           }
