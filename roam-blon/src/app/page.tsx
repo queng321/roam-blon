@@ -90,23 +90,31 @@ export default function Home() {
   const getInitialView = () => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      if (params.get("view") === "landing") {
-        return "landing";
+      if (params.get("view") === "welcome" || params.get("dashboard") === "true") {
+        return "welcome";
       }
-      return "welcome";
+      const activeView = localStorage.getItem("roam_blon_active_view");
+      if (activeView === "welcome") {
+        return "welcome";
+      }
+      return "landing";
     }
-    return "welcome";
+    return "landing";
   };
 
   const getInitialShowAuth = () => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      if (params.get("view") === "landing" || params.get("auth") === "true") {
-        return true;
+      if (params.get("view") === "welcome" || params.get("dashboard") === "true") {
+        return false;
       }
-      return false;
+      const activeView = localStorage.getItem("roam_blon_active_view");
+      if (activeView === "welcome") {
+        return false;
+      }
+      return true;
     }
-    return false;
+    return true;
   };
 
   const [mounted, setMounted] = useState(false);
@@ -277,10 +285,11 @@ export default function Home() {
     try { await supabase.auth.signOut(); } catch { /* ignore — always clear local state */ }
     localStorage.removeItem("roam_blon_tourist_user");
     localStorage.removeItem("roam_blon_active_role");
-    localStorage.setItem("roam_blon_active_view", "welcome");
+    localStorage.removeItem("roam_blon_active_view");
     setTourist(null);
-    setView("welcome");
-    setShowAuth(false);
+    setView("landing");
+    setAuthInitialScreen("landing");
+    setShowAuth(true);
     setShowLogoutConfirm(false);
     setMobileMenuOpen(false);
   };
@@ -329,10 +338,11 @@ export default function Home() {
             await supabase.auth.signOut();
             localStorage.removeItem("roam_blon_tourist_user");
             localStorage.removeItem("roam_blon_active_role");
-            localStorage.setItem("roam_blon_active_view", "welcome");
+            localStorage.removeItem("roam_blon_active_view");
             setTourist(null);
-            setShowAuth(false);
-            setView('welcome');
+            setAuthInitialScreen("landing");
+            setShowAuth(true);
+            setView('landing');
             return;
           }
 
@@ -353,19 +363,19 @@ export default function Home() {
           setView('welcome');
         } else {
           const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
-          if (params && (params.get("view") === "landing" || params.get("auth") === "true")) {
-            if (!parsed || parsed.role === 'admin' || parsed.role === 'tour_guide') {
-              localStorage.removeItem("roam_blon_tourist_user");
-              localStorage.removeItem("roam_blon_active_role");
-              setTourist(null);
-            }
-            setAuthInitialScreen("landing");
-            setShowAuth(true);
-            setView('landing');
-          } else {
+          const activeView = typeof window !== "undefined" ? localStorage.getItem("roam_blon_active_view") : null;
+          if (activeView === "welcome" || (params && (params.get("view") === "welcome" || params.get("dashboard") === "true"))) {
             setShowAuth(false);
             setView('welcome');
             localStorage.setItem("roam_blon_active_view", "welcome");
+          } else if (!parsed || parsed.role === 'admin' || parsed.role === 'tour_guide') {
+            localStorage.removeItem("roam_blon_tourist_user");
+            localStorage.removeItem("roam_blon_active_role");
+            localStorage.removeItem("roam_blon_active_view");
+            setTourist(null);
+            setAuthInitialScreen("landing");
+            setShowAuth(true);
+            setView('landing');
           }
         }
         const { data: dbDests } = await supabase.from('destinations').select('*');
