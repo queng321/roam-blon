@@ -86,7 +86,22 @@ interface BeachReview {
 }
 
 export default function Home() {
-  const [view, setView] = useState("landing");
+  const getInitialView = () => {
+    if (typeof window !== "undefined") {
+      const cachedUser = localStorage.getItem("roam_blon_tourist_user");
+      if (cachedUser) {
+        try {
+          const parsed = JSON.parse(cachedUser);
+          if (parsed && parsed.role !== 'admin' && parsed.role !== 'tour_guide') {
+            return "welcome";
+          }
+        } catch {}
+      }
+    }
+    return "landing";
+  };
+
+  const [view, setView] = useState(getInitialView);
   const [showAuth, setShowAuth] = useState(false);
   const [authInitialScreen, setAuthInitialScreen] = useState<"landing" | "signin">("signin");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
