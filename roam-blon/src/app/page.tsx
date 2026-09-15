@@ -1389,7 +1389,75 @@ export default function Home() {
               </div>
             </div>
 
+            {/* MEET OUR TEAM SECTION */}
+            <div className="w-full px-4 md:px-12 xl:px-24 mx-auto max-w-[1800px] animate-in slide-in-from-bottom duration-1000 delay-300 text-left mt-12 mb-8">
+              <div className="mb-6 text-center">
+                <h2 className="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter italic">Meet Our Team</h2>
+                <div className="w-8 h-1 bg-rose-500 rounded-full mx-auto mt-2 mb-3"></div>
+                <p className="text-slate-500 text-xs md:text-sm font-medium text-center max-w-lg mx-auto">
+                  Meet the passionate developers and designers who built Roam-Blon to elevate tourism and digital experiences in Romblon.
+                </p>
+              </div>
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                {[
+                  {
+                    name: "Niña Marie M. Marceño",
+                    role: "Lead Developer",
+                    image: "/team/nina.jpg",
+                    facebook: "https://www.facebook.com/nina.marie.marceno.2024",
+                  },
+                  {
+                    name: "Princess Quennie May M. Maaba",
+                    role: "Programmer",
+                    image: "/team/quennie.png",
+                    facebook: "https://www.facebook.com/quenniemay.marzoniamaaba.5",
+                  },
+                  {
+                    name: "Kieth Ariane Y. Abad",
+                    role: "UI/UX Designer",
+                    image: "/team/kieth.jpg",
+                    facebook: "https://www.facebook.com/kiethariane.abad",
+                  },
+                  {
+                    name: "Jordan G. Naron",
+                    role: "UI/UX Designer",
+                    image: "/team/jordan.jpg",
+                    facebook: "https://www.facebook.com/kheciamae.gonzales",
+                  },
+                ].map((member, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-white/80 backdrop-blur-sm p-6 rounded-3xl border-2 border-[#FAEEED] shadow-sm hover:shadow-md transition-all flex flex-col items-center text-center w-full"
+                  >
+                    <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-rose-200 shadow-md mb-4 bg-slate-100 flex-shrink-0">
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=1a2236&color=ffffff`;
+                        }}
+                      />
+                    </div>
+
+                    <h4 className="text-sm font-black text-slate-900 mb-1 leading-snug">{member.name}</h4>
+                    <p className="text-rose-600 text-xs font-bold mb-4">{member.role}</p>
+
+                    <a
+                      href={member.facebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors"
+                    >
+                      <Facebook size={12} />
+                      <span>Facebook</span>
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
 
           {/* Comprehensive Landing Footer */}
           <div className="mt-24 pb-12 w-full max-w-4xl mx-auto px-6 border-t border-slate-300/60 pt-16">
