@@ -90,30 +90,21 @@ export default function Home() {
   const getInitialView = () => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      if (params.get("view") === "welcome" || params.get("dashboard") === "true") {
-        return "welcome";
+      if (params.get("view") === "landing") {
+        return "landing";
       }
-      const activeView = localStorage.getItem("roam_blon_active_view");
-      if (activeView === "welcome") {
-        return "welcome";
-      }
-      // Always start at landing for new users to see auth flow first
-      return "landing";
+      return "welcome";
     }
-    return "landing";
+    return "welcome";
   };
 
   const getInitialShowAuth = () => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      if (params.get("view") === "welcome" || params.get("dashboard") === "true") {
-        return false;
+      if (params.get("view") === "landing" || params.get("auth") === "true") {
+        return true;
       }
-      const activeView = localStorage.getItem("roam_blon_active_view");
-      if (activeView === "welcome") {
-        return false;
-      }
-      return true;
+      return false;
     }
     return false;
   };
@@ -286,9 +277,9 @@ export default function Home() {
     try { await supabase.auth.signOut(); } catch { /* ignore — always clear local state */ }
     localStorage.removeItem("roam_blon_tourist_user");
     localStorage.removeItem("roam_blon_active_role");
-    localStorage.removeItem("roam_blon_active_view");
+    localStorage.setItem("roam_blon_active_view", "welcome");
     setTourist(null);
-    setView("landing");
+    setView("welcome");
     setShowAuth(false);
     setShowLogoutConfirm(false);
     setMobileMenuOpen(false);
@@ -338,10 +329,10 @@ export default function Home() {
             await supabase.auth.signOut();
             localStorage.removeItem("roam_blon_tourist_user");
             localStorage.removeItem("roam_blon_active_role");
-            localStorage.removeItem("roam_blon_active_view");
+            localStorage.setItem("roam_blon_active_view", "welcome");
             setTourist(null);
             setShowAuth(false);
-            setView('landing');
+            setView('welcome');
             return;
           }
 
@@ -362,19 +353,19 @@ export default function Home() {
           setView('welcome');
         } else {
           const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
-          const activeView = typeof window !== "undefined" ? localStorage.getItem("roam_blon_active_view") : null;
-          if (activeView === "welcome" || (params && (params.get("view") === "welcome" || params.get("dashboard") === "true"))) {
-            setShowAuth(false);
-            setView('welcome');
-            localStorage.setItem("roam_blon_active_view", "welcome");
-          } else if (!parsed || parsed.role === 'admin' || parsed.role === 'tour_guide') {
-            localStorage.removeItem("roam_blon_tourist_user");
-            localStorage.removeItem("roam_blon_active_role");
-            localStorage.removeItem("roam_blon_active_view");
-            setTourist(null);
+          if (params && (params.get("view") === "landing" || params.get("auth") === "true")) {
+            if (!parsed || parsed.role === 'admin' || parsed.role === 'tour_guide') {
+              localStorage.removeItem("roam_blon_tourist_user");
+              localStorage.removeItem("roam_blon_active_role");
+              setTourist(null);
+            }
             setAuthInitialScreen("landing");
             setShowAuth(true);
             setView('landing');
+          } else {
+            setShowAuth(false);
+            setView('welcome');
+            localStorage.setItem("roam_blon_active_view", "welcome");
           }
         }
         const { data: dbDests } = await supabase.from('destinations').select('*');
