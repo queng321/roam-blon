@@ -91,32 +91,34 @@ export default function QRItemModal({ item, type, onClose, tourist }: QRItemModa
             </p>
           </div>
 
-          {/* Book a Tour Guide */}
-          {!showGuideBooking ? (
-            <button
-              onClick={() => setShowGuideBooking(true)}
-              className="w-full px-5 py-4 rounded-2xl bg-rose-600 text-white font-black uppercase tracking-[0.24em] hover:bg-rose-700 transition-all shadow-lg shadow-rose-200 flex items-center justify-center gap-2"
-            >
-              <Compass size={16} />
-              Book a Tour Guide
-            </button>
-          ) : (
-            <div className="rounded-2xl border border-slate-200 overflow-hidden">
-              <div className="flex items-center justify-between px-5 py-3 bg-slate-900 text-white">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-300">
-                  Book a Tour Guide for {item.name}
-                </p>
-                <button
-                  onClick={() => setShowGuideBooking(false)}
-                  className="inline-flex items-center gap-1 text-[11px] font-bold text-white/80 hover:text-white transition-colors"
-                >
-                  <ArrowLeft size={13} /> Back to Details
-                </button>
+          {/* Book a Tour Guide (Tourist Destinations Only) */}
+          {resolvedType !== "dining" && (
+            !showGuideBooking ? (
+              <button
+                onClick={() => setShowGuideBooking(true)}
+                className="w-full px-5 py-4 rounded-2xl bg-rose-600 text-white font-black uppercase tracking-[0.24em] hover:bg-rose-700 transition-all shadow-lg shadow-rose-200 flex items-center justify-center gap-2"
+              >
+                <Compass size={16} />
+                Book a Tour Guide
+              </button>
+            ) : (
+              <div className="rounded-2xl border border-slate-200 overflow-hidden">
+                <div className="flex items-center justify-between px-5 py-3 bg-slate-900 text-white">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-300">
+                    Book a Tour Guide for {item.name}
+                  </p>
+                  <button
+                    onClick={() => setShowGuideBooking(false)}
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-white/80 hover:text-white transition-colors"
+                  >
+                    <ArrowLeft size={13} /> Back to Details
+                  </button>
+                </div>
+                <div className="p-4 max-h-[60vh] overflow-y-auto">
+                  <TourGuideBooking tourist={tourist} initialDestination={item?.name || ""} compact />
+                </div>
               </div>
-              <div className="p-4 max-h-[60vh] overflow-y-auto">
-                <TourGuideBooking tourist={tourist} initialDestination={item?.name || ""} compact />
-              </div>
-            </div>
+            )
           )}
 
         </div>

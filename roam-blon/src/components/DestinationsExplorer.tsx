@@ -24,6 +24,7 @@ import {
 import QRItemModal from "@/components/QRItemModal";
 import LeafletRouteMap from "@/components/LeafletRouteMap";
 import BookingNotifications from "@/components/BookingNotifications";
+import TourGuideBooking from "@/components/TourGuideBooking";
 import { STATIC_DESTINATIONS } from "@/data/staticDestinations";
 
 export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
@@ -176,18 +177,19 @@ export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
         </div>
         <div className="flex items-center gap-2">
           <button
+            onClick={() => setShowGuideBooking(true)}
+            className="px-3.5 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition-all"
+            title="Book a Tour Guide"
+          >
+            <Compass size={16} />
+            <span>Book Guide</span>
+          </button>
+          <button
             onClick={() => router.push("/")}
             className="w-9 h-9 rounded-full bg-white/80 hover:bg-white border border-slate-100 shadow-sm flex items-center justify-center transition-all text-slate-600 hover:text-rose-500"
             aria-label="Go back to tourist dashboard"
           >
             <X size={18} />
-          </button>
-          <button
-            onClick={() => setShowGuideBooking(true)}
-            className="w-9 h-9 rounded-full bg-white/80 hover:bg-white border border-slate-100 shadow-sm flex items-center justify-center transition-all text-slate-600 hover:text-rose-500"
-            aria-label="Booking notifications"
-          >
-            <Bell size={18} />
           </button>
         </div>
       </div>
@@ -585,7 +587,7 @@ export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
         <QRItemModal item={selectedQRItem} type="destination" tourist={tourist} onClose={() => setSelectedQRItem(null)} />
       )}
 
-      {/* TOUR GUIDE BOOKING NOTIFICATIONS OVERLAY */}
+      {/* TOUR GUIDE BOOKING OVERLAY */}
       {showGuideBooking && (
         <div
           className="fixed inset-0 z-[900] bg-slate-900/70 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-6 animate-in fade-in duration-300"
@@ -593,15 +595,15 @@ export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
             if (e.target === e.currentTarget) setShowGuideBooking(false);
           }}
         >
-          <div className="bg-white rounded-t-[2.5rem] md:rounded-[2.5rem] w-full md:max-w-lg max-h-[93vh] overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 md:slide-in-from-bottom-0 duration-400">
+          <div className="bg-white rounded-t-[2.5rem] md:rounded-[2.5rem] w-full md:max-w-2xl max-h-[93vh] overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 md:slide-in-from-bottom-0 duration-400">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-900 text-white">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-white/10 text-rose-300 flex items-center justify-center">
-                  <Bell size={16} />
+                <div className="w-9 h-9 rounded-xl bg-white/10 text-orange-300 flex items-center justify-center">
+                  <Compass size={18} />
                 </div>
                 <div>
-                  <h3 className="text-base font-black uppercase tracking-tight">Booking Notifications</h3>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Your tour guide booking updates</p>
+                  <h3 className="text-base font-black uppercase tracking-tight">Book a Tour Guide</h3>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Reserve accredited tour guides & view updates</p>
                 </div>
               </div>
               <button
@@ -611,8 +613,12 @@ export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
                 <X size={18} />
               </button>
             </div>
-            <div className="p-5 max-h-[78vh] overflow-y-auto bg-[#FAEEED]/20">
-              <BookingNotifications tourist={tourist} />
+            <div className="p-5 max-h-[78vh] overflow-y-auto bg-[#FAEEED]/20 space-y-6">
+              <TourGuideBooking tourist={tourist} compact />
+              <div className="border-t border-slate-200 pt-4">
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-500 mb-3">Your Bookings & Notifications</h4>
+                <BookingNotifications tourist={tourist} />
+              </div>
             </div>
           </div>
         </div>
