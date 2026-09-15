@@ -1390,16 +1390,22 @@ export default function Home() {
             </div>
 
             {/* MEET OUR TEAM SECTION */}
-            <div className="w-full px-4 md:px-12 xl:px-24 mx-auto max-w-[1800px] animate-in slide-in-from-bottom duration-1000 delay-300 text-left mt-12 mb-8">
-              <div className="mb-6 text-center">
-                <h2 className="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter italic">Meet Our Team</h2>
-                <div className="w-8 h-1 bg-rose-500 rounded-full mx-auto mt-2 mb-3"></div>
-                <p className="text-slate-500 text-xs md:text-sm font-medium text-center max-w-lg mx-auto">
-                  Meet the passionate developers and designers who built Roam-Blon to elevate tourism and digital experiences in Romblon.
+            <div className="w-full px-4 md:px-12 xl:px-24 mx-auto max-w-[1800px] animate-in slide-in-from-bottom duration-1000 delay-300 text-left mt-16 mb-12">
+              <div className="mb-8 text-center">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-rose-50 rounded-full border border-rose-200/80 mb-3 shadow-xs">
+                  <Sparkles size={13} className="text-rose-500 animate-pulse" />
+                  <span className="text-[11px] font-black text-rose-600 uppercase tracking-widest">The Creators</span>
+                </div>
+                <h2 className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tighter italic">
+                  Meet Our Team
+                </h2>
+                <div className="w-12 h-1.5 bg-gradient-to-r from-rose-500 to-pink-500 rounded-full mx-auto mt-2.5 mb-4"></div>
+                <p className="text-slate-500 text-xs md:text-sm font-medium text-center max-w-xl mx-auto leading-relaxed">
+                  Meet the passionate developers and UI/UX designers who built Roam-Blon to transform digital tourism and guide travelers across Romblon Island.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
                 {[
                   {
                     name: "Niña Marie M. Marceño",
@@ -1428,31 +1434,42 @@ export default function Home() {
                 ].map((member, idx) => (
                   <div
                     key={idx}
-                    className="bg-white/80 backdrop-blur-sm p-6 rounded-3xl border-2 border-[#FAEEED] shadow-sm hover:shadow-md transition-all flex flex-col items-center text-center w-full"
+                    className="group relative bg-white/90 backdrop-blur-md p-6 rounded-[2.5rem] border-2 border-[#FAEEED] shadow-sm hover:shadow-xl hover:border-rose-300 hover:-translate-y-2 transition-all duration-300 flex flex-col items-center text-center w-full overflow-hidden"
                   >
-                    <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-rose-200 shadow-md mb-4 bg-slate-100 flex-shrink-0">
-                      <img
-                        src={member.image}
-                        alt={member.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.onerror = null;
-                          e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=1a2236&color=ffffff`;
-                        }}
-                      />
+                    {/* Decorative Top Ambient Glow */}
+                    <div className="absolute -top-12 -left-12 w-28 h-28 bg-rose-400/10 rounded-full blur-2xl group-hover:bg-rose-500/20 transition-all duration-500" />
+                    
+                    {/* Image Avatar Container */}
+                    <div className="relative mb-5 p-1 rounded-full bg-gradient-to-tr from-rose-500 via-pink-400 to-amber-300 shadow-md group-hover:shadow-rose-300/50 group-hover:scale-105 transition-all duration-300">
+                      <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white bg-slate-100 flex-shrink-0">
+                        <img
+                          src={member.image}
+                          alt={member.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=1a2236&color=ffffff`;
+                          }}
+                        />
+                      </div>
                     </div>
 
-                    <h4 className="text-sm font-black text-slate-900 mb-1 leading-snug">{member.name}</h4>
-                    <p className="text-rose-600 text-xs font-bold mb-4">{member.role}</p>
+                    <h4 className="text-base font-black text-slate-900 mb-1.5 leading-snug tracking-tight group-hover:text-rose-600 transition-colors">
+                      {member.name}
+                    </h4>
+                    
+                    <span className="inline-block px-3 py-1 bg-rose-50 text-rose-600 text-[11px] font-extrabold uppercase tracking-wider rounded-full border border-rose-100/80 mb-5 shadow-2xs">
+                      {member.role}
+                    </span>
 
                     <a
                       href={member.facebook}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors"
+                      className="mt-auto w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 hover:from-blue-700 hover:to-indigo-800 shadow-md hover:shadow-blue-500/30 transition-all duration-300 active:scale-95"
                     >
-                      <Facebook size={12} />
-                      <span>Facebook</span>
+                      <Facebook size={14} className="fill-current" />
+                      <span>Connect on Facebook</span>
                     </a>
                   </div>
                 ))}

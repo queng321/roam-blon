@@ -52,15 +52,19 @@ export default function AboutSection() {
       </div>
 
       {/* MEET OUR TEAM SECTION */}
-      <div className="mt-8 pt-8 border-t border-slate-100 text-center">
-        <h3 className="text-lg md:text-xl font-black text-slate-900 uppercase tracking-tighter italic mb-2">
+      <div className="mt-10 pt-10 border-t border-slate-100 text-center">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-rose-50 rounded-full border border-rose-200/80 mb-3 shadow-2xs">
+          <Sparkles size={12} className="text-rose-500 animate-pulse" />
+          <span className="text-[10px] font-black text-rose-600 uppercase tracking-widest">The Creators</span>
+        </div>
+        <h3 className="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter italic mb-2">
           Meet Our Team
         </h3>
-        <p className="text-slate-500 text-xs md:text-sm font-medium max-w-lg mx-auto mb-6">
+        <p className="text-slate-500 text-xs md:text-sm font-medium max-w-lg mx-auto mb-8">
           The passionate developers and designers who built the Roam-Blon system.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {[
             {
               name: "Niña Marie M. Marceño",
@@ -89,30 +93,38 @@ export default function AboutSection() {
           ].map((member, idx) => (
             <div
               key={idx}
-              className="bg-slate-50 p-5 rounded-2xl border border-slate-100 flex flex-col items-center text-center"
+              className="group relative bg-white p-5 rounded-3xl border-2 border-[#FAEEED] shadow-xs hover:shadow-lg hover:border-rose-300 hover:-translate-y-1.5 transition-all duration-300 flex flex-col items-center text-center overflow-hidden"
             >
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-rose-200 shadow-sm mb-3 bg-white flex-shrink-0">
-                <img
-                  src={member.image}
-                  alt={member.name}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=1a2236&color=ffffff`;
-                  }}
-                />
+              {/* Image Avatar Container */}
+              <div className="relative mb-4 p-1 rounded-full bg-gradient-to-tr from-rose-500 via-pink-400 to-amber-300 shadow-md group-hover:scale-105 transition-transform duration-300">
+                <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white bg-slate-100 flex-shrink-0">
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=1a2236&color=ffffff`;
+                    }}
+                  />
+                </div>
               </div>
 
-              <h4 className="text-xs font-black text-slate-900 mb-0.5 leading-snug">{member.name}</h4>
-              <p className="text-rose-600 text-[11px] font-bold mb-3">{member.role}</p>
+              <h4 className="text-xs font-black text-slate-900 mb-1 leading-snug tracking-tight group-hover:text-rose-600 transition-colors">
+                {member.name}
+              </h4>
+              
+              <span className="inline-block px-2.5 py-0.5 bg-rose-50 text-rose-600 text-[10px] font-extrabold uppercase tracking-wider rounded-full border border-rose-100 mb-4">
+                {member.role}
+              </span>
 
               <a
                 href={member.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-auto inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors"
+                className="mt-auto w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-full text-[11px] font-bold text-white bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 hover:from-blue-700 hover:to-indigo-800 shadow-xs transition-all active:scale-95"
               >
-                <Facebook size={11} />
+                <Facebook size={12} className="fill-current" />
                 <span>Facebook</span>
               </a>
             </div>
