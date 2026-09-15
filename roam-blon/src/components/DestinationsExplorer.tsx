@@ -185,7 +185,7 @@ export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
             <Bell size={18} />
           </button>
           <button
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/?view=welcome")}
             className="w-9 h-9 rounded-full bg-white/80 hover:bg-white border border-slate-100 shadow-sm flex items-center justify-center transition-all text-slate-600 hover:text-rose-500"
             aria-label="Go back to tourist dashboard"
           >

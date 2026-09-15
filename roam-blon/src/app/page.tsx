@@ -89,6 +89,10 @@ interface BeachReview {
 export default function Home() {
   const getInitialView = () => {
     if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("view") === "welcome" || params.get("dashboard") === "true") {
+        return "welcome";
+      }
       const cachedUser = localStorage.getItem("roam_blon_tourist_user");
       if (cachedUser) {
         try {
@@ -328,12 +332,17 @@ export default function Home() {
           setShowAuth(false);
           setView('welcome');
         } else if (!parsed || parsed.role === 'admin' || parsed.role === 'tour_guide') {
-          // No auth session and no cached returning/guest tourist — show the public landing.
-          localStorage.removeItem("roam_blon_tourist_user");
-          localStorage.removeItem("roam_blon_active_role");
-          setTourist(null);
-          setShowAuth(false);
-          setView('landing');
+          const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+          if (params && (params.get("view") === "welcome" || params.get("dashboard") === "true")) {
+            setShowAuth(false);
+            setView('welcome');
+          } else {
+            localStorage.removeItem("roam_blon_tourist_user");
+            localStorage.removeItem("roam_blon_active_role");
+            setTourist(null);
+            setShowAuth(false);
+            setView('landing');
+          }
         }
         const { data: dbDests } = await supabase.from('destinations').select('*');
         if (dbDests && dbDests.length > 0) {
@@ -746,7 +755,10 @@ export default function Home() {
                 <Bell size={18} />
               </button>
               <Button
-                onClick={() => setShowDestinations(false)}
+                onClick={() => {
+                  setShowDestinations(false);
+                  setView('welcome');
+                }}
                 className="rounded-full h-10 w-10 bg-slate-900 text-white hover:scale-110 transition-transform shadow-lg"
               >
                 <X size={20} />
