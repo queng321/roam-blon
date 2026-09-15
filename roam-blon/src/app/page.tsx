@@ -120,15 +120,6 @@ export default function Home() {
       if (activeView === "welcome") {
         return false;
       }
-      const cachedUser = localStorage.getItem("roam_blon_tourist_user");
-      if (cachedUser) {
-        try {
-          const parsed = JSON.parse(cachedUser);
-          if (parsed && parsed.role !== 'admin' && parsed.role !== 'tour_guide') {
-            return false;
-          }
-        } catch {}
-      }
       return true;
     }
     return false;
