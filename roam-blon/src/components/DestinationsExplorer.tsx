@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { resolveCoords } from "@/lib/coordinates";
 import {
@@ -26,6 +27,7 @@ import BookingNotifications from "@/components/BookingNotifications";
 import { STATIC_DESTINATIONS } from "@/data/staticDestinations";
 
 export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
+  const router = useRouter();
   const [destinations, setDestinations] = useState<any[]>(STATIC_DESTINATIONS);
   const [destCategoryFilter, setDestCategoryFilter] = useState<string>("ALL");
   const [beachReviews, setBeachReviews] = useState<Record<string, any[]>>({});
@@ -174,9 +176,9 @@ export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => window.history.back()}
+            onClick={() => router.push("/")}
             className="w-9 h-9 rounded-full bg-white/80 hover:bg-white border border-slate-100 shadow-sm flex items-center justify-center transition-all text-slate-600 hover:text-rose-500"
-            aria-label="Go back to dashboard"
+            aria-label="Go back to tourist dashboard"
           >
             <X size={18} />
           </button>
