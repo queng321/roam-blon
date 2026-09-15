@@ -122,10 +122,10 @@ export default function AboutSection() {
                 href={member.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-auto w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-full text-[11px] font-bold text-white bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 hover:from-blue-700 hover:to-indigo-800 shadow-xs transition-all active:scale-95"
+                title={`Visit ${member.name}'s Facebook`}
+                className="mt-auto inline-flex items-center justify-center w-9 h-9 rounded-full text-white bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 hover:from-blue-700 hover:to-indigo-800 shadow-xs hover:scale-110 transition-all active:scale-95"
               >
-                <Facebook size={12} className="fill-current" />
-                <span>Facebook</span>
+                <Facebook size={16} className="fill-current" />
               </a>
             </div>
           ))}

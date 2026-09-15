@@ -1466,10 +1466,10 @@ export default function Home() {
                       href={member.facebook}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-auto w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 hover:from-blue-700 hover:to-indigo-800 shadow-md hover:shadow-blue-500/30 transition-all duration-300 active:scale-95"
+                      title={`Visit ${member.name}'s Facebook`}
+                      className="mt-auto inline-flex items-center justify-center w-10 h-10 rounded-full text-white bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 hover:from-blue-700 hover:to-indigo-800 shadow-md hover:shadow-blue-500/30 hover:scale-110 transition-all duration-300 active:scale-95"
                     >
-                      <Facebook size={14} className="fill-current" />
-                      <span>Connect on Facebook</span>
+                      <Facebook size={18} className="fill-current" />
                     </a>
                   </div>
                 ))}
