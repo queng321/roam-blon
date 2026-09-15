@@ -110,8 +110,32 @@ export default function Home() {
     return "landing";
   };
 
+  const getInitialShowAuth = () => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("view") === "welcome" || params.get("dashboard") === "true") {
+        return false;
+      }
+      const activeView = localStorage.getItem("roam_blon_active_view");
+      if (activeView === "welcome") {
+        return false;
+      }
+      const cachedUser = localStorage.getItem("roam_blon_tourist_user");
+      if (cachedUser) {
+        try {
+          const parsed = JSON.parse(cachedUser);
+          if (parsed && parsed.role !== 'admin' && parsed.role !== 'tour_guide') {
+            return false;
+          }
+        } catch {}
+      }
+      return true;
+    }
+    return false;
+  };
+
   const [view, setView] = useState(getInitialView);
-  const [showAuth, setShowAuth] = useState(false);
+  const [showAuth, setShowAuth] = useState(getInitialShowAuth);
   const [authInitialScreen, setAuthInitialScreen] = useState<"landing" | "signin">("landing");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [tourist, setTourist] = useState<any>(null);
