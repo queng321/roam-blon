@@ -178,11 +178,11 @@ export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowGuideBooking(true)}
-            className="px-3.5 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition-all"
-            title="Book a Tour Guide"
+            className="w-9 h-9 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition-all shadow-sm"
+            title="Booking Notifications"
+            aria-label="Booking Notifications"
           >
-            <Compass size={16} />
-            <span>Book Guide</span>
+            <Bell size={18} />
           </button>
           <button
             onClick={() => router.push("/")}
