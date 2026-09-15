@@ -359,7 +359,8 @@ export default function Home() {
             localStorage.removeItem("roam_blon_active_role");
             localStorage.removeItem("roam_blon_active_view");
             setTourist(null);
-            setShowAuth(false);
+            setAuthInitialScreen("signin");
+            setShowAuth(true);
             setView('landing');
           }
         }
