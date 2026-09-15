@@ -526,6 +526,120 @@ function ScreenLanding({ onTourist, onAdmin, onScanQR }: ScreenLandingProps) {
         </div>
       </div>
 
+      {/* ─── MEET OUR TEAM ─── */}
+      <div style={{ width: "100%", marginBottom: "36px", textAlign: "center" }}>
+        <div style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.22em", color: C.coral, textTransform: "uppercase", marginBottom: "10px" }}>
+          Meet Our Team
+        </div>
+        <div style={{ fontSize: "26px", fontWeight: 900, color: C.navy, lineHeight: "1.2", marginBottom: "12px", letterSpacing: "-0.02em" }}>
+          The Minds Behind Roam-Blon
+        </div>
+        <div style={{ fontSize: "14px", color: C.gray, lineHeight: "1.7", marginBottom: "28px", maxWidth: "380px", margin: "0 auto 28px auto" }}>
+          Our passionate team of developers and designers built Roam-Blon to empower travelers and promote the rich cultural heritage and tourism of Romblon.
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px", textAlign: "center" }}>
+          {[
+            {
+              name: "Niña Marie M. Marceño",
+              role: "Lead Developer",
+              image: "/team/nina.jpg",
+              facebook: "https://www.facebook.com/nina.marie.marceno.2024",
+            },
+            {
+              name: "Princess Quennie May M. Maaba",
+              role: "Programmer",
+              image: "/team/quennie.png",
+              facebook: "https://www.facebook.com/quenniemay.marzoniamaaba.5",
+            },
+            {
+              name: "Kieth Ariane Y. Abad",
+              role: "UI/UX Designer",
+              image: "/team/kieth.jpg",
+              facebook: "https://www.facebook.com/kiethariane.abad",
+            },
+            {
+              name: "Jordan G. Naron",
+              role: "UI/UX Designer",
+              image: "/team/jordan.jpg",
+              facebook: "https://www.facebook.com/kheciamae.gonzales",
+            },
+          ].map((member) => (
+            <div
+              key={member.name}
+              style={{
+                background: C.white,
+                border: `1.5px solid ${C.grayLight}`,
+                borderRadius: "22px",
+                padding: "20px 14px",
+                boxShadow: "0 4px 16px rgba(26,34,54,0.06)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                transition: "transform 0.2s ease, box-shadow 0.2s ease",
+              }}
+            >
+              <div
+                style={{
+                  width: "76px",
+                  height: "76px",
+                  borderRadius: "50%",
+                  overflow: "hidden",
+                  border: `3px solid ${C.bg}`,
+                  boxShadow: "0 4px 12px rgba(26,34,54,0.12)",
+                  marginBottom: "12px",
+                  background: "#e2e8f0",
+                  flexShrink: 0,
+                }}
+              >
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=1a2236&color=ffffff`;
+                  }}
+                />
+              </div>
+
+              <div style={{ fontSize: "14px", fontWeight: 800, color: C.navy, marginBottom: "4px", lineHeight: "1.3" }}>
+                {member.name}
+              </div>
+
+              <div style={{ fontSize: "12px", fontWeight: 700, color: C.coral, marginBottom: "10px", letterSpacing: "0.02em" }}>
+                {member.role}
+              </div>
+
+              <a
+                href={member.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  color: "#1877F2",
+                  background: "#edf5ff",
+                  padding: "6px 12px",
+                  borderRadius: "12px",
+                  textDecoration: "none",
+                  transition: "background 0.2s ease",
+                  marginTop: "auto",
+                }}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                </svg>
+                <span>Facebook</span>
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         <button
           style={{ ...S.btnPrimary, fontSize: "18px", padding: "20px 48px", borderRadius: "18px", width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}
