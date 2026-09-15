@@ -146,10 +146,10 @@ export default function SiteHeader() {
       if (isHome) {
         window.scrollTo({ top: 0, behavior: "smooth" });
       } else {
-        router.push("/");
+        router.push("/?view=welcome");
       }
     } else {
-      router.push("/");
+      router.push("/?view=welcome");
     }
   };
 
