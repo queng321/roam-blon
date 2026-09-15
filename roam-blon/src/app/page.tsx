@@ -93,10 +93,6 @@ export default function Home() {
       if (params.get("view") === "welcome" || params.get("dashboard") === "true") {
         return "welcome";
       }
-      const activeView = localStorage.getItem("roam_blon_active_view");
-      if (activeView === "welcome") {
-        return "welcome";
-      }
       return "landing";
     }
     return "landing";
@@ -106,10 +102,6 @@ export default function Home() {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       if (params.get("view") === "welcome" || params.get("dashboard") === "true") {
-        return false;
-      }
-      const activeView = localStorage.getItem("roam_blon_active_view");
-      if (activeView === "welcome") {
         return false;
       }
       return true;
@@ -305,8 +297,10 @@ export default function Home() {
   useEffect(() => {
     async function checkSession() {
       try {
-        // Fast restore from localStorage — this also covers guest tourists created
-        // via "Get Started", which have no auth session and no email.
+        const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+        const explicitWelcome = params && (params.get("view") === "welcome" || params.get("dashboard") === "true");
+
+        // Restore cached user session if available
         const cachedUser = localStorage.getItem("roam_blon_tourist_user");
         let parsed: any = null;
         if (cachedUser) {
@@ -317,19 +311,12 @@ export default function Home() {
 
         if (parsed && parsed.role !== 'admin' && parsed.role !== 'tour_guide') {
           setTourist(parsed);
-          setShowAuth(false);
-          setView('welcome');
-          localStorage.setItem("roam_blon_active_view", "welcome");
         }
 
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           const userEmail = user.email?.toLowerCase().trim() || "";
 
-          // Admin and guide sessions live in their own separate storage keys, so a
-          // profile found here means a stale session from before the separation.
-          // Never bounce the visitor to an admin/guide login — just clear the stale
-          // session and show the tourist welcome page.
           const [{ data: adminProfile }, { data: guideProfile }] = await Promise.all([
             supabase.from('admins').select('email').ilike('email', userEmail).maybeSingle(),
             supabase.from('tour_guides').select('email').ilike('email', userEmail).maybeSingle(),
@@ -346,9 +333,6 @@ export default function Home() {
             return;
           }
 
-          // Always show the tourist dashboard for any logged-in tourist. The admin and
-          // guide dashboards are only opened through their own login links, so
-          // opening the site never bounces anyone to /admin/dashboard or /guide/dashboard.
           const { data: tProfile } = await supabase.from('tourists').select('*').ilike('email', userEmail).maybeSingle();
           const touristData = tProfile || {
             email: user.email,
@@ -358,26 +342,18 @@ export default function Home() {
           };
           setTourist(touristData);
           localStorage.setItem("roam_blon_tourist_user", JSON.stringify(touristData));
-          localStorage.setItem("roam_blon_active_view", "welcome");
+        }
+
+        if (explicitWelcome) {
           setShowAuth(false);
           setView('welcome');
+          localStorage.setItem("roam_blon_active_view", "welcome");
         } else {
-          const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
-          const activeView = typeof window !== "undefined" ? localStorage.getItem("roam_blon_active_view") : null;
-          if (activeView === "welcome" || (params && (params.get("view") === "welcome" || params.get("dashboard") === "true"))) {
-            setShowAuth(false);
-            setView('welcome');
-            localStorage.setItem("roam_blon_active_view", "welcome");
-          } else if (!parsed || parsed.role === 'admin' || parsed.role === 'tour_guide') {
-            localStorage.removeItem("roam_blon_tourist_user");
-            localStorage.removeItem("roam_blon_active_role");
-            localStorage.removeItem("roam_blon_active_view");
-            setTourist(null);
-            setAuthInitialScreen("landing");
-            setShowAuth(true);
-            setView('landing');
-          }
+          setAuthInitialScreen("landing");
+          setShowAuth(true);
+          setView('landing');
         }
+
         const { data: dbDests } = await supabase.from('destinations').select('*');
         if (dbDests && dbDests.length > 0) {
           const mapped = dbDests.map(d => {
