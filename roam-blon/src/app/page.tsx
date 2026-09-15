@@ -134,9 +134,14 @@ export default function Home() {
     return false;
   };
 
+  const [mounted, setMounted] = useState(false);
   const [view, setView] = useState(getInitialView);
   const [showAuth, setShowAuth] = useState(getInitialShowAuth);
   const [authInitialScreen, setAuthInitialScreen] = useState<"landing" | "signin">("landing");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [tourist, setTourist] = useState<any>(null);
   const [showMap, setShowMap] = useState(false);
@@ -614,6 +619,10 @@ export default function Home() {
     setAuthInitialScreen('signin');
     setShowAuth(true);
   };
+
+  if (!mounted) {
+    return <main className="min-h-screen bg-[#FAEEED]" />;
+  }
 
   return (
     <main className={`min-h-screen bg-[#F6F1ED] flex flex-col relative text-sm overflow-x-clip ${isOverlayOpen ? 'h-screen overflow-hidden' : ''}`}>
