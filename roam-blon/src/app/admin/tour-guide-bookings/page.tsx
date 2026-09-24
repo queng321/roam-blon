@@ -65,11 +65,11 @@ interface ChatMessage {
   created_at?: string;
 }
 
-export default function TourGuideBookingsAdminPage() {
+export default function TourGuideBookingsAdminPage({ isEmbedded = false }: { isEmbedded?: boolean }) {
   const router = useRouter();
 
   // Loading & Auth
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!isEmbedded);
   const [unauthorized, setUnauthorized] = useState(false);
   const [user, setUser] = useState<any>(null);
 
@@ -114,6 +114,11 @@ export default function TourGuideBookingsAdminPage() {
   // --- INITIALIZATION ---
   useEffect(() => {
     async function checkAuthAndLoad() {
+      if (isEmbedded) {
+        setLoading(false);
+        await fetchAllData();
+        return;
+      }
       try {
         const { data: { user: currentUser } } = await adminSupabase.auth.getUser();
         if (currentUser) {
@@ -515,10 +520,10 @@ export default function TourGuideBookingsAdminPage() {
   }
 
   return (
-    <div className="flex h-screen bg-[#F6F1ED] text-slate-900 overflow-hidden font-sans">
+    <div className={isEmbedded ? "w-full" : "flex h-screen bg-[#F6F1ED] text-slate-900 overflow-hidden font-sans"}>
 
       {/* MOBILE SIDEBAR OVERLAY */}
-      {isSidebarOpen && (
+      {!isEmbedded && isSidebarOpen && (
         <div
           className="fixed inset-0 bg-slate-900/60 z-50 lg:hidden backdrop-blur-xs"
           onClick={() => setIsSidebarOpen(false)}
@@ -526,6 +531,7 @@ export default function TourGuideBookingsAdminPage() {
       )}
 
       {/* SIDEBAR NAVIGATION (LOGOUT REMOVED) */}
+      {!isEmbedded && (
       <aside
         className={`fixed lg:static inset-y-0 left-0 z-50 flex flex-col w-80 bg-slate-900 p-8 shrink-0 text-white transition-transform duration-300 ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
@@ -605,18 +611,21 @@ export default function TourGuideBookingsAdminPage() {
           </button>
         </nav>
       </aside>
+      )}
 
       {/* MAIN BODY AREA */}
-      <div className="flex-1 flex flex-col overflow-hidden bg-[#F8FAFC]">
+      <div className={isEmbedded ? "w-full" : "flex-1 flex flex-col overflow-hidden bg-[#F8FAFC]"}>
         {/* HEADER BAR */}
         <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
+            {!isEmbedded && (
             <button
               onClick={() => setIsSidebarOpen(true)}
               className="lg:hidden p-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200"
             >
               <Menu size={20} />
             </button>
+            )}
             <div>
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
