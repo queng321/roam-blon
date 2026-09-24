@@ -25,7 +25,8 @@ import {
   MapPin,
   Eye,
   RefreshCw,
-  Menu
+  Menu,
+  UserPlus
 } from "lucide-react";
 
 interface Booking {
@@ -94,6 +95,22 @@ export default function TourGuideBookingsAdminPage({ isEmbedded = false }: { isE
   const [isNewBookingModalOpen, setIsNewBookingModalOpen] = useState(false);
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [editNotesValue, setEditNotesValue] = useState("");
+
+  // Add Tour Guide modal state
+  const [isAddGuideModalOpen, setIsAddGuideModalOpen] = useState(false);
+  const [addGuideForm, setAddGuideForm] = useState({
+    full_name: "",
+    email: "",
+    contact_number: "",
+    specialty: "",
+    rate_per_day: "",
+    bio: "",
+    languages: "",
+    experience_years: ""
+  });
+  const [isSubmittingGuide, setIsSubmittingGuide] = useState(false);
+  const [guideSubmitError, setGuideSubmitError] = useState("");
+  const [guideSubmitSuccess, setGuideSubmitSuccess] = useState(false);
 
   // New Booking form state
   const [newBookingForm, setNewBookingForm] = useState({
@@ -642,11 +659,10 @@ export default function TourGuideBookingsAdminPage({ isEmbedded = false }: { isE
 
           <div className="flex items-center gap-3">
             <button
-              onClick={() => fetchAllData()}
-              className="p-3 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 transition-all"
-              title="Refresh Data"
+              onClick={() => { setGuideSubmitError(""); setGuideSubmitSuccess(false); setAddGuideForm({ full_name: "", email: "", contact_number: "", specialty: "", rate_per_day: "", bio: "", languages: "", experience_years: "" }); setIsAddGuideModalOpen(true); }}
+              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all shadow-md"
             >
-              <RefreshCw size={16} />
+              <UserPlus size={16} /> Add Tour Guide
             </button>
             <button
               onClick={() => setIsNewBookingModalOpen(true)}
@@ -702,19 +718,6 @@ export default function TourGuideBookingsAdminPage({ isEmbedded = false }: { isE
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex items-center justify-between">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">
-                  Total Earnings
-                </p>
-                <h3 className="text-3xl font-black text-rose-600 italic">
-                  ₱{totalRevenue.toLocaleString()}
-                </h3>
-              </div>
-              <div className="w-12 h-12 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-600">
-                <TrendingUp size={22} />
-              </div>
-            </div>
           </div>
 
           {/* TAB 1: BOOKING APPOINTMENTS & APPROVALS */}
@@ -1403,6 +1406,182 @@ export default function TourGuideBookingsAdminPage({ isEmbedded = false }: { isE
               Create Appointment
             </button>
           </form>
+        </div>
+      )}
+
+      {/* ADD TOUR GUIDE MODAL */}
+      {isAddGuideModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="p-8">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Add Tour Guide</h3>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Will appear on tourist dashboard immediately</p>
+                </div>
+                <button onClick={() => setIsAddGuideModalOpen(false)} className="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all">
+                  <X size={18} />
+                </button>
+              </div>
+
+              {guideSubmitSuccess ? (
+                <div className="flex flex-col items-center justify-center py-10 gap-4">
+                  <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center">
+                    <CheckCircle2 size={32} className="text-emerald-500" />
+                  </div>
+                  <p className="text-xl font-black text-slate-900 uppercase tracking-tighter">Tour Guide Added!</p>
+                  <p className="text-slate-500 text-sm text-center">The guide is now visible on the tourist booking dashboard.</p>
+                  <button
+                    onClick={() => setIsAddGuideModalOpen(false)}
+                    className="mt-2 px-8 py-3 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest"
+                  >
+                    Close
+                  </button>
+                </div>
+              ) : (
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    setIsSubmittingGuide(true);
+                    setGuideSubmitError("");
+                    try {
+                      const { error } = await supabase.from("tour_guides").insert([{
+                        full_name: addGuideForm.full_name,
+                        name: addGuideForm.full_name,
+                        email: addGuideForm.email || null,
+                        contact_number: addGuideForm.contact_number || null,
+                        phone: addGuideForm.contact_number || null,
+                        specialty: addGuideForm.specialty || null,
+                        specialties: addGuideForm.specialty || null,
+                        rate_per_day: addGuideForm.rate_per_day ? Number(addGuideForm.rate_per_day) : null,
+                        bio: addGuideForm.bio || null,
+                        languages: addGuideForm.languages || null,
+                        experience_years: addGuideForm.experience_years ? Number(addGuideForm.experience_years) : null,
+                        status: "approved",
+                        is_available: true,
+                        created_at: new Date().toISOString()
+                      }]);
+                      if (error) throw error;
+                      setGuideSubmitSuccess(true);
+                    } catch (err: any) {
+                      setGuideSubmitError(err?.message || "Failed to add guide. Please try again.");
+                    } finally {
+                      setIsSubmittingGuide(false);
+                    }
+                  }}
+                  className="space-y-4"
+                >
+                  {guideSubmitError && (
+                    <div className="bg-rose-50 border border-rose-200 text-rose-700 rounded-xl p-4 text-xs font-bold">
+                      {guideSubmitError}
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Full Name *</label>
+                    <input
+                      required
+                      value={addGuideForm.full_name}
+                      onChange={(e) => setAddGuideForm({ ...addGuideForm, full_name: e.target.value })}
+                      placeholder="e.g. Juan Dela Cruz"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-emerald-500 transition-all"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Email</label>
+                      <input
+                        type="email"
+                        value={addGuideForm.email}
+                        onChange={(e) => setAddGuideForm({ ...addGuideForm, email: e.target.value })}
+                        placeholder="guide@email.com"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-emerald-500 transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Contact Number</label>
+                      <input
+                        value={addGuideForm.contact_number}
+                        onChange={(e) => setAddGuideForm({ ...addGuideForm, contact_number: e.target.value })}
+                        placeholder="+63 912 345 6789"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-emerald-500 transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Specialty</label>
+                      <input
+                        value={addGuideForm.specialty}
+                        onChange={(e) => setAddGuideForm({ ...addGuideForm, specialty: e.target.value })}
+                        placeholder="e.g. Island Hopping, Trekking"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-emerald-500 transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Rate per Day (₱)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={addGuideForm.rate_per_day}
+                        onChange={(e) => setAddGuideForm({ ...addGuideForm, rate_per_day: e.target.value })}
+                        placeholder="e.g. 1500"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-emerald-500 transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Languages</label>
+                      <input
+                        value={addGuideForm.languages}
+                        onChange={(e) => setAddGuideForm({ ...addGuideForm, languages: e.target.value })}
+                        placeholder="e.g. English, Filipino"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-emerald-500 transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Years of Experience</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={addGuideForm.experience_years}
+                        onChange={(e) => setAddGuideForm({ ...addGuideForm, experience_years: e.target.value })}
+                        placeholder="e.g. 5"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-emerald-500 transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Bio / Description</label>
+                    <textarea
+                      value={addGuideForm.bio}
+                      onChange={(e) => setAddGuideForm({ ...addGuideForm, bio: e.target.value })}
+                      rows={3}
+                      placeholder="Brief description about the guide..."
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-emerald-500 transition-all resize-none"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSubmittingGuide}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white font-black py-4 rounded-2xl text-xs uppercase tracking-widest shadow-md transition-all mt-2 flex items-center justify-center gap-2"
+                  >
+                    {isSubmittingGuide ? (
+                      <><span className="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full" /> Adding Guide...</>
+                    ) : (
+                      <><UserPlus size={16} /> Add Tour Guide</>
+                    )}
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
