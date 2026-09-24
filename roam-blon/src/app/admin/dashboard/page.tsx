@@ -2284,13 +2284,16 @@ export default function AdminDashboardPage() {
                        <button onClick={() => openAddModal("dining")} className="w-full py-4 bg-slate-50 hover:bg-rose-500 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Manage Directory</button>
                     </div>
 
-                    {/* Tour Guides Summary */}
-                    <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm group hover:border-emerald-200 transition-all">
-                       <div className="h-14 w-14 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mb-6"><Users size={24}/></div>
-                       <h4 className="text-2xl font-black italic tracking-tighter uppercase mb-4">Tour Guides</h4>
-                       <p className="text-3xl font-black text-slate-900 italic mb-6">{allServices.tourGuides?.length || 0} Active Guides</p>
-                       <button onClick={() => router.push('/admin/guides')} className="w-full py-4 bg-slate-50 hover:bg-emerald-500 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Manage Approvals</button>
-                    </div>
+                     {/* Tour Guides Summary */}
+                     <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm group hover:border-emerald-200 transition-all">
+                        <div className="h-14 w-14 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mb-6"><Users size={24}/></div>
+                        <h4 className="text-2xl font-black italic tracking-tighter uppercase mb-4">Tour Guides</h4>
+                        <p className="text-3xl font-black text-slate-900 italic mb-4">{allServices.tourGuides?.length || 0} Active Guides</p>
+                        <div className="space-y-2">
+                           <button onClick={() => router.push('/admin/tour-guide-bookings')} className="w-full py-3 bg-slate-900 hover:bg-rose-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Manage Appointments &amp; Chat</button>
+                           <button onClick={() => router.push('/admin/guides')} className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Guide Approvals Portal</button>
+                        </div>
+                     </div>
 
                     {/* Emergency Summary */}
                     <div className="bg-slate-900 p-10 rounded-[3rem] shadow-xl text-white relative overflow-hidden group">

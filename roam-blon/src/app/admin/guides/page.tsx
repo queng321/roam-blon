@@ -185,8 +185,25 @@ export default function GuideAdminDashboard() {
         </div>
         
         <nav className="flex-1 space-y-2">
-           <button className="w-full flex items-center gap-4 px-6 py-4 bg-rose-500 text-white shadow-xl shadow-rose-500/30 rounded-2xl font-bold text-[11px] uppercase tracking-[0.2em] transition-all">
+           <button 
+             onClick={() => router.push('/admin/dashboard')}
+             className="w-full flex items-center gap-4 px-6 py-4 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl font-bold text-[11px] uppercase tracking-[0.15em] transition-all"
+           >
+              <LayoutDashboard size={18} /> Main Dashboard
+           </button>
+
+           <button 
+             onClick={() => router.push('/admin/guides')}
+             className="w-full flex items-center gap-4 px-6 py-4 bg-rose-500 text-white shadow-xl shadow-rose-500/30 rounded-2xl font-bold text-[11px] uppercase tracking-[0.15em] transition-all"
+           >
               <Compass size={18} /> Guide Approval
+           </button>
+
+           <button 
+             onClick={() => router.push('/admin/tour-guide-bookings')}
+             className="w-full flex items-center gap-4 px-6 py-4 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl font-bold text-[11px] uppercase tracking-[0.15em] transition-all"
+           >
+              <Calendar size={18} /> Bookings & Messages
            </button>
         </nav>
 
