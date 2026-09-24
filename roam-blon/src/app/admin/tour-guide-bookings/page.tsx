@@ -11,33 +11,21 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
-  User,
-  Phone,
   Mail,
   Search,
-  LogOut,
   AlertCircle,
   Plus,
   Trash2,
   Edit,
   Send,
-  Filter,
   Check,
   X,
-  ChevronLeft,
-  ChevronRight,
   UserCheck,
-  UserX,
-  DollarSign,
   TrendingUp,
   MapPin,
-  Users,
   Eye,
   RefreshCw,
-  MessageCircle,
-  Menu,
-  Sparkles,
-  Award
+  Menu
 } from "lucide-react";
 
 interface Booking {
@@ -77,18 +65,6 @@ interface ChatMessage {
   created_at?: string;
 }
 
-interface TourGuide {
-  id: string;
-  full_name: string;
-  email: string;
-  phone?: string;
-  specialty?: string | string[];
-  experience_years?: number;
-  status: string;
-  is_available?: boolean;
-  profile_image_url?: string;
-}
-
 export default function TourGuideBookingsAdminPage() {
   const router = useRouter();
 
@@ -97,27 +73,20 @@ export default function TourGuideBookingsAdminPage() {
   const [unauthorized, setUnauthorized] = useState(false);
   const [user, setUser] = useState<any>(null);
 
-  // Main navigation & tabs
-  const [activeTab, setActiveTab] = useState<"bookings" | "calendar" | "messages" | "guides">("bookings");
+  // Main navigation & tabs (Only Bookings and Messages)
+  const [activeTab, setActiveTab] = useState<"bookings" | "messages">("bookings");
   const [bookingFilter, setBookingFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   // Data states
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [guides, setGuides] = useState<TourGuide[]>([]);
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
   const [activeRoom, setActiveRoom] = useState<ChatRoom | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [messageInput, setMessageInput] = useState("");
   const [isSendingMessage, setIsSendingMessage] = useState(false);
-
-  // Calendar states
-  const [selectedCalendarDate, setSelectedCalendarDate] = useState<string>(
-    new Date().toISOString().split("T")[0]
-  );
-  const [calendarMonth, setCalendarMonth] = useState<Date>(new Date());
+  const [isClearingMessages, setIsClearingMessages] = useState(false);
 
   // Modals & Detail views
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
@@ -188,13 +157,6 @@ export default function TourGuideBookingsAdminPage() {
           fetchChatRooms();
         }
       )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "tour_guides" },
-        () => {
-          fetchGuides();
-        }
-      )
       .subscribe();
 
     return () => {
@@ -211,12 +173,12 @@ export default function TourGuideBookingsAdminPage() {
 
   // --- DATA FETCHING ---
   const fetchAllData = async () => {
-    await Promise.all([fetchBookings(), fetchGuides(), fetchChatRooms()]);
+    await Promise.all([fetchBookings(), fetchChatRooms()]);
   };
 
   const fetchBookings = async () => {
     try {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("tour_guide_bookings")
         .select("*")
         .order("created_at", { ascending: false });
@@ -245,18 +207,6 @@ export default function TourGuideBookingsAdminPage() {
     }
   };
 
-  const fetchGuides = async () => {
-    try {
-      const { data } = await supabase
-        .from("tour_guides")
-        .select("*")
-        .order("full_name");
-      setGuides(data || []);
-    } catch (e) {
-      console.error("Error fetching guides:", e);
-    }
-  };
-
   const fetchChatRooms = async () => {
     try {
       const { data } = await supabase
@@ -270,6 +220,10 @@ export default function TourGuideBookingsAdminPage() {
           setActiveRoom(data[0]);
           fetchRoomMessages(data[0].id);
         }
+      } else {
+        setChatRooms([]);
+        setActiveRoom(null);
+        setChatMessages([]);
       }
     } catch (e) {
       console.error("Error fetching chat rooms:", e);
@@ -296,17 +250,15 @@ export default function TourGuideBookingsAdminPage() {
     newStatus: "approved" | "declined" | "confirmed" | "completed"
   ) => {
     try {
-      const { error } = await supabase
+      await supabase
         .from("tour_guide_bookings")
         .update({ status: newStatus })
         .eq("id", bookingId);
 
-      // Local state update
       setBookings((prev) =>
         prev.map((b) => (b.id === bookingId ? { ...b, status: newStatus } : b))
       );
 
-      // Update localStorage fallback if present
       const stored = JSON.parse(
         localStorage.getItem("roam_blon_tour_guide_bookings") || "[]"
       );
@@ -460,21 +412,31 @@ export default function TourGuideBookingsAdminPage() {
     }
   };
 
-  const toggleGuideAvailability = async (guideId: string, currentAvailable?: boolean) => {
-    const newStatus = !(currentAvailable !== false);
-    try {
-      await supabase
-        .from("tour_guides")
-        .update({ is_available: newStatus })
-        .eq("id", guideId);
+  // CLEAR ALL TOURIST MESSAGES
+  const handleClearAllMessages = async () => {
+    if (!confirm("Are you sure you want to CLEAR ALL tourist messages? This action cannot be undone.")) return;
 
-      setGuides((prev) =>
-        prev.map((g) => (g.id === guideId ? { ...g, is_available: newStatus } : g))
-      );
-    } catch (e) {
-      setGuides((prev) =>
-        prev.map((g) => (g.id === guideId ? { ...g, is_available: newStatus } : g))
-      );
+    setIsClearingMessages(true);
+    try {
+      if (activeRoom?.id) {
+        await supabase.from("chat_messages").delete().eq("room_id", activeRoom.id);
+      } else {
+        await supabase.from("chat_messages").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+      }
+
+      setChatMessages([]);
+      if (activeRoom?.id) {
+        await supabase
+          .from("chat_rooms")
+          .update({ latest_message: "Messages cleared by admin", updated_at: new Date().toISOString() })
+          .eq("id", activeRoom.id);
+      }
+      fetchChatRooms();
+    } catch (err) {
+      console.error("Error clearing messages:", err);
+      setChatMessages([]);
+    } finally {
+      setIsClearingMessages(false);
     }
   };
 
@@ -506,25 +468,9 @@ export default function TourGuideBookingsAdminPage() {
   const approvedCount = bookings.filter(
     (b) => b.status === "approved" || b.status === "confirmed"
   ).length;
-  const completedCount = bookings.filter((b) => b.status === "completed").length;
   const totalRevenue = bookings
     .filter((b) => b.status !== "declined")
     .reduce((sum, b) => sum + (Number(b.total_price) || 0), 0);
-
-  // Calendar logic
-  const getDaysInMonth = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const days = new Date(year, month + 1, 0).getDate();
-    const firstDayIndex = new Date(year, month, 1).getDay();
-    return { days, firstDayIndex };
-  };
-
-  const { days, firstDayIndex } = getDaysInMonth(calendarMonth);
-
-  const getBookingsForDate = (dateStr: string) => {
-    return bookings.filter((b) => b.booking_date === dateStr);
-  };
 
   if (loading) {
     return (
@@ -579,7 +525,7 @@ export default function TourGuideBookingsAdminPage() {
         />
       )}
 
-      {/* SIDEBAR NAVIGATION */}
+      {/* SIDEBAR NAVIGATION (LOGOUT REMOVED) */}
       <aside
         className={`fixed lg:static inset-y-0 left-0 z-50 flex flex-col w-80 bg-slate-900 p-8 shrink-0 text-white transition-transform duration-300 ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
@@ -641,17 +587,6 @@ export default function TourGuideBookingsAdminPage() {
           </button>
 
           <button
-            onClick={() => setActiveTab("calendar")}
-            className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold text-[11px] uppercase tracking-[0.15em] transition-all ${
-              activeTab === "calendar"
-                ? "bg-rose-500 text-white shadow-xl shadow-rose-500/30"
-                : "text-slate-400 hover:text-white hover:bg-slate-800"
-            }`}
-          >
-            <Clock size={18} /> Calendar Schedule
-          </button>
-
-          <button
             onClick={() => setActiveTab("messages")}
             className={`w-full flex items-center justify-between px-6 py-4 rounded-2xl font-bold text-[11px] uppercase tracking-[0.15em] transition-all ${
               activeTab === "messages"
@@ -668,27 +603,7 @@ export default function TourGuideBookingsAdminPage() {
               </span>
             )}
           </button>
-
-          <button
-            onClick={() => setActiveTab("guides")}
-            className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold text-[11px] uppercase tracking-[0.15em] transition-all ${
-              activeTab === "guides"
-                ? "bg-rose-500 text-white shadow-xl shadow-rose-500/30"
-                : "text-slate-400 hover:text-white hover:bg-slate-800"
-            }`}
-          >
-            <Users size={18} /> Tour Guide Roster
-          </button>
         </nav>
-
-        <div className="pt-8 border-t border-slate-800/50">
-          <button
-            onClick={() => setIsLogoutModalOpen(true)}
-            className="w-full flex items-center gap-4 px-6 py-4 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-2xl font-bold text-[11px] uppercase tracking-widest transition-all"
-          >
-            <LogOut size={18} /> Logout
-          </button>
-        </div>
       </aside>
 
       {/* MAIN BODY AREA */}
@@ -711,9 +626,7 @@ export default function TourGuideBookingsAdminPage() {
               </div>
               <h2 className="text-xl font-black text-slate-900 uppercase tracking-tighter">
                 {activeTab === "bookings" && "Booking Appointments & Approvals"}
-                {activeTab === "calendar" && "Interactive Tour Schedule"}
                 {activeTab === "messages" && "Tourist Messages & Inquiries"}
-                {activeTab === "guides" && "Active Tour Guides Roster"}
               </h2>
             </div>
           </div>
@@ -843,7 +756,6 @@ export default function TourGuideBookingsAdminPage() {
                     const isPending = b.status === "pending";
                     const isApproved = b.status === "approved" || b.status === "confirmed";
                     const isDeclined = b.status === "declined";
-                    const isCompleted = b.status === "completed";
 
                     return (
                       <div
@@ -1000,244 +912,32 @@ export default function TourGuideBookingsAdminPage() {
             </div>
           )}
 
-          {/* TAB 2: CALENDAR & APPOINTMENTS VIEW */}
-          {activeTab === "calendar" && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* CALENDAR MONTH GRID */}
-              <div className="lg:col-span-2 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter italic">
-                    {calendarMonth.toLocaleString("default", {
-                      month: "long",
-                      year: "numeric"
-                    })}
-                  </h3>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() =>
-                        setCalendarMonth(
-                          new Date(
-                            calendarMonth.getFullYear(),
-                            calendarMonth.getMonth() - 1,
-                            1
-                          )
-                        )
-                      }
-                      className="p-3 bg-slate-100 hover:bg-slate-200 rounded-2xl text-slate-700 transition-all"
-                    >
-                      <ChevronLeft size={18} />
-                    </button>
-                    <button
-                      onClick={() => setCalendarMonth(new Date())}
-                      className="px-4 py-2 bg-slate-900 text-white rounded-2xl text-xs font-bold uppercase tracking-widest"
-                    >
-                      Today
-                    </button>
-                    <button
-                      onClick={() =>
-                        setCalendarMonth(
-                          new Date(
-                            calendarMonth.getFullYear(),
-                            calendarMonth.getMonth() + 1,
-                            1
-                          )
-                        )
-                      }
-                      className="p-3 bg-slate-100 hover:bg-slate-200 rounded-2xl text-slate-700 transition-all"
-                    >
-                      <ChevronRight size={18} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* DAYS OF WEEK */}
-                <div className="grid grid-cols-7 text-center font-black text-[10px] uppercase tracking-widest text-slate-400">
-                  <span>Sun</span>
-                  <span>Mon</span>
-                  <span>Tue</span>
-                  <span>Wed</span>
-                  <span>Thu</span>
-                  <span>Fri</span>
-                  <span>Sat</span>
-                </div>
-
-                {/* DAYS GRID */}
-                <div className="grid grid-cols-7 gap-2">
-                  {Array.from({ length: firstDayIndex }).map((_, i) => (
-                    <div key={`empty-${i}`} className="h-24 bg-slate-50/50 rounded-2xl" />
-                  ))}
-
-                  {Array.from({ length: days }).map((_, i) => {
-                    const dayNum = i + 1;
-                    const dateStr = `${calendarMonth.getFullYear()}-${String(
-                      calendarMonth.getMonth() + 1
-                    ).padStart(2, "0")}-${String(dayNum).padStart(2, "0")}`;
-
-                    const dayBookings = getBookingsForDate(dateStr);
-                    const isSelected = selectedCalendarDate === dateStr;
-
-                    return (
-                      <div
-                        key={dateStr}
-                        onClick={() => setSelectedCalendarDate(dateStr)}
-                        className={`h-24 p-2 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
-                          isSelected
-                            ? "bg-rose-50 border-rose-500 ring-2 ring-rose-500/20 shadow-md"
-                            : "bg-white border-slate-200 hover:border-slate-300"
-                        }`}
-                      >
-                        <div className="flex justify-between items-center">
-                          <span
-                            className={`text-xs font-black ${
-                              isSelected ? "text-rose-600" : "text-slate-800"
-                            }`}
-                          >
-                            {dayNum}
-                          </span>
-                          {dayBookings.length > 0 && (
-                            <span className="bg-rose-500 text-white font-black text-[9px] px-1.5 py-0.5 rounded-full">
-                              {dayBookings.length}
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="space-y-1 overflow-y-auto max-h-14">
-                          {dayBookings.slice(0, 2).map((b) => (
-                            <div
-                              key={b.id}
-                              className={`text-[9px] font-bold p-1 rounded-lg truncate ${
-                                b.status === "pending"
-                                  ? "bg-amber-100 text-amber-800"
-                                  : b.status === "approved"
-                                  ? "bg-emerald-100 text-emerald-800"
-                                  : "bg-slate-100 text-slate-700"
-                              }`}
-                            >
-                              {b.tourist_name || b.guide_name}
-                            </div>
-                          ))}
-                          {dayBookings.length > 2 && (
-                            <p className="text-[8px] font-black text-slate-400">
-                              +{dayBookings.length - 2} more
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* CALENDAR SELECTED DATE DETAIL PANEL */}
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm flex flex-col justify-between">
-                <div>
-                  <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">
-                    Schedule Details
-                  </h4>
-                  <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter mb-6">
-                    {new Date(selectedCalendarDate).toLocaleDateString("en-US", {
-                      weekday: "long",
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric"
-                    })}
-                  </h3>
-
-                  {getBookingsForDate(selectedCalendarDate).length > 0 ? (
-                    <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1">
-                      {getBookingsForDate(selectedCalendarDate).map((b) => (
-                        <div
-                          key={b.id}
-                          className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2"
-                        >
-                          <div className="flex items-center justify-between">
-                            <span
-                              className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase ${
-                                b.status === "pending"
-                                  ? "bg-amber-100 text-amber-700"
-                                  : b.status === "approved"
-                                  ? "bg-emerald-100 text-emerald-700"
-                                  : "bg-slate-200 text-slate-700"
-                              }`}
-                            >
-                              {b.status}
-                            </span>
-                            <span className="text-xs font-black text-rose-600">
-                              ₱{(Number(b.total_price) || 0).toLocaleString()}
-                            </span>
-                          </div>
-
-                          <h5 className="font-black text-slate-900 text-sm">
-                            {b.tourist_name}
-                          </h5>
-                          <p className="text-xs text-slate-500 font-bold">
-                            Guide: {b.guide_name}
-                          </p>
-
-                          <div className="flex justify-between items-center text-[10px] text-slate-400 font-bold pt-2 border-t border-slate-200/60">
-                            <span>Time: {b.booking_time || "Morning"}</span>
-                            <span>Pax: {b.pax}</span>
-                          </div>
-
-                          {b.status === "pending" && (
-                            <div className="flex gap-2 pt-2">
-                              <button
-                                onClick={() =>
-                                  handleUpdateBookingStatus(b.id, "approved")
-                                }
-                                className="flex-1 bg-emerald-600 text-white font-bold text-[9px] uppercase py-2 rounded-xl"
-                              >
-                                Approve
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleUpdateBookingStatus(b.id, "declined")
-                                }
-                                className="flex-1 bg-rose-50 text-rose-600 border border-rose-200 font-bold text-[9px] uppercase py-2 rounded-xl"
-                              >
-                                Decline
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                      <Clock size={32} className="text-slate-300 mx-auto mb-2" />
-                      <p className="text-xs font-bold text-slate-400">
-                        No appointments booked for this date.
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                <button
-                  onClick={() => setIsNewBookingModalOpen(true)}
-                  className="w-full bg-slate-900 text-white font-black py-4 rounded-2xl text-xs uppercase tracking-widest mt-6 hover:bg-rose-600 transition-all"
-                >
-                  + Add Appointment for This Date
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 3: MANAGE TOURIST MESSAGES */}
+          {/* TAB 2: MANAGE TOURIST MESSAGES (WITH CLEAR ALL MESSAGES FEATURE) */}
           {activeTab === "messages" && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[650px] bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
               {/* LEFT CONVERSATIONS LIST */}
               <div className="border-r border-slate-200 flex flex-col h-full bg-slate-50/50">
-                <div className="p-4 border-b border-slate-200 bg-white">
-                  <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider mb-2">
-                    Tourist Conversations
-                  </h3>
+                <div className="p-4 border-b border-slate-200 bg-white space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider">
+                      Tourist Conversations
+                    </h3>
+                    <button
+                      onClick={handleClearAllMessages}
+                      disabled={isClearingMessages}
+                      className="text-rose-600 hover:bg-rose-50 px-3 py-1 rounded-xl text-[10px] font-black uppercase border border-rose-200 transition-all flex items-center gap-1"
+                      title="Clear all tourist messages"
+                    >
+                      <Trash2 size={12} /> Clear All
+                    </button>
+                  </div>
                   <div className="relative">
                     <Search
                       size={14}
                       className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
                     />
                     <input
-                      placeholder="Search email or message..."
+                      placeholder="Search email..."
                       className="w-full pl-9 pr-3 py-2 bg-slate-100 border border-slate-200 rounded-xl text-xs font-medium outline-none"
                     />
                   </div>
@@ -1274,7 +974,7 @@ export default function TourGuideBookingsAdminPage() {
                             </span>
                           </div>
                           <p className="text-xs text-slate-500 truncate font-medium">
-                            {room.latest_message || "No messages yet"}
+                            {room.latest_message || "No messages"}
                           </p>
                         </div>
                       );
@@ -1306,6 +1006,14 @@ export default function TourGuideBookingsAdminPage() {
                           </p>
                         </div>
                       </div>
+
+                      <button
+                        onClick={handleClearAllMessages}
+                        disabled={isClearingMessages}
+                        className="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border border-rose-200 flex items-center gap-1.5 transition-all"
+                      >
+                        <Trash2 size={13} /> Clear Thread
+                      </button>
                     </div>
 
                     {/* MESSAGES LIST */}
@@ -1347,7 +1055,7 @@ export default function TourGuideBookingsAdminPage() {
                         })
                       ) : (
                         <div className="h-full flex items-center justify-center text-slate-400 font-bold text-xs">
-                          Start replying to this tourist inquiry below.
+                          No messages in this thread. Type below to send a message.
                         </div>
                       )}
                     </div>
@@ -1383,83 +1091,6 @@ export default function TourGuideBookingsAdminPage() {
                     </p>
                   </div>
                 )}
-              </div>
-            </div>
-          )}
-
-          {/* TAB 4: TOUR GUIDE ROSTER & AVAILABILITY */}
-          {activeTab === "guides" && (
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter">
-                  Registered Island Tour Guides ({guides.length})
-                </h3>
-                <button
-                  onClick={() => router.push("/admin/guides")}
-                  className="text-xs font-black uppercase text-rose-600 hover:underline flex items-center gap-1"
-                >
-                  Manage Approvals &rarr;
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {guides.map((g) => {
-                  const isAvailable = g.is_available !== false;
-                  return (
-                    <div
-                      key={g.id}
-                      className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4"
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className="w-16 h-16 rounded-2xl bg-slate-100 overflow-hidden border-2 border-slate-100 shrink-0">
-                          <img
-                            src={g.profile_image_url || "/placeholder-user.png"}
-                            alt={g.full_name}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div>
-                          <span
-                            className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase ${
-                              g.status === "approved"
-                                ? "bg-emerald-100 text-emerald-800"
-                                : "bg-amber-100 text-amber-800"
-                            }`}
-                          >
-                            {g.status}
-                          </span>
-                          <h4 className="text-lg font-black text-slate-900 mt-1">
-                            {g.full_name}
-                          </h4>
-                          <p className="text-xs text-slate-500 font-bold">{g.email}</p>
-                        </div>
-                      </div>
-
-                      <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-xs font-bold space-y-1">
-                        <p className="text-slate-600">
-                          Experience: {g.experience_years || 5} Years
-                        </p>
-                        <p className="text-slate-600 truncate">
-                          Specialty:{" "}
-                          {Array.isArray(g.specialty)
-                            ? g.specialty.join(", ")
-                            : g.specialty || "Island Tours"}
-                        </p>
-                      </div>
-
-                      <button
-                        onClick={() => toggleGuideAvailability(g.id, g.is_available)}
-                        className={`w-full py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                          isAvailable
-                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
-                            : "bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200"
-                        }`}
-                      >
-                        {isAvailable ? "🟢 Currently Available" : "🔴 Unavailable"}
-                      </button>
-                    </div>
-                  );
-                })}
               </div>
             </div>
           )}
@@ -1763,38 +1394,6 @@ export default function TourGuideBookingsAdminPage() {
               Create Appointment
             </button>
           </form>
-        </div>
-      )}
-
-      {/* LOGOUT CONFIRMATION MODAL */}
-      {isLogoutModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-          <div
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-xs"
-            onClick={() => setIsLogoutModalOpen(false)}
-          />
-          <div className="relative bg-white w-full max-w-md rounded-[2.5rem] p-10 text-center shadow-2xl">
-            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-slate-900 mb-6">
-              Exit Admin Console?
-            </h3>
-            <div className="flex gap-4">
-              <button
-                onClick={() => setIsLogoutModalOpen(false)}
-                className="flex-1 px-6 py-4 bg-slate-100 rounded-2xl font-black text-[10px] uppercase"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  adminSupabase.auth.signOut();
-                  router.push("/");
-                }}
-                className="flex-1 px-6 py-4 bg-rose-500 text-white rounded-2xl font-black text-[10px] uppercase shadow-lg shadow-rose-200"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
         </div>
       )}
     </div>
