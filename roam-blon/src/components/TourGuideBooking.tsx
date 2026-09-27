@@ -62,7 +62,7 @@ const STATIC_GUIDES: TourGuide[] = [
     bio: "Experienced beach tour guide from Romblon. Takes you to the island's finest beaches, including Bonbon Beach sandbar.",
     rating: 4.9,
     status: "approved",
-    is_available: false,
+    is_available: true,
   },
   {
     id: "sg-jon",
@@ -78,7 +78,7 @@ const STATIC_GUIDES: TourGuide[] = [
     bio: "Certified local guide leading island-hopping and scenic land tours around Romblon.",
     rating: 4.8,
     status: "approved",
-    is_available: false,
+    is_available: true,
   },
 ];
 
