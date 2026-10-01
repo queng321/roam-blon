@@ -57,7 +57,10 @@ export default function BookingNotifications({ tourist }: BookingNotificationsPr
       }
     });
     combined.sort((a, b) => new Date(b.created_at || b.booking_date || 0).getTime() - new Date(a.created_at || a.booking_date || 0).getTime());
-    setBookings(combined.slice(0, 20));
+
+    // Only show actual bookings with reference code (RB-xxx), filter out test/static data
+    const actualBookings = combined.filter(b => b.reference_code && String(b.reference_code).startsWith('RB-'));
+    setBookings(actualBookings.slice(0, 20));
     setLoading(false);
   };
 
