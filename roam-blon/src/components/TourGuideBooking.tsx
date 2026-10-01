@@ -48,7 +48,39 @@ interface BookingConfirmation {
   pax: number;
 }
 
-const STATIC_GUIDES: TourGuide[] = [];
+const STATIC_GUIDES: TourGuide[] = [
+  {
+    id: "sg-reynan",
+    name: "Reynan Jess Rivas",
+    full_name: "Reynan Jess Rivas",
+    photo_url: "/guides/barney.jpg",
+    email: "reynanjesse@gmail.com",
+    contact_number: "092772185",
+    languages: ["Filipino", "English"],
+    specialties: "Beach Tour Guide",
+    rate_per_day: 2000,
+    bio: "Experienced beach tour guide from Romblon. Takes you to the island's finest beaches, including Bonbon Beach sandbar.",
+    rating: 4.9,
+    status: "approved",
+    is_available: true,
+  },
+  {
+    id: "sg-jon",
+    name: "Jon Michael Musico",
+    full_name: "Jon Michael Musico",
+    photo_url: "/guides/jon.jpg",
+    email: "musicomagayamjonmichael@gmail.com",
+    contact_number: "09987266791",
+    languages: ["Filipino", "English"],
+    specialties: "Island Hopping, Land Tour",
+    rate_per_day: 1500,
+    rate_label: "₱1,000 - ₱1,500",
+    bio: "Certified local guide leading island-hopping and scenic land tours around Romblon.",
+    rating: 4.8,
+    status: "approved",
+    is_available: true,
+  },
+];
 
 function generateReferenceCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -78,7 +110,7 @@ function mergeGuides(sources: TourGuide[][]): TourGuide[] {
 }
 
 export default function TourGuideBooking({ tourist, initialDestination = "", compact = false }: { tourist: any; initialDestination?: string; compact?: boolean }) {
-  const [guides, setGuides] = useState<TourGuide[]>([]);
+  const [guides, setGuides] = useState<TourGuide[]>(STATIC_GUIDES);
   const [loading, setLoading] = useState(true);
 
   const [selectedGuide, setSelectedGuide] = useState<TourGuide | null>(null);
@@ -133,8 +165,8 @@ export default function TourGuideBooking({ tourist, initialDestination = "", com
         localGuides = JSON.parse(localStorage.getItem("roam_blon_tour_guides") || "[]");
       } catch { /* ignore */ }
 
-      const merged = mergeGuides([dbGuides, localGuides]);
-      setGuides(merged);
+      const merged = mergeGuides([dbGuides, localGuides, STATIC_GUIDES]);
+      setGuides(merged.length > 0 ? merged : STATIC_GUIDES);
     } catch { /* ignore */ } finally {
       setLoading(false);
     }
