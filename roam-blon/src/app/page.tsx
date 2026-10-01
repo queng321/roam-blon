@@ -1655,7 +1655,7 @@ export default function Home() {
                     <Compass size={18} /> OPEN MAP
                   </button>
                   <button onClick={() => router.push('/destinations')} className="flex items-center justify-center gap-2 text-[13px] font-black bg-rose-600 text-white px-6 py-4 rounded-xl hover:bg-rose-700 transition-all w-full sm:w-auto">
-                    <Star size={18} /> EXPLORE NOW
+                    <Star size={18} /> TOURIST DESTINATIONS
                   </button>
                 </div>
               </div>
