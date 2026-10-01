@@ -52,7 +52,7 @@ import LeafletRouteMap from "@/components/LeafletRouteMap";
 import BookingNotifications from "@/components/BookingNotifications";
 import TourGuideBooking from "@/components/TourGuideBooking";
 import TouristProfile from "@/components/TouristProfile";
-import EvaluationForm from "@/components/EvaluationForm";
+
 import AboutSection from "@/components/AboutSection";
 import { STATIC_DESTINATIONS } from "@/data/staticDestinations";
 
@@ -1638,8 +1638,6 @@ export default function Home() {
           <section className="max-w-7xl mx-auto py-6 px-6 animate-in fade-in duration-700">
             <div className="flex flex-col lg:flex-row gap-10 items-center mb-8 relative">
               <div className="flex-1 space-y-4">
-                {/* System evaluation survey checklist */}
-                <EvaluationForm />
 
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-rose-50 rounded-full border border-rose-100">
                   <Sparkles size={12} className="text-rose-500" />
@@ -1652,12 +1650,12 @@ export default function Home() {
                 <p className="leading-relaxed text-slate-600 font-medium text-base max-w-lg">
                   Explore the "Marble Capital of the Philippines" like a local. From the surreal sandbars of Bonbon to the heritage-rich streets.
                 </p>
-                <div className="flex flex-wrap gap-3">
-                  <button onClick={() => setShowMap(true)} className="flex items-center gap-2 text-[13px] font-black bg-slate-900 text-white px-5 py-3 rounded-lg hover:bg-slate-800 transition-all">
+                <div className="flex flex-col sm:flex-row gap-4 mt-6">
+                  <button onClick={() => setShowMap(true)} className="flex items-center justify-center gap-2 text-[13px] font-black bg-slate-900 text-white px-6 py-4 rounded-xl hover:bg-slate-800 transition-all w-full sm:w-auto">
                     <Compass size={18} /> OPEN MAP
                   </button>
-                  <button onClick={() => router.push('/destinations')} className="flex items-center gap-2 text-[13px] font-black border-2 border-rose-100 text-rose-600 px-5 py-3 rounded-lg hover:bg-rose-50 transition-all">
-                    <Star size={18} /> TOURIST DESTINATIONS
+                  <button onClick={() => router.push('/destinations')} className="flex items-center justify-center gap-2 text-[13px] font-black bg-rose-600 text-white px-6 py-4 rounded-xl hover:bg-rose-700 transition-all w-full sm:w-auto">
+                    <Star size={18} /> EXPLORE NOW
                   </button>
                 </div>
               </div>
