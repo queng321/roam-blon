@@ -13,6 +13,8 @@ import {
   Star,
   X,
   AlertCircle,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 
 interface BookingNotificationsProps {
@@ -32,6 +34,9 @@ export default function BookingNotifications({ tourist, onPendingCountChange }: 
   const [reviewComment, setReviewComment] = useState("");
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewError, setReviewError] = useState("");
+
+  // QR Code modal state
+  const [showQRModal, setShowQRModal] = useState<{ code: string; guide: string; date: string } | null>(null);
 
   const fetchBookings = async () => {
     setLoading(true);
@@ -198,7 +203,8 @@ export default function BookingNotifications({ tourist, onPendingCountChange }: 
   };
 
   return (
-    <div className="space-y-3">
+    <>
+      <div className="space-y-3">
       {loading ? (
         <div className="flex flex-col items-center justify-center py-14 gap-3">
           <Loader2 className="animate-spin text-rose-500" size={26} />
@@ -260,13 +266,14 @@ export default function BookingNotifications({ tourist, onPendingCountChange }: 
                       <span className="font-mono font-black text-emerald-700 bg-white px-2 py-1 rounded border">{b.reference_code}</span>
                       <span className="text-slate-500 ml-auto">Show this to your guide</span>
                     </div>
-                    <div className="mt-2 flex items-center gap-2">
+                    <div className="mt-2 flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => setShowQRModal({ code: b.reference_code, guide: b.guide_name || 'Tour Guide', date: b.booking_date || b.tour_date || '' })}>
                       <img
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(b.reference_code)}`}
                         alt="Booking QR"
                         className="w-20 h-20 bg-white rounded p-1 border"
                       />
-                      <span className="text-[10px] text-slate-500">Scan to verify</span>
+                      <span className="text-[10px] text-slate-500">Tap to enlarge →</span>
                     </div>
                   </div>
                 )}
@@ -376,5 +383,63 @@ export default function BookingNotifications({ tourist, onPendingCountChange }: 
         </div>
       )}
     </div>
+
+    {/* QR Code Modal */}
+    {showQRModal && (
+      <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-in fade-in duration-300">
+        <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" onClick={() => setShowQRModal(null)} />
+        <div className="bg-white rounded-[2rem] p-8 max-w-sm w-full relative z-10 shadow-2xl border-t-8 border-emerald-500 animate-in zoom-in duration-300 text-center">
+          <button
+            onClick={() => setShowQRModal(null)}
+            className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-all"
+          >
+            <X size={18} className="text-slate-600" />
+          </button>
+
+          <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500 mx-auto mb-4">
+            <CheckCircle2 size={32} />
+          </div>
+
+          <h3 className="text-xl font-black text-slate-900 uppercase italic mb-1">
+            Tour Confirmation QR
+          </h3>
+          <p className="text-slate-500 text-[12px] font-bold mb-2">
+            {showQRModal.guide} · {showQRModal.date}
+          </p>
+
+          <div className="bg-slate-50 rounded-2xl p-5 border-2 border-slate-100 mb-5">
+            <img
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(showQRModal.code)}`}
+              alt="Booking QR Code"
+              className="w-56 h-56 mx-auto rounded-lg"
+            />
+            <div className="mt-4 pt-4 border-t border-slate-200 text-left space-y-1.5">
+              <div className="flex justify-between text-[12px]">
+                <span className="font-bold text-slate-400 uppercase tracking-widest">Ref Code</span>
+                <span className="font-mono font-black text-emerald-700">{showQRModal.code}</span>
+              </div>
+              <div className="flex justify-between text-[12px]">
+                <span className="font-bold text-slate-400 uppercase tracking-widest">Guide</span>
+                <span className="font-black text-slate-900">{showQRModal.guide}</span>
+              </div>
+              <div className="flex justify-between text-[12px]">
+                <span className="font-bold text-slate-400 uppercase tracking-widest">Date</span>
+                <span className="font-black text-slate-900">{showQRModal.date}</span>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-[11px] text-slate-500 mb-6">Show this QR code to your guide to confirm the tour</p>
+
+          <button
+            onClick={() => setShowQRModal(null)}
+            className="w-full bg-slate-900 hover:bg-emerald-600 text-white font-black uppercase py-5 rounded-2xl transition-all flex items-center justify-center gap-2"
+          >
+            <Minimize2 size={16} /> Close
+          </button>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
