@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import TouristAuthFlow from "@/components/TouristAuthFlow";
 import TouristProfile from "@/components/TouristProfile";
+import BookingNotifications from "@/components/BookingNotifications";
 
 const NAV_ITEMS = [
   { id: "welcome", label: "Home" },
@@ -32,6 +33,8 @@ export default function SiteHeader() {
   const [showProfile, setShowProfile] = useState(false);
   const [tourist, setTourist] = useState<any>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showBookingNotifications, setShowBookingNotifications] = useState(false);
+  const [pendingBookingCount, setPendingBookingCount] = useState(0);
 
   useEffect(() => {
     async function checkSession() {
@@ -156,56 +159,61 @@ export default function SiteHeader() {
     }
   };
 
-  return (
+return (
     <>
-      <header className="sticky top-0 z-[60] flex flex-col lg:flex-row items-center justify-between px-4 md:px-8 py-3.5 md:py-4 bg-white/90 backdrop-blur-md border-b-2 border-rose-100/80 shadow-sm gap-3 md:gap-4 transition-all">
+      <header className="fixed top-0 left-0 right-0 z-[60] flex flex-col lg:flex-row items-center justify-between px-4 md:px-8 py-4 md:py-6 bg-white border-b-4 border-[#FAEEED] shadow-lg gap-3 md:gap-4">
         <div className="flex items-center justify-between w-full lg:w-auto gap-3">
-          <div className="flex items-center gap-3.5 cursor-pointer group" onClick={() => handleNav("welcome")}>
-            <div className="w-12 h-12 md:w-13 md:h-13 bg-rose-50 rounded-2xl flex items-center justify-center border border-rose-200/80 overflow-hidden shadow-sm group-hover:scale-105 group-hover:border-rose-400 transition-all">
+          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => handleNav("welcome")}>
+            <div className="w-12 h-12 md:w-14 md:h-14 bg-[#FAEEED] rounded-xl flex items-center justify-center border-2 border-rose-200 overflow-hidden shadow-inner">
               <img src="/logo.jpg" alt="Logo" className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col">
-              <span className="font-black text-2xl md:text-3xl text-slate-900 uppercase tracking-tighter leading-none group-hover:text-rose-600 transition-colors">ROAM-BLON</span>
-              <span className="text-[10px] md:text-xs font-black text-rose-500 tracking-[0.22em] uppercase mt-0.5">AI Integrated Travel Buddy</span>
-              <span className="text-[9px] md:text-[10px] font-bold text-slate-400 tracking-wide uppercase" style={{ maxWidth: 300 }}>
-                This is a Capstone Project of 4th year BSIT Students of RSU - Romblon Campus
-              </span>
+              <span className="font-black text-2xl md:text-3xl text-slate-900 uppercase tracking-tighter leading-none">ROAM-BLON</span>
+              <span className="text-[10px] md:text-xs font-bold text-rose-500 tracking-[0.2em] uppercase">AI Integrated Travel Buddy</span>
+              <span className="text-[9px] md:text-[10px] font-black text-slate-400 tracking-wide uppercase" style={{ maxWidth: 300 }}>This is a Capstone Project of 4th year BSIT Students of RSU - Romblon Campus</span>
             </div>
           </div>
 
+          {/* Mobile Hamburger Button */}
           <div className="flex items-center gap-2 lg:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2.5 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 transition-all"
-              aria-label="Menu"
+              className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 transition-all"
             >
               {mobileMenuOpen ? <X size={24} className="text-slate-900" /> : <Menu size={24} className="text-slate-900" />}
             </button>
           </div>
         </div>
 
+        {/* Desktop: Navigation + Profile on the right side */}
         <div className="hidden lg:flex items-center gap-2">
-          <nav className="flex items-center gap-1.5 bg-slate-100/70 p-1.5 rounded-2xl border border-slate-200/80 backdrop-blur-xs whitespace-nowrap shadow-inner">
+          <nav className="flex items-center gap-1 bg-slate-100/50 p-2 rounded-xl border-2 border-slate-200 whitespace-nowrap">
             {NAV_ITEMS.map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleNav(item.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
-                  isHome && item.id === "welcome"
-                    ? "bg-white text-rose-600 shadow-sm scale-102"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
-                }`}
+                className={`px-3 py-2 rounded-lg text-sm font-black transition-all ${pathname === `/${item.id}` || (isHome && item.id === "welcome") ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'}`}
               >
                 {item.label}
               </button>
             ))}
-            <button
-              onClick={() => router.push("/emergency")}
-              className="px-4 py-2 rounded-xl text-xs font-black text-rose-600 bg-rose-50/80 hover:bg-rose-500 hover:text-white border border-rose-200/80 transition-all uppercase tracking-widest shadow-2xs active:scale-95"
-            >
-              EMERGENCY
-            </button>
+            <button onClick={() => router.push("/emergency")} className="px-3 py-2 rounded-lg text-sm font-black text-red-600 hover:bg-red-50 transition-all uppercase tracking-widest">EMERGENCY</button>
             <div className="w-px h-4 bg-slate-300 mx-1"></div>
+            {tourist && (
+              <button
+                onClick={() => setShowBookingNotifications(!showBookingNotifications)}
+                className="relative w-9 h-9 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition-all"
+                title="Booking Notifications"
+                aria-label="Booking Notifications"
+              >
+                <Bell size={18} />
+                {pendingBookingCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">
+                    {pendingBookingCount > 9 ? '9+' : pendingBookingCount}
+                  </span>
+                )}
+              </button>
+            )}
             {tourist ? (
               <Button
                 variant="ghost"
@@ -217,12 +225,13 @@ export default function SiteHeader() {
                 <LogOut size={18} />
               </Button>
             ) : null}
-            </nav>
-          </div>
+          </nav>
+        </div>
 
+        {/* Mobile Menu Overlay */}
         {mobileMenuOpen && (
           <div className="lg:hidden w-full flex flex-col gap-3 mt-2">
-            {NAV_ITEMS.map((item) => (
+{NAV_ITEMS.map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleNav(item.id)}
@@ -240,11 +249,56 @@ export default function SiteHeader() {
             >
               EMERGENCY
             </button>
-            <div className="border-t-2 border-slate-100 my-1"></div>
+
+            {tourist && (
+              <button
+                onClick={() => { setShowBookingNotifications(!showBookingNotifications); setMobileMenuOpen(false); }}
+                className="w-full px-6 py-4 rounded-xl text-lg font-black text-left text-orange-600 bg-orange-50 border-2 border-orange-200 hover:bg-orange-100 transition-all text-left flex items-center gap-3"
+              >
+                <Bell size={20} /> Booking Notifications
+              </button>
+            )}
+
+            {tourist && (
+              <button
+                onClick={() => setShowLogoutConfirm(true)}
+                className="w-full px-6 py-4 rounded-xl text-lg font-black text-left text-slate-500 bg-slate-50 border-2 border-slate-100 hover:bg-red-50 hover:text-red-600 transition-all text-left flex items-center gap-3"
+              >
+                <LogOut size={20} /> Logout
+              </button>
+            )}
           </div>
         )}
-            
+             
       </header>
+
+      {/* BOOKING NOTIFICATIONS OVERLAY */}
+      {showBookingNotifications && tourist && (
+        <div className="fixed inset-0 z-[900] bg-slate-900/70 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-6 animate-in fade-in duration-300" onClick={(e) => { if (e.target === e.currentTarget) setShowBookingNotifications(false); }}>
+          <div className="bg-white rounded-t-[2.5rem] md:rounded-[2.5rem] w-full md:max-w-2xl max-h-[93vh] overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 md:slide-in-from-bottom-0 duration-400">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-900 text-white">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white/10 text-orange-300 flex items-center justify-center">
+                  <Bell size={18} />
+                </div>
+                <div>
+                  <h3 className="text-base font-black uppercase tracking-tight">Booking Notifications</h3>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Your tour guide booking status updates</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowBookingNotifications(false)}
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all flex-shrink-0"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-5 max-h-[78vh] overflow-y-auto bg-[#FAEEED]/20">
+              <BookingNotifications tourist={tourist} onPendingCountChange={setPendingBookingCount} />
+            </div>
+          </div>
+        </div>
+      )}
 
       {showAuth && (
         <div className="fixed inset-0 z-[999] overflow-y-auto overflow-x-hidden">
