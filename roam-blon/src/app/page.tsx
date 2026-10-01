@@ -143,6 +143,8 @@ export default function Home() {
   const [scanFacing, setScanFacing] = useState<"environment" | "user">("environment");
   const scannerRef = useRef<any>(null);
 
+  const [showBookingNotifications, setShowBookingNotifications] = useState(false);
+
   const stopScanner = useCallback(async () => {
     try {
       if (scannerRef.current) {
@@ -1167,6 +1169,34 @@ export default function Home() {
         </div>
       )}
 
+      {/* BOOKING NOTIFICATIONS OVERLAY */}
+      {showBookingNotifications && tourist && (
+        <div className="fixed inset-0 z-[900] bg-slate-900/70 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-6 animate-in fade-in duration-300" onClick={(e) => { if (e.target === e.currentTarget) setShowBookingNotifications(false); }}>
+          <div className="bg-white rounded-t-[2.5rem] md:rounded-[2.5rem] w-full md:max-w-2xl max-h-[93vh] overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 md:slide-in-from-bottom-0 duration-400">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-900 text-white">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white/10 text-orange-300 flex items-center justify-center">
+                  <Bell size={18} />
+                </div>
+                <div>
+                  <h3 className="text-base font-black uppercase tracking-tight">Booking Notifications</h3>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Your tour guide booking status updates</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowBookingNotifications(false)}
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all flex-shrink-0"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-5 max-h-[78vh] overflow-y-auto bg-[#FAEEED]/20">
+              <BookingNotifications tourist={tourist} />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 1. THE HERO LANDING */}
       {view === "landing" && (
         <section className="fixed inset-0 z-[100] flex flex-col items-center justify-start bg-[#FAEEED] text-slate-800 pt-12 md:pt-20 text-center overflow-y-auto no-scrollbar relative">
@@ -1584,6 +1614,16 @@ export default function Home() {
               ))}
               <button onClick={() => handleNavClick("emergency")} className="px-3 py-2 rounded-lg text-sm font-black text-red-600 hover:bg-red-50 transition-all uppercase tracking-widest">EMERGENCY</button>
               <div className="w-px h-4 bg-slate-300 mx-1"></div>
+              {tourist && (
+                <button
+                  onClick={() => setShowBookingNotifications(!showBookingNotifications)}
+                  className="relative w-9 h-9 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition-all"
+                  title="Booking Notifications"
+                  aria-label="Booking Notifications"
+                >
+                  <Bell size={18} />
+                </button>
+              )}
               {tourist ? (
                 <Button
                   variant="ghost"
@@ -1617,6 +1657,15 @@ export default function Home() {
                 >
                   EMERGENCY
                 </button>
+
+{ tourist && (
+                  <button
+                    onClick={() => { setShowBookingNotifications(!showBookingNotifications); setMobileMenuOpen(false); }}
+                    className="w-full px-6 py-4 rounded-xl text-lg font-black text-left text-orange-600 bg-orange-50 border-2 border-orange-200 hover:bg-orange-100 transition-all text-left flex items-center gap-3"
+                  >
+                    <Bell size={20} /> Booking Notifications
+                  </button>
+                )}
 
                 {tourist && (
                   <button
