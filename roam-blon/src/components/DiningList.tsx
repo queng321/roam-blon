@@ -257,7 +257,7 @@ export default function DiningList({ onLocate }: DiningListProps) {
 
   return (
     <>
-    <div className="flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-7xl mx-auto pb-10 px-4 md:px-0">
+    <div className="flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-7xl mx-auto py-10 px-4 md:px-0">
       
       {/* SECTION 1: MUST-TRY DELICACIES */}
       <section className="py-6 md:py-10">

@@ -12,10 +12,8 @@ export default function DiningPage() {
   return (
     <>
       <SiteHeader />
-      <div className="min-h-screen bg-[#FAEEED]/20 py-10 px-4">
-        <div className="max-w-7xl mx-auto">
-          <DiningList />
-        </div>
+      <div className="min-h-screen bg-[#FAEEED]/20">
+        <DiningList />
       </div>
     </>
   );
