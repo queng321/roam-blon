@@ -109,7 +109,7 @@ function mergeGuides(sources: TourGuide[][]): TourGuide[] {
   return Array.from(map.values());
 }
 
-export default function TourGuideBooking({ tourist, initialDestination = "", compact = false }: { tourist: any; initialDestination?: string; compact?: boolean }) {
+export default function TourGuideBooking({ tourist, initialDestination = "", compact = false, onBookingSuccess }: { tourist: any; initialDestination?: string; compact?: boolean; onBookingSuccess?: () => void }) {
   const [guides, setGuides] = useState<TourGuide[]>(STATIC_GUIDES);
   const [loading, setLoading] = useState(true);
 
@@ -333,6 +333,7 @@ export default function TourGuideBooking({ tourist, initialDestination = "", com
         pax,
       });
       setSelectedGuide(null);
+      onBookingSuccess?.();
     } catch (err) {
       console.error("Booking failed", err);
       setSubmitError("Something went wrong while saving your booking. Please try again.");

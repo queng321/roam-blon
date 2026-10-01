@@ -1159,7 +1159,7 @@ export default function Home() {
               </button>
             </div>
             <div className="p-5 max-h-[78vh] overflow-y-auto bg-[#FAEEED]/20 space-y-6">
-              <TourGuideBooking tourist={tourist} compact />
+              <TourGuideBooking tourist={tourist} compact onBookingSuccess={() => setShowBookingNotifications(true)} />
               <div className="border-t border-slate-200 pt-4">
                 <h4 className="text-xs font-black uppercase tracking-wider text-slate-500 mb-3">Your Bookings & Notifications</h4>
                 <BookingNotifications tourist={tourist} />
