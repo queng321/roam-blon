@@ -241,6 +241,29 @@ export default function BookingNotifications({ tourist }: BookingNotificationsPr
                 {b.rejection_reason && (b.status === 'declined' || b.status === 'rejected') && (
                   <p className="text-[11px] text-rose-600 font-bold italic mt-1.5">"{b.rejection_reason}"</p>
                 )}
+                {(b.status === 'approved' || b.status === 'confirmed') && b.reference_code && (
+                  <div className="mt-3 p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white">
+                        <CheckCircle2 size={14} />
+                      </div>
+                      <span className="text-sm font-black text-emerald-700">Booking Confirmed</span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 text-[11px]">
+                      <span className="font-bold text-slate-600">Code:</span>
+                      <span className="font-mono font-black text-emerald-700 bg-white px-2 py-1 rounded border">{b.reference_code}</span>
+                      <span className="text-slate-500 ml-auto">Show this to your guide</span>
+                    </div>
+                    <div className="mt-2 flex items-center gap-2">
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(b.reference_code)}`}
+                        alt="Booking QR"
+                        className="w-20 h-20 bg-white rounded p-1 border"
+                      />
+                      <span className="text-[10px] text-slate-500">Scan to verify</span>
+                    </div>
+                  </div>
+                )}
                 {(b.status === 'approved' || b.status === 'confirmed') && (
                   (() => {
                     const existing = findReviewFor(b);
