@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import AboutSection from "@/components/AboutSection";
 import SiteHeader from "@/components/SiteHeader";
+import CommonIssues from "@/components/CommonIssues";
 
 export const metadata: Metadata = {
   title: "About | Roam-Blon",
@@ -15,6 +16,7 @@ export default function AboutPage() {
       <div className="min-h-screen bg-[#FAEEED]/20 pt-20 py-10 px-4">
         <div className="max-w-5xl mx-auto">
           <AboutSection />
+          <CommonIssues />
         </div>
       </div>
     </>
