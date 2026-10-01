@@ -599,11 +599,11 @@ export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-900 text-white">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-white/10 text-orange-300 flex items-center justify-center">
-                  <Compass size={18} />
+                  <Bell size={18} />
                 </div>
                 <div>
-                  <h3 className="text-base font-black uppercase tracking-tight">Book a Tour Guide</h3>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Reserve accredited tour guides & view updates</p>
+                  <h3 className="text-base font-black uppercase tracking-tight">Booking Notifications</h3>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Your tour guide booking status updates</p>
                 </div>
               </div>
               <button
@@ -613,12 +613,8 @@ export default function DestinationsExplorer({ tourist }: { tourist?: any }) {
                 <X size={18} />
               </button>
             </div>
-            <div className="p-5 max-h-[78vh] overflow-y-auto bg-[#FAEEED]/20 space-y-6">
-              <TourGuideBooking tourist={tourist} compact />
-              <div className="border-t border-slate-200 pt-4">
-                <h4 className="text-xs font-black uppercase tracking-wider text-slate-500 mb-3">Your Bookings & Notifications</h4>
-                <BookingNotifications tourist={tourist} />
-              </div>
+            <div className="p-5 max-h-[78vh] overflow-y-auto bg-[#FAEEED]/20">
+              <BookingNotifications tourist={tourist} />
             </div>
           </div>
         </div>
