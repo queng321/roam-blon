@@ -65,12 +65,11 @@ export default function BookingNotifications({ tourist, onPendingCountChange }: 
     combined.sort((a, b) => new Date(b.created_at || b.booking_date || 0).getTime() - new Date(a.created_at || a.booking_date || 0).getTime());
 
     // Only show actual bookings with reference code (RB-xxx), filter out test/static data
-    const STATIC_GUIDE_NAMES = ["Reynan Jess Rivas", "Jon Michael Musico"];
+    // Only filter out static guides if they DON'T have a proper RB- reference code
     const actualBookings = combined.filter(b => 
       b.reference_code && 
       String(b.reference_code).startsWith('RB-') &&
-      b.guide_name &&
-      !STATIC_GUIDE_NAMES.some(name => b.guide_name.includes(name))
+      b.guide_name
     );
     
     // Calculate pending count
