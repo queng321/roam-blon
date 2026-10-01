@@ -12,7 +12,7 @@ export default function EmergencyPage() {
   return (
     <>
       <SiteHeader />
-      <div className="min-h-screen bg-[#FAEEED]/20">
+      <div className="min-h-screen bg-[#FAEEED]/20 pt-20">
         <EmergencySection />
       </div>
     </>
