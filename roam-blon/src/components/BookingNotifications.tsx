@@ -32,29 +32,6 @@ export default function BookingNotifications({ tourist }: BookingNotificationsPr
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewError, setReviewError] = useState("");
 
-  // Guide availability map (guide name → is_available)
-  const [guideAvailability, setGuideAvailability] = useState<Record<string, boolean>>({});
-
-  const fetchGuideAvailability = async () => {
-    const map: Record<string, boolean> = {};
-    try {
-      let dbGuides: any[] = [];
-      try {
-        const { data } = await supabase
-          .from('tour_guides')
-          .select('full_name, name, is_available')
-          .eq('status', 'approved');
-        if (data) dbGuides = data;
-      } catch { /* ignore */ }
-      const local = JSON.parse(localStorage.getItem("roam_blon_tour_guides") || "[]");
-      [...dbGuides, ...local].forEach((g: any) => {
-        const n = g.full_name || g.name || "";
-        if (n && map[n.toLowerCase()] === undefined) map[n.toLowerCase()] = g.is_available !== false;
-      });
-    } catch { /* ignore */ }
-    setGuideAvailability(map);
-  };
-
   const fetchBookings = async () => {
     setLoading(true);
     const touristEmail = tourist?.email || tourist?.email?.toLowerCase() || "tourist@roam-blon.com";
@@ -108,13 +85,10 @@ export default function BookingNotifications({ tourist }: BookingNotificationsPr
   useEffect(() => {
     fetchBookings();
     fetchGuideReviews();
-    fetchGuideAvailability();
 
     const channel = supabase
       .channel('tourist-booking-notif')
       .on('broadcast', { event: 'booking_status' }, () => fetchBookings())
-      .on('broadcast', { event: 'guide_availability' }, () => fetchGuideAvailability())
-      .on('broadcast', { event: 'new_tour_guide' }, () => fetchGuideAvailability())
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
@@ -255,18 +229,6 @@ export default function BookingNotifications({ tourist }: BookingNotificationsPr
                 {b.destinations && (
                   <p className="text-[11px] text-slate-400 font-medium italic mt-1.5 truncate">📍 {b.destinations}</p>
                 )}
-                {(() => {
-                  const avail = b.guide_name ? guideAvailability[b.guide_name.toLowerCase()] : undefined;
-                  if (avail === undefined) return null;
-                  return (
-                    <div className={`mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
-                      avail ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200'
-                    }`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${avail ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
-                      Guide: {avail ? 'Available' : 'Unavailable'}
-                    </div>
-                  );
-                })()}
                 {b.rejection_reason && (b.status === 'declined' || b.status === 'rejected') && (
                   <p className="text-[11px] text-rose-600 font-bold italic mt-1.5">"{b.rejection_reason}"</p>
                 )}
