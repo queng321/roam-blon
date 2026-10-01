@@ -144,6 +144,7 @@ export default function Home() {
   const scannerRef = useRef<any>(null);
 
   const [showBookingNotifications, setShowBookingNotifications] = useState(false);
+  const [pendingBookingCount, setPendingBookingCount] = useState(0);
 
   const stopScanner = useCallback(async () => {
     try {
@@ -1162,7 +1163,7 @@ export default function Home() {
               <TourGuideBooking tourist={tourist} compact onBookingSuccess={() => setShowBookingNotifications(true)} />
               <div className="border-t border-slate-200 pt-4">
                 <h4 className="text-xs font-black uppercase tracking-wider text-slate-500 mb-3">Your Bookings & Notifications</h4>
-                <BookingNotifications tourist={tourist} />
+<BookingNotifications tourist={tourist} onPendingCountChange={setPendingBookingCount} />
               </div>
             </div>
           </div>
@@ -1622,6 +1623,11 @@ export default function Home() {
                   aria-label="Booking Notifications"
                 >
                   <Bell size={18} />
+                  {pendingBookingCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">
+                      {pendingBookingCount > 9 ? '9+' : pendingBookingCount}
+                    </span>
+                  )}
                 </button>
               )}
               {tourist ? (

@@ -17,9 +17,10 @@ import {
 
 interface BookingNotificationsProps {
   tourist: any;
+  onPendingCountChange?: (count: number) => void;
 }
 
-export default function BookingNotifications({ tourist }: BookingNotificationsProps) {
+export default function BookingNotifications({ tourist, onPendingCountChange }: BookingNotificationsProps) {
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -66,6 +67,11 @@ export default function BookingNotifications({ tourist }: BookingNotificationsPr
       b.guide_name &&
       !STATIC_GUIDE_NAMES.some(name => b.guide_name.includes(name))
     );
+    
+    // Calculate pending count
+    const pendingCount = actualBookings.filter(b => b.status === 'pending').length;
+    onPendingCountChange?.(pendingCount);
+    
     setBookings(actualBookings.slice(0, 20));
     setLoading(false);
   };
