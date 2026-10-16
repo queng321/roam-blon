@@ -1599,7 +1599,7 @@ export default function AdminDashboardPage() {
     await adminSupabase.auth.signOut();
     setCurrentTourist(null);
     setIsLogoutModalOpen(false);
-    router.push('/login');
+    router.push('/login?role=admin');
   };
 
   if (loading) {
